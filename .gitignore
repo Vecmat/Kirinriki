@@ -1,0 +1,16 @@
+.idea
+.DS_Store
+node_modules
+coverage
+dist
+docs
+temp
+logs
+.rush
+npm-debug.log
+yarn-error.log
+jest_html_reporters.html
+# 临时屏蔽
+docs/*
+jest-html-reporters-attach/
+*.log
