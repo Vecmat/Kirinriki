@@ -1,6 +1,7 @@
 
 import rc from "rc";
-import { Helper, Loader } from "@vecmat/vendor";
+import { LoadDir } from "./Loader";
+import { Helper } from "@vecmat/vendor";
 import { IOCContainer, TAGGED_ARGS } from "../container";
 
 /**
@@ -16,19 +17,25 @@ import { IOCContainer, TAGGED_ARGS } from "../container";
 export function LoadConfigs(loadPath: string[], baseDir?: string, pattern?: string[], ignore?: string[]) {
     const conf: any = {};
     const env = process.env.KIRINRIKI_ENV || process.env.NODE_ENV || "";
-    Loader.Load(loadPath, baseDir, (name: string, path: string, exp: any) => {
-        let tempConf: any = {};
-        if (name.includes("_")) {
-            const t = name.slice(name.lastIndexOf("_") + 1);
-            if (t && env.indexOf(t) === 0) {
-                name = name.replace(`_${t}`, "");
-                tempConf = rc(name, { [name]: parseEnv(exp), });
+    LoadDir(
+        loadPath,
+        baseDir,
+        (name: string, path: string, exp: any) => {
+            let tempConf: any = {};
+            if (name.includes("_")) {
+                const t = name.slice(name.lastIndexOf("_") + 1);
+                if (t && env.indexOf(t) === 0) {
+                    name = name.replace(`_${t}`, "");
+                    tempConf = rc(name, { [name]: parseEnv(exp) });
+                }
+            } else {
+                tempConf = rc(name, { [name]: parseEnv(exp) });
             }
-        } else {
-            tempConf = rc(name, { [name]: parseEnv(exp), });
-        }
-        conf[name] = tempConf[name];
-    }, pattern, ignore);
+            conf[name] = tempConf[name];
+        },
+        pattern,
+        ignore
+    );
 
     return conf;
 }

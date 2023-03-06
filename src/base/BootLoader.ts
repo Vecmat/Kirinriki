@@ -4,6 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import * as path from "path";
+import { LoadDir } from "./Loader";
 import { Kirinriki } from '../core';
 import { Captor  } from "./Capturer";
 import { checkClass } from "./widget";
@@ -11,7 +12,7 @@ import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "./config";
 import { BaseController } from "./BaseController";
 import { IMiddleware, IPlugin } from './Component';
-import { Exception, Helper, Loader } from "@vecmat/vendor";
+import { Exception, Helper } from "@vecmat/vendor";
 import { Logger, SetLogger, LoggerOption } from "./Logger";
 import { TraceMiddleware } from "../middleware/TraceMiddleware";
 import { PayloadMiddleware } from "../middleware/PayloadMiddleware";
@@ -115,9 +116,15 @@ export class BootLoader {
         // configuration metadata
         const configurationMetas = BootLoader.GetConfigurationMetas(app, target);
         const exSet = new Set();
-        Loader.Load(componentMetas, '', (fileName: string, xpath: string, xTarget: any) => {
-            checkClass(fileName, xpath, xTarget, exSet);
-        }, ['**/**.js', '**/**.ts', '!**/**.d.ts'], [...configurationMetas, `${target.name || '.no'}.ts`]);
+        LoadDir(
+            componentMetas,
+            "",
+            (fileName: string, xpath: string, xTarget: any) => {
+                checkClass(fileName, xpath, xTarget, exSet);
+            },
+            ["**/**.js", "**/**.ts", "!**/**.d.ts"],
+            [...configurationMetas, `${target.name || ".no"}.ts`]
+        );
         exSet.clear();
     }
 
@@ -194,7 +201,7 @@ export class BootLoader {
     public static LoadConfigs(app: Kirinriki, loadPath?: string[]) {
         const frameConfig: any = {};
         // Logger.Debug(`Load configuration path: ${app.thinkPath}/config`);
-        Loader.Load(["./config"], app.thinkPath, function (name: string, path: string, exp: any) {
+        LoadDir(["./config"], app.thinkPath, function (name: string, path: string, exp: any) {
             frameConfig[name] = exp;
         });
 
@@ -217,8 +224,8 @@ export class BootLoader {
      * @memberof BootLoader
      */
     public static loadCaptor(app: Kirinriki) {
-        // 使用Loader.Load(） 加载 CAPTURER 目录？
-        Loader.Load( ["./Capturer"], app.thinkPath);
+        // 使用LoadDir(） 加载 CAPTURER 目录？
+        LoadDir(["./Capturer"], app.thinkPath);
         const clsList = IOCContainer.listClass("CAPTURER");
         clsList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("CAPTURER:", "");
@@ -226,7 +233,7 @@ export class BootLoader {
             const keyMeta = IOCContainer.listPropertyData(CAPTURER_KEY, item.target);
             for (const fun in keyMeta) {
                 if (Helper.isFunction(ins[fun])) {
-                    Captor.reg(keyMeta[fun] ,ins[fun]);
+                    Captor.reg(keyMeta[fun], ins[fun]);
                 }
             }
         });
@@ -234,17 +241,17 @@ export class BootLoader {
         // 获取函数并注入到Captor map
         // $ 是否可以加载全部错误拦截？
         // 获取所有class，然后解析所有的 CAPTURER_KEY 并注入
-        app.once("appReady",async ()=>{
+        app.once("appReady", async () => {
             const allcls = IOCContainer.listClass();
             allcls.forEach((item: ComponentItem) => {
-                if((item.id ?? "").startsWith("CAPTURER")) return;
+                if ((item.id ?? "").startsWith("CAPTURER")) return;
                 // 动态获取类型
-                const [,type,name] = item.id.match(/(\S+):(\S+)/);
-                const ins = IOCContainer.get(name,<ComponentType>type);
-                const keyMeta =  IOCContainer.listPropertyData(CAPTURER_KEY, item.target);
+                const [, type, name] = item.id.match(/(\S+):(\S+)/);
+                const ins = IOCContainer.get(name, <ComponentType>type);
+                const keyMeta = IOCContainer.listPropertyData(CAPTURER_KEY, item.target);
                 for (const fun in keyMeta) {
                     if (Helper.isFunction(ins[fun])) {
-                        Captor.reg(keyMeta[fun] ,ins[fun]);
+                        Captor.reg(keyMeta[fun], ins[fun]);
                     }
                 }
             });
@@ -267,7 +274,7 @@ export class BootLoader {
         }
 
         // Mount default middleware
-        Loader.Load(loadPath || ["./middleware"], app.thinkPath);
+        LoadDir(loadPath || ["./middleware"], app.thinkPath);
         // Mount application middleware
         // const middleware: any = {};
         const appMiddleware = IOCContainer.listClass("MIDDLEWARE") ?? [];
