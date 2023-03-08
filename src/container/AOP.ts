@@ -3,10 +3,11 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Exception, Helper } from "@vecmat/vendor";
+import lodash from "lodash";
+import { getMethodNames } from "./Util";
+import { Exception, Check } from "@vecmat/vendor";
 import { Container, IOCContainer } from "./Container";
 import { TAGGED_AOP, TAGGED_CLS } from "./IContainer";
-import { getMethodNames } from "./Util";
 
 /**
  * defined AOP type
@@ -161,7 +162,7 @@ export function AfterEach(aopName?: string | Function): ClassDecorator {
 async function executeAspect(aopName: string | Function, props: any[]) {
     // tslint:disable-next-line: one-variable-per-declaration
     let aspect;//, name = "";
-    if (Helper.isClass(aopName)) {
+    if (Check.isClass(aopName)) {
         // tslint:disable-next-line: no-invalid-this
         aspect = IOCContainer.getInsByClass(aopName);
         // name = IOCContainer.getIdentifier(<Function>aopName) || (<Function>aopName).name || "";
@@ -170,7 +171,7 @@ async function executeAspect(aopName: string | Function, props: any[]) {
         aspect = IOCContainer.get(<string>aopName, "COMPONENT");
         // name = <string>aopName;
     }
-    if (aspect && Helper.isFunction(aspect.run)) {
+    if (aspect && lodash.isFunction(aspect.run)) {
         // logger.Info(`Execute the aspect ${name}`);
         // tslint:disable-next-line: no-invalid-this
         await aspect.run(props);
@@ -247,11 +248,11 @@ function injectDefaultAOP(target: any, instance: any, methods: string[]) {
     // );
     // logger.Warn(`The ${target.name} class has a default AOP method, @BeforeEach and @AfterEach maybe not take effect`);
     methods.forEach((element) => {
-        if (Helper.isFunction(instance.__before)) {
+        if (lodash.isFunction(instance.__before)) {
             // logger.Debug(`Register inject default AOP ${target.name} method: ${element} => __before`);
             defineAOPProperty(target, element, "__before", AOPType.BeforeEach);
         }
-        if (Helper.isFunction(instance.__after)) {
+        if (lodash.isFunction(instance.__after)) {
             // logger.Debug(`Register inject default AOP ${target.name} method: ${element} => __after`);
             defineAOPProperty(target, element, "__after", AOPType.AfterEach);
         }

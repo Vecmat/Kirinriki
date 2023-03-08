@@ -4,9 +4,9 @@
  * @ abstract: 小组件
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-
-import { Exception, Helper } from "@vecmat/vendor";
+import lodash from "lodash";
 import { ApiOutput } from "./Component";
+import { Exception, Check } from "@vecmat/vendor";
 
 const ARGUMENT_NAMES = /([^\s,]+)/g;
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
@@ -72,7 +72,7 @@ export function checkClass(fileName: string, xpath: string, target: any, exSet?:
     let calssname = "";
     if(target.__esModule && target.name === undefined ){
         const keys = Object.keys(target);
-        if(Helper.isClass(target[keys[0]])){
+        if(Check.isClass(target[keys[0]])){
             calssname  = keys[0];
         }
     }
@@ -103,11 +103,11 @@ export function formatApiData(msg: any, data: any, defaultCode: number): ApiOutp
         message: "",
         data: null,
     };
-    if (Helper.isError(msg)) {
+    if (lodash.isError(msg)) {
         const { code, message, } = <any>msg;
         obj.code = code || defaultCode;
         obj.message = message;
-    } else if (Helper.isObject(msg)) {
+    } else if (lodash.isObject(msg)) {
         obj = { ...obj, ...msg, };
     } else {
         obj.message = msg;

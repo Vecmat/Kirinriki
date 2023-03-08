@@ -4,13 +4,13 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import { Logger } from "../../base/Logger";
-import { Kirinriki, IApplication } from "../../core";
-import { ServerOptions, WebSocketServer } from "ws";
+import { ARROBJ } from "@vecmat/vendor";
+import { ListeningOptions } from "../index";
 import { CreateTerminus } from "../terminus";
+import { ServerOptions, WebSocketServer } from "ws";
+import { Kirinriki, IApplication } from "../../core";
 import { Server as HttpServer, IncomingMessage, ServerResponse, createServer } from "http";
 import { Server as HttpsServer, createServer as httpsCreateServer, ServerOptions as httpsServerOptions } from "https";
-import { ListeningOptions } from "../index";
-import { Helper } from "@vecmat/vendor";
 export interface WebSocketServerOptions extends ListeningOptions {
     wsOptions?: ServerOptions;
 }
@@ -72,7 +72,7 @@ export class WsServer implements IApplication {
                 this.server.handleUpgrade(request, socket, head, (client, req) => {
                     client
                         .on("message", data => {
-                            Helper.define(req, "data", data, true);
+                            ARROBJ.defineProp(req, "data", data, true);
                             this.app.callback(this.options.protocol)(req, client);
                         })
                         .on("error", err => {

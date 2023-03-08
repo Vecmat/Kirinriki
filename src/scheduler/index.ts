@@ -5,13 +5,14 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
+import lodash from "lodash";
 import { CronJob } from "cron";
-import { Exception, Helper } from "@vecmat/vendor";
+import { Locker } from "./locker";
+import { StoreOptions } from "../store";
+import { recursiveGetMetadata } from "./lib";
+import { Exception, Check } from "@vecmat/vendor";
 import { DefaultLogger as logger } from "@vecmat/printer";
 import { Application, IOCContainer } from "../container";
-import { Locker } from "./locker";
-import { recursiveGetMetadata } from "./lib";
-import { StoreOptions } from "../store";
 
 const SCHEDULE_KEY = 'SCHEDULE_KEY';
 // const APP_READY_HOOK = "APP_READY_HOOK";
@@ -46,14 +47,14 @@ const ScheduleLocker: ScheduleLockerInterface = {
 export async function GetScheduleLocker(app: Application): Promise<LockerInterface> {
     if (!ScheduleLocker.locker) {
         const opt: StoreOptions = app.config("SchedulerLock", "db") ?? {};
-        if (Helper.isEmpty(opt)) {
+        if (Check.isEmpty(opt)) {
             logger.Warn(`Missing configuration. Please write a configuration item with the key name 'SchedulerLock' in the db.ts file.`);
         }
         if (opt.type !== "redis") {
             throw  new Exception("SYSERR_LOCKER_TYPEUNSUITED",`ScheduleLocker depends on redis, please configure redis server. `);
         }
         const locker = Locker.getInstance(opt);
-        if (locker && Helper.isFunction(locker.getClient)) {
+        if (locker && lodash.isFunction(locker.getClient)) {
             await locker.getClient();
             ScheduleLocker.locker = locker;
         } else {
@@ -91,7 +92,7 @@ async function InitScheduleLocker() {
  * @returns {MethodDecorator}
  */
 export function Scheduled(cron: string): MethodDecorator {
-    if (Helper.isEmpty(cron)) {
+    if (Check.isEmpty(cron)) {
         // cron = "0 * * * * *";
         throw new Exception("SYSERR_DEMTH_MISSPARAMS","ScheduleJob rule is not defined");
     }
@@ -127,7 +128,7 @@ export function SchedulerLock(name?: string, lockTimeOut?: number, waitLockInter
             throw new  Exception("BOOTERR_DEPRO_UNSUITED","This decorator only used in the service、component class.");
         }
         const { value, configurable, enumerable } = descriptor;
-        if (Helper.isEmpty(name)) {
+        if (Check.isEmpty(name)) {
             const identifier = IOCContainer.getIdentifier(target) || (target.constructor ? target.constructor.name : "");
             name = `${identifier}_${methodName}`;
         }
@@ -213,7 +214,7 @@ const execInjectSchedule = function (target: any, method: string, cron: string) 
         const componentType = IOCContainer.getType(target);
         const instance: any = IOCContainer.get(identifier, componentType);
 
-        if (instance && Helper.isFunction(instance[method]) && cron) {
+        if (instance && lodash.isFunction(instance[method]) && cron) {
             logger.Debug(`Register inject ${identifier} schedule key: ${method} => value: ${cron}`);
             new CronJob(cron, async function () {
                 logger.Info(`The schedule job ${identifier}_${method} started.`);

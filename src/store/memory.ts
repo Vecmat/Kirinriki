@@ -3,9 +3,9 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Exception, Helper } from "@vecmat/vendor";
 import { CacheStore } from "../store";
 import { StoreOptions } from "./options";
+import { Exception } from "@vecmat/vendor";
 import { MemoryCache, messages } from "./cache";
 
 export class MemoryStore extends CacheStore {

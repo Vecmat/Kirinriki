@@ -3,7 +3,7 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Helper } from "@vecmat/vendor";
+import lodash from "lodash";
 import { Logger } from "./Logger";
 import { version, engines } from "../../package.json";
 
@@ -23,7 +23,7 @@ export function checkRuntime() {
     }
     nodeVersion = nodeVersion.slice(0, nodeVersion.lastIndexOf("."));
 
-    if (Helper.toNumber(nodeEngines) > Helper.toNumber(nodeVersion)) {
+    if (lodash.toNumber(nodeEngines) > lodash.toNumber(nodeVersion)) {
         Logger.Error(`Kirinriki need node version > ${nodeEngines}, current version is ${nodeVersion}, please upgrade it.`);
         process.exit(-1);
     }

@@ -1,8 +1,8 @@
+import { ARROBJ } from "@vecmat/vendor";
 import { GrpcRouter } from "./protocol/grpc";
 import { HttpRouter } from "./protocol/http";
-import { WebsocketRouter } from "./protocol/websocket";
 import { Kirinriki, IRouter } from "../core";
-import { Helper } from "@vecmat/vendor";
+import { WebsocketRouter } from "./protocol/websocket";
 
 /**
  * RouterOptions
@@ -53,16 +53,16 @@ export function NewRouter(app: Kirinriki, options: RouterOptions, protocol?: str
     switch (protocol) {
         case "grpc":
             router = new GrpcRouter(app, options);
-            Helper.define(router, "protocol", protocol);
+            ARROBJ.defineProp(router, "protocol", protocol);
             break;
         case "ws":
         case "wss":
             router = new WebsocketRouter(app, options);
-            Helper.define(router, "protocol", protocol);
+            ARROBJ.defineProp(router, "protocol", protocol);
             break;
         default:
             router = new HttpRouter(app, options);
-            Helper.define(router, "protocol", protocol);
+            ARROBJ.defineProp(router, "protocol", protocol);
     }
     return router;
 }

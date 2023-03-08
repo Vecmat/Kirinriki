@@ -6,7 +6,6 @@
 
 
 import Koa from "koa";
-import { Helper } from "@vecmat/vendor";
 import koaCompose from "koa-compose";
 import onFinished from "on-finished";
 import { CreateContext } from "./Context";
@@ -18,8 +17,10 @@ import {
     InitOptions,
     IRouter, IApplication
 } from "./IApplication";
-import { ServerResponse } from "http";
+import lodash from "lodash";
 import { Captor } from "../base";
+import { ServerResponse } from "http";
+import { ARROBJ } from "@vecmat/vendor";
 
 /**
  * Application 
@@ -86,7 +87,7 @@ export class Kirinriki extends Koa implements Application {
     setMetaData(key: string, value: any): any {
         // private
         if (key.startsWith("_")) {
-            Helper.define(this, key, value);
+            ARROBJ.defineProp(this, key, value);
             return;
         }
         this.metadata.set(key, value);
@@ -114,7 +115,7 @@ export class Kirinriki extends Koa implements Application {
      * @memberof Kirinriki
      */
     public use(fn: Function): any {
-        if (!Helper.isFunction) {
+        if (!lodash.isFunction) {
             Logger.Error('The paramter is not a function.');
             return;
         }
@@ -129,7 +130,7 @@ export class Kirinriki extends Koa implements Application {
      * @memberof Kirinriki
      */
     public useExp(fn: Function): any {
-        if (!Helper.isFunction) {
+        if (!lodash.isFunction) {
             Logger.Error('The paramter is not a function.');
             return;
         }
@@ -152,7 +153,7 @@ export class Kirinriki extends Koa implements Application {
             if (name === undefined) {
                 return caches[type];
             }
-            if (Helper.isString(name)) {
+            if (lodash.isString(name)) {
                 // name不含. 一级
                 if (name.indexOf('.') === -1) {
                     return caches[type][name];
@@ -190,7 +191,7 @@ export class Kirinriki extends Koa implements Application {
         // create context
         const context = super.createContext(req, resp);
 
-        Helper.define(context, "protocol", protocol);
+        ARROBJ.defineProp(context, "protocol", protocol);
         return CreateContext(context, req, res);
     }
 
@@ -283,7 +284,7 @@ export class Kirinriki extends Koa implements Application {
         process.removeAllListeners('uncaughtException');
         process.on('uncaughtException', (err) => {
             if (err.message.indexOf('EADDRINUSE') > -1) {
-                Logger.Error(Helper.toString(err));
+                Logger.Error(lodash.toString(err));
                 process.exit(-1);
             }
             // if (!isPrevent(err)) {
@@ -310,8 +311,8 @@ export class Kirinriki extends Koa implements Application {
 //     },
 //     construct(target, args, newTarget) {
 //         Reflect.ownKeys(target.prototype).map((n) => {
-//             if (newTarget.prototype.hasOwnProperty(n) && !properties.includes(Helper.toString(n))) {
-//                 throw Error(`Cannot override the final method '${Helper.toString(n)}'`);
+//             if (newTarget.prototype.hasOwnProperty(n) && !properties.includes(lodash.toString(n))) {
+//                 throw Error(`Cannot override the final method '${lodash.toString(n)}'`);
 //             }
 //         });
 //         return Reflect.construct(target, args, newTarget);

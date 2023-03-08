@@ -4,10 +4,10 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import Koa from "koa";
-import { Helper } from "@vecmat/vendor";
-import { Kirinriki, IContext, INext } from "../core";
-import { Logger } from "../base/Logger";
 import { Parse } from "./parse";
+import { Logger } from "../base/Logger";
+import { Check, ARROBJ } from "@vecmat/vendor";
+import { Kirinriki, IContext, INext } from "../core";
 
 /**
  *
@@ -62,9 +62,9 @@ export function Payload(options: PayloadOptions, app: Kirinriki): Koa.Middleware
          * @param {any} value
          * @returns
          */
-        Helper.define(ctx, "bodyParser", async (): Promise<any> => {
+        ARROBJ.defineProp(ctx, "bodyParser", async (): Promise<any> => {
             let body = ctx.getMetaData("_body");
-            if (!Helper.isEmpty(body)) return body;
+            if (!Check.isEmpty(body)) return body;
 
             try {
                 const res = await Parse(ctx, options);
@@ -84,9 +84,9 @@ export function Payload(options: PayloadOptions, app: Kirinriki): Koa.Middleware
          * @param {any} value
          * @returns
          */
-        Helper.define(ctx, "queryParser", (): any => {
+        ARROBJ.defineProp(ctx, "queryParser", (): any => {
             let query = ctx.getMetaData("_query");
-            if (!Helper.isEmpty(query)) return query;
+            if (!Check.isEmpty(query)) return query;
 
             query = { ...ctx.query, ...(ctx.params || {}) };
             ctx.setMetaData("_query", query);

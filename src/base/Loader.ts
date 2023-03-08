@@ -24,9 +24,8 @@ type callbackFunc = (fileName: string, xpath: string, target: any) => void;
  * @param baseDir
  * @param dir
  */
-function buildLoadDir(baseDir: string, dir: string) {
+function buildLoadDir(baseDir: string, dir: string) :string{
     if (!path.isAbsolute(dir)) return path.join(baseDir, dir);
-
     return dir;
 }
 
@@ -66,9 +65,10 @@ export function LoadDir(
 
     for (let dir of loadDirs) {
         dir = buildLoadDir(baseDir, dir);
-        const fileResults = globby.sync(pattern, {
+     
+        const fileResults = globby.sync(pattern, <globby.GlobbyOptions> {
             cwd: dir,
-            ignore
+            ignore: ignore
         });
         for (let name of fileResults) {
             const file = path.join(dir, name);

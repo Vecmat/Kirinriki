@@ -4,13 +4,14 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import KoaRouter from "@koa/router";
+import { Check } from "@vecmat/vendor";
 import { RouterOptions } from "../option";
 import { RequestMethod } from "../mapping";
 import { Logger } from "../../base/Logger";
 import { IOCContainer } from "../../container";
 import { Handler, injectParam, injectRouter } from "../inject";
 import { Kirinriki, IContext, INext, IRouter } from "../../core";
-import { Helper } from "@vecmat/vendor";
+
 
 /**
  * WebsocketRouter Options
@@ -51,7 +52,7 @@ export class WebsocketRouter implements IRouter {
      * @memberof WebsocketRouter
      */
     SetRouter(path: string, func: WsImplementation, method?: RequestMethod) {
-        if (Helper.isEmpty(method)) {
+        if (Check.isEmpty(method)) {
             return;
         }
         method = method ?? RequestMethod.ALL;

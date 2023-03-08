@@ -4,13 +4,13 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-import { Exception, Helper } from "@vecmat/vendor";
+import lodash from "lodash";
 import { getParamter } from "./params";
 import { Logger } from "../base/Logger";
 import { Kirinriki, IContext } from "../core";
+import { CONTROLLER_ROUTER, ROUTER_KEY } from "./mapping";
 import { getOriginMetadata, IOCContainer, RecursiveGetMetadata, TAGGED_PARAM } from "../container";
 import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY, ValidOtpions, ValidRules } from "../validation";
-import { CONTROLLER_ROUTER, ROUTER_KEY } from "./mapping";
 
 /**
  * controller handler
@@ -142,7 +142,7 @@ export function injectParam(app: Kirinriki, target: any, instance?: any): ParamM
         // 实例方法带规则形参必须小于等于原型形参(如果不存在验证规则，则小于)
         if (instance[meta] && instance[meta].length <= metaDatas[meta].length) {
             Logger.Debug(
-                `Register inject param key ${IOCContainer.getIdentifier(target)}: ${Helper.toString(meta)} => value: ${JSON.stringify(
+                `Register inject param key ${IOCContainer.getIdentifier(target)}: ${lodash.toString(meta)} => value: ${JSON.stringify(
                     metaDatas[meta]
                 )}`
             );

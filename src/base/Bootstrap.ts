@@ -5,12 +5,13 @@
  */
 import "reflect-metadata";
 import fs from "fs";
+import lodash from "lodash";
 import EventEmitter from "events";
 import { Kirinriki } from '../core';
 import { Logger } from "./Logger";
 import { Captor } from "./Capturer";
 import { BootLoader } from "./BootLoader";
-import { Exception, Helper } from "@vecmat/vendor";
+import { Exception, ARROBJ } from "@vecmat/vendor";
 import { NewRouter, RouterOptions } from "../router";
 import { IOCContainer, TAGGED_CLS } from "../container";
 import { checkRuntime, checkUTRuntime, KIRINRIKI_VERSION } from "./Check";
@@ -52,7 +53,7 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         !app.silent && Logger.Log("🌈🌈🌈🌈🌈", LOGO, WELCOME);
        
         // version
-        Helper.define(app, "version", KIRINRIKI_VERSION);
+        ARROBJ.defineProp(app, "version", KIRINRIKI_VERSION);
 
         // todo 
 
@@ -68,7 +69,7 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
 
 
         // exec bootFunc
-        if (Helper.isFunction(bootFunc)) {
+        if (lodash.isFunction(bootFunc)) {
             Logger.Log('Vecmat', '', 'Execute bootFunc ...');
             await bootFunc(app);
         }
@@ -261,7 +262,7 @@ const asyncEvent = async function (event: EventEmitter, eventName: string) {
     const ls: any[] = event.listeners(eventName);
     // eslint-disable-next-line no-restricted-syntax
     for await (const func of ls) {
-        if (Helper.isFunction(func)) {
+        if (lodash.isFunction(func)) {
             func();
         }
     }

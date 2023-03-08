@@ -5,12 +5,13 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
-import { Helper } from "@vecmat/vendor";
-import { injectAutowired } from './Autowired';
-import { IContainer, ObjectDefinitionOptions, Application, ComponentType, TAGGED_CLS } from "./IContainer";
+import lodash from "lodash";
 import { injectAOP } from "./AOP";
 import { injectValues } from "./Values";
 import { Kirinriki } from "../core";
+import { Check } from "@vecmat/vendor";
+import { injectAutowired } from './Autowired';
+import { IContainer, ObjectDefinitionOptions, Application, ComponentType, TAGGED_CLS } from "./IContainer";
 
 /**
  * IOC Container
@@ -81,12 +82,12 @@ export class Container implements IContainer {
     public reg<T>(target: T, options?: ObjectDefinitionOptions): T
     public reg<T>(identifier: string, target: T, options?: ObjectDefinitionOptions): T
     public reg<T>(identifier: any, target?: any, options?: ObjectDefinitionOptions): T {
-        if (Helper.isClass(identifier) || Helper.isFunction(identifier)) {
+        if (Check.isClass(identifier) || lodash.isFunction(identifier)) {
             options = target;
             target = (identifier as any);
             identifier = this.getIdentifier(target);
         }
-        if (!Helper.isClass(target)) {
+        if (!Check.isClass(target)) {
             return target;
         }
 
@@ -196,7 +197,7 @@ export class Container implements IContainer {
      * @memberof Container
      */
     public getInsByClass<T>(target: T, args: any[] = []): T {
-        if (!Helper.isClass(target)) {
+        if (!Check.isClass(target)) {
             return null;
         }
         // get instance from the Container
@@ -230,7 +231,7 @@ export class Container implements IContainer {
         }
         if (propertyKey) {
             // for property or method
-            const key = `${Helper.toString(metadataKey)}:${Helper.toString(propertyKey)}`;
+            const key = `${lodash.toString(metadataKey)}:${lodash.toString(propertyKey)}`;
             const map = this.metadataMap.get(target);
             if (!map.has(key)) {
                 map.set(key, new Map());
@@ -255,7 +256,7 @@ export class Container implements IContainer {
      */
     public getIdentifier(target: Function | Object) {
         let name = "";
-        if (Helper.isFunction(target)) {
+        if (lodash.isFunction(target)) {
             const metaData = Reflect.getOwnMetadata(TAGGED_CLS, target);
             if (metaData) {
                 name = metaData.id ?? "";

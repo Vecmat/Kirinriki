@@ -3,7 +3,8 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Helper } from "@vecmat/vendor";
+import lodash from "lodash";
+import { Disk } from "@vecmat/vendor";
 import { GrpcObject, loadPackageDefinition, ServiceDefinition } from "@grpc/grpc-js";
 import { loadSync, Options, ProtobufTypeDefinition } from "@grpc/proto-loader";
 
@@ -42,7 +43,7 @@ export function LoadProto(
         oneofs: true
     }
 ): GrpcObject {
-    if (!Helper.isFile(protoFile)) throw new Error(`no such file: ${protoFile}`);
+    if (!Disk.isFile(protoFile)) throw new Error(`no such file: ${protoFile}`);
 
     // Loading file
     const parsedObj = loadSync(protoFile, options);
@@ -77,8 +78,8 @@ export function ListServices(def: GrpcObject | ProtobufTypeDefinition): ProtoDef
                     service,
                     handlers
                 });
-            } else if (Helper.isObject(value)) {
-                results.push(...ListServices(value));
+            } else if (lodash.isObject(value)) {
+                results.push(...ListServices(value as GrpcObject));
             }
         }
     }

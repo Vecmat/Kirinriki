@@ -7,7 +7,7 @@ import { inspect } from "util";
 import { catcher } from "../catcher";
 import { IContext } from "../../core";
 import { Logger } from "../../base/Logger";
-import { Helper, Exception } from "@vecmat/vendor";
+import { Exception,  ARROBJ } from "@vecmat/vendor";
 
 /**
  * wsRunner
@@ -19,11 +19,11 @@ export async function wsRunner(ctx: IContext, next: Function, ext?: any): Promis
     const timeout = ext.timeout || 10000;
 
     // set ctx start time
-    Helper.define(ctx, "startTime", Date.now());
+    ARROBJ.defineProp(ctx, "startTime", Date.now());
     // http version
-    Helper.define(ctx, "version", ctx.req.httpVersion);
+    ARROBJ.defineProp(ctx, "version", ctx.req.httpVersion);
     // originalPath
-    Helper.define(ctx, "originalPath", ctx.path);
+    ARROBJ.defineProp(ctx, "originalPath", ctx.path);
     // Encoding
     ctx.encoding = ext.encoding;
     // auto send security header
@@ -47,7 +47,7 @@ export async function wsRunner(ctx: IContext, next: Function, ext?: any): Promis
     //     Logger.Info("websocket connected");
     // });
     // ctx.websocket.once("close", (socket: any, code: number, reason: Buffer) => {
-    //     Logger.Error("websocket closed: ", Helper.toString(reason));
+    //     Logger.Error("websocket closed: ", lodash.toString(reason));
     // });
 
     // try /catch

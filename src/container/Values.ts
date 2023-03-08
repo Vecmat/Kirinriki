@@ -3,10 +3,11 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Exception, Helper } from "@vecmat/vendor";
-import { Container, IOCContainer } from "./Container";
+import lodash from "lodash";
 import { TAGGED_ARGS } from "./IContainer";
 import { RecursiveGetMetadata } from "./Util";
+import { Exception, Check } from "@vecmat/vendor";
+import { Container, IOCContainer } from "./Container";
 
 /**
  * Inject class instance property
@@ -25,7 +26,7 @@ export function injectValues(target: any, instance: any, container?: Container) 
             enumerable: true,
             configurable: false,
             writable: true,
-            value: Helper.isFunction(method) ? <Function>method() : method ?? undefined
+            value: lodash.isFunction(method) ? <Function>method() : method ?? undefined
         });
     }
 }
@@ -48,11 +49,11 @@ export function Values(val: any | Function, defaultValue?: unknown): PropertyDec
                 name: propertyKey,
                 method: function () {
                     let value = val;
-                    if (Helper.isFunction(val)) {
+                    if (lodash.isFunction(val)) {
                         value = val();
                     }
                     if (defaultValue !== undefined) {
-                        value = Helper.isTrueEmpty(value) ? defaultValue : value;
+                        value = Check.isTrueEmpty(value) ? defaultValue : value;
                     }
                     if (typeof value !== types) {
                         throw new Exception(

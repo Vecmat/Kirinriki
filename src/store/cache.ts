@@ -4,8 +4,8 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import { EventEmitter } from "events";
-import { Exception, Helper } from "@vecmat/vendor";
-import { flatten, isNil, isUndefined, union } from "lodash";
+import { Exception } from "@vecmat/vendor";
+import lodash, { flatten, isNil, isUndefined, union } from "lodash";
 
 /**
  *
@@ -157,7 +157,7 @@ export class MemoryCache extends EventEmitter {
      * @memberof MemoryCache
      */
     select(dbIndex: number, callback?: Function) {
-        if (!Helper.isNumber(dbIndex)) {
+        if (!lodash.isNumber(dbIndex)) {
             return this._handleCallback(callback, null, messages.invalidDBIndex);
         }
         if (!this.databases.hasOwnProperty(dbIndex)) {

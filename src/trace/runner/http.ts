@@ -5,8 +5,9 @@
  */
 import { catcher } from "../catcher";
 import { IContext } from "../../core";
-import { Exception, Helper } from "@vecmat/vendor";
+import { Exception,  ARROBJ } from "@vecmat/vendor";
 import { DefaultLogger as Logger } from "@vecmat/printer";
+
 
 /**
  * httpRunner
@@ -17,11 +18,11 @@ import { DefaultLogger as Logger } from "@vecmat/printer";
 export async function httpRunner(ctx: IContext, next: Function, ext?: any): Promise<any> {
     const timeout = ext.timeout || 10000;
     // set ctx start time
-    Helper.define(ctx, "startTime", Date.now());
+    ARROBJ.defineProp(ctx, "startTime", Date.now());
     // http version
-    Helper.define(ctx, "version", ctx.req.httpVersion);
+    ARROBJ.defineProp(ctx, "version", ctx.req.httpVersion);
     // originalPath
-    Helper.define(ctx, "originalPath", ctx.path);
+    ARROBJ.defineProp(ctx, "originalPath", ctx.path);
     // Encoding
     ctx.encoding = ext.encoding;
     // auto send security header

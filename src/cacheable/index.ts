@@ -3,8 +3,9 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Exception, Helper } from "@vecmat/vendor";
+import lodash from "lodash";
 import { DefaultLogger as logger } from "@vecmat/printer";
+import { Exception, Check, Random } from "@vecmat/vendor";
 import { CacheStore, Store, StoreOptions } from "../store";
 import { Application, IOCContainer } from '../container';
 
@@ -34,11 +35,11 @@ export async function GetCacheStore(app: Application): Promise<CacheStore> {
         return cacheStore.store;
     }
     const opt: StoreOptions = app.config("CacheStore", "db") ?? {};
-    if (Helper.isEmpty(opt)) {
+    if (Check.isEmpty(opt)) {
         logger.Warn(`Missing CacheStore server configuration. Please write a configuration item with the key name 'CacheStore' in the db.ts file.`);
     }
     cacheStore.store = Store.getInstance(opt);
-    if (!Helper.isFunction(cacheStore.store.getConnection)) {
+    if (!lodash.isFunction(cacheStore.store.getConnection)) {
         throw new Exception("SYSERR_CACHE_CONNECTLESS",`CacheStore connection failed. `);
     }
     return cacheStore.store;
@@ -89,19 +90,19 @@ export function CacheAble(cacheName: string, timeout = 3600): MethodDecorator {
                     // tslint:disable-next-line: one-variable-per-declaration
                     let key = "", res;
                     if (props && props.length > 0) {
-                        key = `${identifier}:${methodName}:${Helper.murmurHash(JSON.stringify(props))}`;
+                        key = `${identifier}:${methodName}:${Random.murmur(JSON.stringify(props))}`;
                     } else {
                         key = `${identifier}:${methodName}`;
                     }
 
                     res = await store.hget(cacheName, key).catch((): any => null);
-                    if (!Helper.isEmpty(res)) {
+                    if (!Check.isEmpty(res)) {
                         return JSON.parse(res);
                     }
                     // tslint:disable-next-line: no-invalid-this
                     res = await value.apply(this, props);
                     // prevent cache penetration
-                    if (Helper.isEmpty(res)) {
+                    if (Check.isEmpty(res)) {
                         res = "";
                         timeout = 60;
                     }

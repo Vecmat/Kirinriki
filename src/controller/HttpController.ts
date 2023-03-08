@@ -3,7 +3,7 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Helper } from "@vecmat/vendor";
+import lodash from "lodash";
 import { formatApiData } from "../base/widget";
 import { ApiInput, ApiOutput } from "../base/Component";
 import { BaseController } from "../base/BaseController";
@@ -113,7 +113,7 @@ export class HttpController extends BaseController {
      * @memberof HttpController
      */
     public expires(timeout = 30): void {
-        timeout = Helper.toNumber(timeout) * 1000;
+        timeout = lodash.toNumber(timeout) * 1000;
         const date = new Date(Date.now() + timeout);
         this.ctx.set("Cache-Control", `max-age=${timeout}`);
         return this.ctx.set("Expires", date.toUTCString());

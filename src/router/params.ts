@@ -4,10 +4,11 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
+import lodash from "lodash";
+import { Exception } from "@vecmat/vendor";
 import { ParamMetadata } from "./inject";
 import { IOCContainer } from "../container";
 import { Kirinriki, IContext } from "../core";
-import { Exception, Helper } from "@vecmat/vendor";
 
 import {
     ClassValidator,
@@ -32,7 +33,7 @@ export async function getParamter(app: Kirinriki, ctx: IContext, params?: ParamM
     params = params || <ParamMetadata[]>[];
     const props: any[] = params.map(async (v: ParamMetadata, k: number) => {
         let value: any = null;
-        if (v.fn && Helper.isFunction(v.fn)) {
+        if (v.fn && lodash.isFunction(v.fn)) {
             value = await v.fn(ctx);
         }
 
@@ -122,9 +123,9 @@ function validatorFuncs(name: string, value: any, type: string, rule: ValidRules
         rule(value);
     } else {
         const funcs: any[] = [];
-        if (Helper.isString(rule)) {
+        if (lodash.isString(rule)) {
             funcs.push(rule);
-        } else if (Helper.isArray(rule)) {
+        } else if (lodash.isArray(rule)) {
             funcs.push(...(<any[]>rule));
         }
         for (const func of funcs) {

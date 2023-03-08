@@ -5,7 +5,7 @@
  */
 
 import { MetadataClass } from "./Metadata";
-import { Exception, Helper } from "@vecmat/vendor";
+import { Exception, ARROBJ } from "@vecmat/vendor";
 import { IRpcServerCallback, IRpcServerUnaryCall, IWebSocket, KoaContext, IContext, WsRequest } from "./IContext";
 
 /**
@@ -42,7 +42,7 @@ export function CreateContext(ctx: KoaContext, req: any, res: any): IContext {
 function createGrpcContext(context: IContext, call: IRpcServerUnaryCall<any, any>, callback: IRpcServerCallback<any>): IContext {
     context.status = 200;
     //
-    Helper.define(context, "rpc", {
+    ARROBJ.defineProp(context, "rpc", {
         call,
         callback
     });
@@ -88,7 +88,7 @@ function createGrpcContext(context: IContext, call: IRpcServerUnaryCall<any, any
  */
 function createWsContext(context: IContext, req: WsRequest, socket: IWebSocket): IContext {
     context.status = 200;
-    Helper.define(context, "websocket", socket);
+    ARROBJ.defineProp(context, "websocket", socket);
     context.setMetaData("_body", (req.data ?? "").toString());
 
     return context;

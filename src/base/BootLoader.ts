@@ -2,7 +2,8 @@
  * @ Author: Hanrea
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
- */
+*/
+import lodash from "lodash";
 import * as path from "path";
 import { LoadDir } from "./Loader";
 import { Kirinriki } from '../core';
@@ -12,9 +13,9 @@ import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "./config";
 import { BaseController } from "./BaseController";
 import { IMiddleware, IPlugin } from './Component';
-import { Exception, Helper } from "@vecmat/vendor";
 import { Logger, SetLogger, LoggerOption } from "./Logger";
 import { TraceMiddleware } from "../middleware/TraceMiddleware";
+import { Exception, defineProp, Check, ARROBJ } from "@vecmat/vendor";
 import { PayloadMiddleware } from "../middleware/PayloadMiddleware";
 import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
 import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from './Constants';
@@ -66,9 +67,9 @@ export class BootLoader {
         const rootPath = app.rootPath || process.cwd();
         const appPath = app.appPath || path.resolve(rootPath, env.indexOf('ts-node') > -1 ? 'src' : 'dist');
         const thinkPath = path.resolve(__dirname, '..');
-        Helper.define(app, 'rootPath', rootPath);
-        Helper.define(app, 'appPath', appPath);
-        Helper.define(app, 'thinkPath', thinkPath);
+        ARROBJ.defineProp(app, "rootPath", rootPath);
+        ARROBJ.defineProp(app, "appPath", appPath);
+        ARROBJ.defineProp(app, "thinkPath", thinkPath);
 
         process.env.ROOT_PATH = rootPath;
         process.env.APP_PATH = appPath;
@@ -90,7 +91,7 @@ export class BootLoader {
         let componentMetas = [];
         const componentMeta = IOCContainer.getClassMetadata(TAGGED_CLS, COMPONENT_SCAN, target);
         if (componentMeta) {
-            if (Helper.isArray(componentMeta)) {
+            if (lodash.isArray(componentMeta)) {
                 componentMetas = componentMeta;
             } else {
                 componentMetas.push(componentMeta);
@@ -141,7 +142,7 @@ export class BootLoader {
         const confMeta = IOCContainer.getClassMetadata(TAGGED_CLS, CONFIGURATION_SCAN, target);
         let configurationMetas = [];
         if (confMeta) {
-            if (Helper.isArray(confMeta)) {
+            if (lodash.isArray(confMeta)) {
                 configurationMetas = confMeta;
             } else {
                 configurationMetas.push(confMeta);
@@ -182,7 +183,7 @@ export class BootLoader {
      */
     public static LoadAppReadyHooks(app: Kirinriki, target: any) {
         const funcs = IOCContainer.getClassMetadata(TAGGED_CLS, APP_READY_HOOK, target);
-        if (Helper.isArray(funcs)) {
+        if (lodash.isArray(funcs)) {
             funcs.forEach((element: AppReadyHookFunc): any => {
                 app.once('appReady', () => element(app));
                 return null;
@@ -205,11 +206,11 @@ export class BootLoader {
             frameConfig[name] = exp;
         });
 
-        if (Helper.isArray(loadPath)) {
+        if (lodash.isArray(loadPath)) {
             loadPath = loadPath.length > 0 ? loadPath : ["./config"];
         }
         let appConfig = loadConf(loadPath, app.appPath);
-        appConfig = Helper.extend(frameConfig, appConfig, true);
+        appConfig = ARROBJ.extendObj(frameConfig, appConfig, true);
 
         app.setMetaData("_configs", appConfig);
     }
@@ -232,7 +233,7 @@ export class BootLoader {
             const ins = IOCContainer.reg(item.id, item.target, { scope: "Prototype", type: "CAPTURER", args: [] });
             const keyMeta = IOCContainer.listPropertyData(CAPTURER_KEY, item.target);
             for (const fun in keyMeta) {
-                if (Helper.isFunction(ins[fun])) {
+                if (lodash.isFunction(ins[fun])) {
                     Captor.reg(keyMeta[fun], ins[fun]);
                 }
             }
@@ -250,7 +251,7 @@ export class BootLoader {
                 const ins = IOCContainer.get(name, <ComponentType>type);
                 const keyMeta = IOCContainer.listPropertyData(CAPTURER_KEY, item.target);
                 for (const fun in keyMeta) {
-                    if (Helper.isFunction(ins[fun])) {
+                    if (lodash.isFunction(ins[fun])) {
                         Captor.reg(keyMeta[fun], ins[fun]);
                     }
                 }
@@ -269,7 +270,7 @@ export class BootLoader {
      */
     public static async LoadMiddlewares(app: Kirinriki, loadPath?: string[]) {
         let middlewareConf = app.config(undefined, "middleware");
-        if (Helper.isEmpty(middlewareConf)) {
+        if (lodash.isEmpty(middlewareConf)) {
             middlewareConf = { config: {}, list: [] };
         }
 
@@ -283,7 +284,7 @@ export class BootLoader {
         appMiddleware.push({ id: "PayloadMiddleware", target: PayloadMiddleware });
         appMiddleware.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("MIDDLEWARE:", "");
-            if (item.id && Helper.isClass(item.target)) {
+            if (item.id && Check.isClass(item.target)) {
                 IOCContainer.reg(item.id, item.target, { scope: "Prototype", type: "MIDDLEWARE", args: [] });
             }
         });
@@ -307,7 +308,7 @@ export class BootLoader {
                 Logger.Error(`Middleware ${key} load error.`);
                 continue;
             }
-            if (!Helper.isFunction(handle.run)) {
+            if (!lodash.isFunction(handle.run)) {
                 Logger.Error(`Middleware ${key} must be implements method 'run'.`);
                 continue;
             }
@@ -322,7 +323,7 @@ export class BootLoader {
             }
             Logger.Debug(`Load middleware: ${key}`);
             const result = await handle.run(middlewareConf.config[key] || {}, app);
-            if (Helper.isFunction(result)) {
+            if (lodash.isFunction(result)) {
                 if (result.length < 3) {
                     app.use(result);
                 } else {
@@ -344,7 +345,7 @@ export class BootLoader {
         const actionList = IOCContainer.listClass("ACTION");
         actionList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("ACTION:", "");
-            if (item.id && Helper.isClass(item.target)) {
+            if (item.id && Check.isClass(item.target)) {
                 Logger.Debug(`Load action: ${item.id}`);
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "ACTION", args: [] });
@@ -364,7 +365,7 @@ export class BootLoader {
 
         componentList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("COMPONENT:", "");
-            if (item.id && !(item.id).endsWith("Plugin") && Helper.isClass(item.target)) {
+            if (item.id && !(item.id).endsWith("Plugin") && Check.isClass(item.target)) {
                 Logger.Debug(`Load component: ${item.id}`);
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
@@ -385,7 +386,7 @@ export class BootLoader {
         const controllers: string[] = [];
         controllerList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("CONTROLLER:", "");
-            if (item.id && Helper.isClass(item.target)) {
+            if (item.id && Check.isClass(item.target)) {
                 Logger.Debug(`Load controller: ${item.id}`);
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Prototype", type: "CONTROLLER", args: [] });
@@ -411,14 +412,14 @@ export class BootLoader {
         const componentList = IOCContainer.listClass("COMPONENT");
 
         let pluginsConf = app.config(undefined, "plugin");
-        if (Helper.isEmpty(pluginsConf)) {
+        if (Check.isEmpty(pluginsConf)) {
             pluginsConf = { config: {}, list: [] };
         }
 
         const pluginList = [];
         componentList.forEach(async (item: ComponentItem) => {
             item.id = (item.id ?? "").replace("COMPONENT:", "");
-            if (item.id && (item.id).endsWith("Plugin") && Helper.isClass(item.target)) {
+            if (item.id && (item.id).endsWith("Plugin") && Check.isClass(item.target)) {
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
                 pluginList.push(item.id);
@@ -428,7 +429,7 @@ export class BootLoader {
         const pluginConfList = pluginsConf.list;
         for (const key of pluginConfList) {
             const handle: IPlugin = IOCContainer.get(key, "COMPONENT");
-            if (!Helper.isFunction(handle.run)) {
+            if (!lodash.isFunction(handle.run)) {
                 Logger.Error(`plugin ${key} must be implements method 'run'.`);
                 continue;
             }

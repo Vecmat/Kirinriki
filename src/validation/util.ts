@@ -5,7 +5,8 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
-import { Helper } from "@vecmat/vendor";
+import lodash from "lodash";
+import { Check } from "@vecmat/vendor";
 import { PARAM_TYPE_KEY } from "./rule";
 import { getOriginMetadata } from "../container";
 
@@ -137,9 +138,9 @@ export function defineNewProperty(clazz: Function, protoName: string, func: Func
  * @returns
  */
 export function plainToClass(clazz: any, data: any, convert = false) {
-    if (Helper.isClass(clazz)) {
+    if (Check.isClass(clazz)) {
         let cls;
-        if (!Helper.isObject(data))
+        if (!lodash.isObject(data))
             data = {};
 
         if (data instanceof clazz)
@@ -192,14 +193,14 @@ export function convertParamsType(param: any, type: string) {
         switch (type) {
             case "Number":
             case "number":
-                if (Helper.isNaN(param))
+                if (lodash.isNaN(param))
                     return NaN;
 
-                if (Helper.isNumber(param))
+                if (lodash.isNumber(param))
                     return param;
 
-                if (Helper.isNumberString(param))
-                    return Helper.toNumber(param);
+                if (Check.isNumberString(param))
+                    return lodash.toNumber(param);
 
                 return NaN;
             case "Boolean":
@@ -209,16 +210,16 @@ export function convertParamsType(param: any, type: string) {
             case "array":
             case "Tuple":
             case "tuple":
-                if (Helper.isArray(param))
+                if (lodash.isArray(param))
                     return param;
 
-                return Helper.toArray(param);
+                return lodash.toArray(param);
             case "String":
             case "string":
-                if (Helper.isString(param))
+                if (lodash.isString(param))
                     return param;
 
-                return Helper.toString(param);
+                return lodash.toString(param);
             case "Null":
             case "null":
                 return null;
@@ -252,27 +253,25 @@ export function checkParamsType(value: any, type: string): any {
     switch (type) {
         case "Number":
         case "number":
-            if (!Helper.isNumber(value) || Helper.isNaN(value))
-                return false;
+            if (!lodash.isNumber(value) || lodash.isNaN(value)) return false;
 
             return true;
         case "Boolean":
         case "boolean":
-            if (!Helper.isBoolean(value))
-                return false;
+            if (!lodash.isBoolean(value)) return false;
 
             return true;
         case "Array":
         case "array":
         case "Tuple":
         case "tuple":
-            if (!Helper.isArray(value))
+            if (!lodash.isArray(value))
                 return false;
 
             return true;
         case "String":
         case "string":
-            if (!Helper.isString(value))
+            if (!lodash.isString(value))
                 return false;
 
             return true;
@@ -280,21 +279,19 @@ export function checkParamsType(value: any, type: string): any {
         case "object":
         case "Enum":
         case "enum":
-            if (Helper.isTrueEmpty(value))
+            if (Check.isTrueEmpty(value))
                 return false;
 
             return true;
         case "Null":
         case "null":
-            if (!Helper.isNull(value))
+            if (!lodash.isNull(value))
                 return false;
 
             return true;
         case "Undefined":
         case "undefined":
-            if (!Helper.isUndefined(value))
-                return false;
-
+            if (!lodash.isUndefined(value)) return false;
             return true;
         case "Bigint":
         case "bigint":

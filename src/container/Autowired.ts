@@ -5,10 +5,11 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
-import { Exception, Helper } from "@vecmat/vendor";
+import { RecursiveGetMetadata } from "./Util";
+import { Exception, STR } from "@vecmat/vendor";
 import { Container, IOCContainer } from "./Container";
 import { ComponentType, TAGGED_PROP } from "./IContainer";
-import { RecursiveGetMetadata } from "./Util";
+
 
 /**
  * Marks a constructor method as to be autowired by Kirinriki"s dependency injection facilities.
@@ -25,7 +26,7 @@ export function Autowired(identifier?: string, type?: ComponentType, constructAr
         const designType = Reflect.getMetadata("design:type", target, propertyKey);
         if (!identifier) {
             if (!designType || designType.name === "Object") {
-                identifier = Helper.camelCase(propertyKey, true);
+                identifier = STR.camelCase(propertyKey, true);
             } else {
                 identifier = designType.name;
             }

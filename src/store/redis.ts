@@ -3,11 +3,12 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
+import lodash from "lodash";
 import IORedis from "ioredis";
-import genericPool from "generic-pool";
-import { Helper } from "@vecmat/vendor";
-import { StoreOptions } from "./options";
 import { CacheStore } from "./store";
+import genericPool from "generic-pool";
+import { StoreOptions } from "./options";
+import { Check, getDefer } from "@vecmat/vendor";
 import { DefaultLogger as logger } from "@vecmat/printer";
 
 /**
@@ -47,11 +48,11 @@ export class RedisStore extends CacheStore {
             connectTimeout: options.connectTimeout || 500,
         };
 
-        if (Helper.isArray(options.host)) {
+        if (lodash.isArray(options.host)) {
             const hosts: Array<{ host: string; port: number }> = [];
             for (let i = 0; i < options.host.length; i++) {
                 const h = options.host[i];
-                if (!Helper.isEmpty(options.host[i])) {
+                if (!Check.isEmpty(options.host[i])) {
                     let p: number;
                     if (Array.isArray(options.port)) {
                         p = options.port[i];
@@ -60,12 +61,12 @@ export class RedisStore extends CacheStore {
                     }
                     hosts.push({
                         host: h,
-                        port: Helper.toNumber(p),
+                        port: lodash.toNumber(p),
                     });
                 }
             }
             // sentinel
-            if (!Helper.isEmpty(options.name)) {
+            if (!Check.isEmpty(options.name)) {
                 opt.host = "";
                 opt.port = null;
                 opt.sentinels = [...hosts];
@@ -93,9 +94,9 @@ export class RedisStore extends CacheStore {
             return this.client;
         }
 
-        const defer = Helper.getDefer();
+        const defer = getDefer();
         let connection: IORedis.Redis | IORedis.Cluster;
-        if (!Helper.isEmpty(this.options.clusters)) {
+        if (!Check.isEmpty(this.options.clusters)) {
             connection = new IORedis.Cluster([...this.options.clusters], { redisOptions: <{ host: string }>this.options });
         } else {
             connection = new IORedis(<{ host: string }>this.options);

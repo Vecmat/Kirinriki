@@ -4,12 +4,12 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import KoaRouter from "@koa/router";
-import { Helper } from "@vecmat/vendor";
+import { Check } from "@vecmat/vendor";
 import { RouterOptions } from "../option";
 import { Logger } from "../../base/Logger";
+import { RequestMethod } from "../mapping";
 import { IOCContainer } from "../../container";
 import { Handler, injectParam, injectRouter } from "../inject";
-import { RequestMethod } from "../mapping";
 import { Kirinriki, IContext, INext, IRouter } from "../../core";
 
 // HttpImplementation
@@ -40,7 +40,7 @@ export class HttpRouter implements IRouter {
      * @param {RequestMethod} [method]
      */
     SetRouter(path: string, func: HttpImplementation, method?: RequestMethod) {
-        if (Helper.isEmpty(method)) {
+        if (Check.isEmpty(method)) {
             return;
         }
         method = method ?? RequestMethod.ALL;

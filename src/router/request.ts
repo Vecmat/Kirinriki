@@ -3,8 +3,9 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Exception, Helper } from "@vecmat/vendor";
+import lodash from "lodash";
 import { IContext } from "../core";
+import { Exception } from "@vecmat/vendor";
 import { IOCContainer, TAGGED_PARAM } from "../container";
 import { paramterTypes } from "../validation";
 
@@ -166,7 +167,7 @@ const Inject = (fn: Function, name: string): ParameterDecorator => {
         let type = paramTypes[descriptor]?.name ? paramTypes[descriptor].name : "object";
         let isDto = false;
         //DTO class
-        if (!(Helper.toString(type) in paramterTypes)) {
+        if (!(lodash.toString(type) in paramterTypes)) {
             type = IOCContainer.getIdentifier(paramTypes[descriptor]);
             // reg to IOC container
             // IOCContainer.reg(type, paramTypes[descriptor]);

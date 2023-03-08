@@ -4,10 +4,10 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
+import lodash from "lodash";
 import EventEmitter from "events";
-import { Logger } from "../base/Logger";
-import { Helper } from "@vecmat/vendor";
 import { IApplication } from "../core";
+import { Logger } from "../base/Logger";
 
 /** @type {*} */
 const terminusOptions = {
@@ -51,7 +51,7 @@ type processEvent = "beforeExit" | "exit" | NodeJS.Signals;
 export function BindProcessEvent(event: EventEmitter, originEventName: string, targetEventName: processEvent = "beforeExit") {
     const ls: Function[] = event.listeners(originEventName);
     for (const func of ls) {
-        if (Helper.isFunction(func)) {
+        if (lodash.isFunction(func)) {
             process.addListener(<any>targetEventName, <NodeJS.SignalsListener>func);
         }
     }
@@ -68,7 +68,7 @@ const asyncEvent = async function (event: EventEmitter, eventName: string) {
     const ls: any[] = event.listeners(eventName);
     // eslint-disable-next-line no-restricted-syntax
     for await (const func of ls) {
-        if (Helper.isFunction(func)) {
+        if (lodash.isFunction(func)) {
             func();
         }
     }

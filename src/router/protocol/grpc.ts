@@ -3,7 +3,7 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Helper } from "@vecmat/vendor";
+import { Check } from "@vecmat/vendor";
 import { RouterOptions } from "../option";
 import { Logger } from "../../base/Logger";
 import { IOCContainer } from "../../container";
@@ -88,7 +88,7 @@ export class GrpcRouter implements IRouter {
      * @memberof GrpcRouter
      */
     SetRouter(name: string, service: any, implementation: UntypedServiceImplementation) {
-        if (Helper.isEmpty(name)) {
+        if (Check.isEmpty(name)) {
             return;
         }
         const value = {

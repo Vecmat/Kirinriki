@@ -3,7 +3,8 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Helper } from "@vecmat/vendor";
+import lodash from "lodash";
+import { Check } from "@vecmat/vendor";
 import { Container } from "./Container";
 
 // get property of an object
@@ -117,11 +118,11 @@ export function getMethodNames(target: any, isSelfProperties = false): string[] 
     if (!isSelfProperties) {
         // searching prototype chain for methods
         let parent = ordinaryGetPrototypeOf(target);
-        while (Helper.isClass(parent) && parent.constructor) {
+        while (Check.isClass(parent) && parent.constructor) {
             const allOwnKeysOnPrototype: any[] = Object.getOwnPropertyNames(parent.prototype);
             // get methods from es6 class
             allOwnKeysOnPrototype.forEach(k => {
-                if (!result.includes(k) && Helper.isFunction(parent.prototype[k])) {
+                if (!result.includes(k) && lodash.isFunction(parent.prototype[k])) {
                     result.push(k);
                 }
             });
@@ -131,7 +132,7 @@ export function getMethodNames(target: any, isSelfProperties = false): string[] 
 
     // leave out those methods on Object's prototype
     enumerableOwnKeys.forEach(k => {
-        if (!result.includes(k) && Helper.isFunction(target.prototype[k])) {
+        if (!result.includes(k) && lodash.isFunction(target.prototype[k])) {
             result.push(k);
         }
     });
@@ -152,11 +153,11 @@ export function getPropertyNames(target: any, isSelfProperties = false): string[
     if (!isSelfProperties) {
         // searching prototype chain for methods
         let parent = ordinaryGetPrototypeOf(target);
-        while (Helper.isClass(parent) && parent.constructor) {
+        while (Check.isClass(parent) && parent.constructor) {
             const allOwnKeysOnPrototype: any[] = Object.getOwnPropertyNames(parent);
             // get methods from es6 class
             allOwnKeysOnPrototype.forEach(k => {
-                if (!result.includes(k) && !Helper.isFunction(parent.prototype[k])) {
+                if (!result.includes(k) && !lodash.isFunction(parent.prototype[k])) {
                     result.push(k);
                 }
             });
@@ -166,7 +167,7 @@ export function getPropertyNames(target: any, isSelfProperties = false): string[
 
     // leave out those methods on Object's prototype
     enumerableOwnKeys.forEach(k => {
-        if (!result.includes(k) && !Helper.isFunction(target.prototype[k])) {
+        if (!result.includes(k) && !lodash.isFunction(target.prototype[k])) {
             result.push(k);
         }
     });

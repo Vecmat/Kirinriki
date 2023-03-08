@@ -19,9 +19,11 @@ import {
     validate,
     ValidationError
 } from "class-validator";
-import { Exception, Helper } from "@vecmat/vendor";
+import lodash from "lodash";
+import { Exception, Check } from "@vecmat/vendor";
 import { IsEmailOptions, IsURLOptions, HashAlgorithm, ValidOtpions } from "./decorator";
 import { cnName, idNumber, mobile, plainToClass, plateNumber, zipCode } from "./util";
+
 
 // constant
 export const PARAM_TYPE_KEY = "PARAM_TYPE_KEY";
@@ -141,13 +143,13 @@ const ValidFuncs = {
      * tabs, formfeeds, etc.), returns false
      */
     IsNotEmpty: (value: unknown) => {
-        return !Helper.isEmpty(value);
+        return !Check.isEmpty(value);
     },
     /**
      * Checks if a given value is a real date.
      */
     IsDate: (value: unknown) => {
-        return Helper.isDate(value);
+        return lodash.isDate(value);
     },
     /**
      * Checks if the string is an email. If given value is not a string, then it returns false.
@@ -189,7 +191,7 @@ const ValidFuncs = {
      * Checks if value is a chinese name.
      */
     IsCnName: (value: any) => {
-        if (!Helper.isString(value)) return false;
+        if (!lodash.isString(value)) return false;
 
         return cnName(value);
     },
@@ -197,7 +199,7 @@ const ValidFuncs = {
      * Checks if value is a idcard number.
      */
     IsIdNumber: (value: any) => {
-        if (!Helper.isString(value)) return false;
+        if (!lodash.isString(value)) return false;
 
         return idNumber(value);
     },
@@ -205,7 +207,7 @@ const ValidFuncs = {
      * Checks if value is a zipCode.
      */
     IsZipCode: (value: any) => {
-        if (!Helper.isString(value)) return false;
+        if (!lodash.isString(value)) return false;
 
         return zipCode(value);
     },
@@ -213,7 +215,7 @@ const ValidFuncs = {
      * Checks if value is a mobile phone number.
      */
     IsMobile: (value: any) => {
-        if (!Helper.isString(value)) return false;
+        if (!lodash.isString(value)) return false;
 
         return mobile(value);
     },
@@ -221,7 +223,7 @@ const ValidFuncs = {
      * Checks if value is a plateNumber.
      */
     IsPlateNumber: (value: any) => {
-        if (!Helper.isString(value)) return false;
+        if (!lodash.isString(value)) return false;
 
         return plateNumber(value);
     },
@@ -259,25 +261,25 @@ const ValidFuncs = {
      * Checks if the first number is greater than or equal to the second.
      */
     Gt: (num: unknown, min: number) => {
-        return Helper.toNumber(num) > min;
+        return lodash.toNumber(num) > min;
     },
     /**
      * Checks if the first number is less than or equal to the second.
      */
     Lt: (num: unknown, max: number) => {
-        return Helper.toNumber(num) < max;
+        return lodash.toNumber(num) < max;
     },
     /**
      * Checks if the first number is greater than or equal to the second.
      */
     Gte: (num: unknown, min: number) => {
-        return Helper.toNumber(num) >= min;
+        return lodash.toNumber(num) >= min;
     },
     /**
      * Checks if the first number is less than or equal to the second.
      */
     Lte: (num: unknown, max: number) => {
-        return Helper.toNumber(num) <= max;
+        return lodash.toNumber(num) <= max;
     }
 };
 
@@ -360,7 +362,7 @@ const FunctionValidator: {
 
 Object.keys(ValidFuncs).forEach((key: ValidRules) => {
     FunctionValidator[key] = (value: unknown, options?: string | ValidOtpions) => {
-        if (Helper.isString(options)) options = { message: options, value: null } as ValidOtpions;
+        if (lodash.isString(options)) options = { message: options, value: null } as ValidOtpions;
 
         if (!(<any>ValidFuncs)[key](value, (<ValidOtpions>options).value))
             throw new Exception("SYSERR_RULE_UNREALIZED", (<ValidOtpions>options).message || "ValidatorError: invalid arguments.");

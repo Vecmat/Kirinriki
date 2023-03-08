@@ -22,10 +22,12 @@ import {
     ValidationArguments,
     ValidationOptions
 } from "class-validator";
-import { Helper } from "@vecmat/vendor";
+import lodash from "lodash";
+import { Check } from "@vecmat/vendor";
 import { getOriginMetadata, IOCContainer } from "../container";
 import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY, ValidRules } from "./rule";
 import { cnName, idNumber, mobile, plateNumber, setExpose, zipCode } from "./util";
+
 
 // options for isEmail
 export interface IsEmailOptions {
@@ -79,14 +81,14 @@ export type ValidOtpions = { message: string; value: any };
  */
 export function Valid(rule: ValidRules | ValidRules[] | Function, options?: string | ValidOtpions): ParameterDecorator {
     let rules: any = [];
-    if (Helper.isString(rule)) rules = (<string>rule).split(",");
+    if (lodash.isString(rule)) rules = (<string>rule).split(",");
     else rules = rule;
 
     return (target: any, propertyKey: string, descriptor: any) => {
         // 获取成员参数类型
         const paramTypes = Reflect.getMetadata("design:paramtypes", target, propertyKey);
         const type = paramTypes[descriptor]?.name ? paramTypes[descriptor].name : "object";
-        if (Helper.isString(options)) options = { message: <string>options, value: null };
+        if (lodash.isString(options)) options = { message: <string>options, value: null };
 
         IOCContainer.attachPropertyData(
             PARAM_RULE_KEY,
@@ -342,7 +344,7 @@ export function IsNotEmpty(validationOptions?: ValidationOptions): PropertyDecor
             options: validationOptions,
             validator: {
                 validate(value: any, args: ValidationArguments) {
-                    return !Helper.isEmpty(value);
+                    return !Check.isEmpty(value);
                 },
                 defaultMessage(args: ValidationArguments) {
                     return "invalid parameter ($property).";
@@ -545,7 +547,7 @@ export function Gt(min: number, validationOptions?: ValidationOptions): Property
             options: validationOptions,
             validator: {
                 validate(value: any, args: ValidationArguments) {
-                    return Helper.toNumber(value) > min;
+                    return lodash.toNumber(value) > min;
                 },
                 defaultMessage(args: ValidationArguments) {
                     return `invalid parameter ($property).`;
@@ -574,7 +576,7 @@ export function Lt(max: number, validationOptions?: ValidationOptions): Property
             options: validationOptions,
             validator: {
                 validate(value: any, args: ValidationArguments) {
-                    return Helper.toNumber(value) < max;
+                    return lodash.toNumber(value) < max;
                 },
                 defaultMessage(args: ValidationArguments) {
                     return `invalid parameter ($property).`;
@@ -602,7 +604,7 @@ export function Gte(min: number, validationOptions?: ValidationOptions): Propert
             options: validationOptions,
             validator: {
                 validate(value: any, args: ValidationArguments) {
-                    return Helper.toNumber(value) >= min;
+                    return lodash.toNumber(value) >= min;
                 },
                 defaultMessage(args: ValidationArguments) {
                     return `invalid parameter ($property).`;
@@ -631,7 +633,7 @@ export function Lte(max: number, validationOptions?: ValidationOptions): Propert
             options: validationOptions,
             validator: {
                 validate(value: any, args: ValidationArguments) {
-                    return Helper.toNumber(value) <= max;
+                    return lodash.toNumber(value) <= max;
                 },
                 defaultMessage(args: ValidationArguments) {
                     return `invalid parameter ($property).`;

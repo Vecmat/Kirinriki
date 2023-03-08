@@ -1,7 +1,8 @@
 
 import rc from "rc";
+import lodash from "lodash";
 import { LoadDir } from "./Loader";
-import { Helper } from "@vecmat/vendor";
+import { IObject, Check } from "@vecmat/vendor";
 import { IOCContainer, TAGGED_ARGS } from "../container";
 
 /**
@@ -40,28 +41,28 @@ export function LoadConfigs(loadPath: string[], baseDir?: string, pattern?: stri
     return conf;
 }
 
+
+
+
 /**
  * parse process.env to replace ${}
  *
  * @param {*} conf
  * @returns {*}
  */
-function parseEnv(conf: any) {
-    if (!Helper.isObject(conf))
-        return conf;
+function parseEnv(conf: IObject) {
+    if (!lodash.isObject(conf)) return conf;
     for (const key in conf) {
         if (Object.prototype.hasOwnProperty.call(conf, key)) {
             const element = conf[key];
-            if (Helper.isObject(element)) {
+            if (lodash.isObject(element)) {
                 conf[key] = parseEnv(element);
             } else {
-                if (Helper.isString(element)) {
+                if (typeof element == "string") {
                     if (element.startsWith("${") && element.endsWith("}")) {
                         const value = process.env[element.slice(2, -1)];
-                        if (!Helper.isTrueEmpty(value))
-                            conf[key] = value;
-                        else
-                            conf[key] = "";
+                        if (!Check.isTrueEmpty(value)) conf[key] = value;
+                        else conf[key] = "";
                     }
                 }
             }
@@ -84,7 +85,7 @@ export function Config(key?: string, type?: string): PropertyDecorator {
         if (!app || !app.config)
             return;
 
-        // identifier = identifier || helper.camelCase(propertyKey, { pascalCase: true });
+        // identifier = identifier || STR.camelCase(propertyKey, { pascalCase: true });
         key = key || propertyKey;
         type = type || "config";
         IOCContainer.savePropertyData(TAGGED_ARGS, {

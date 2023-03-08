@@ -3,10 +3,11 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
+import lodash from "lodash";
 import { catcher } from "../catcher";
 import { IContext } from "../../core";
+import { Exception } from "@vecmat/vendor";
 import { StatusCodeConvert } from "../code";
-import { Helper, Exception } from "@vecmat/vendor";
 import { DefaultLogger as Logger } from "@vecmat/printer";
 
 /**
@@ -31,7 +32,7 @@ export async function grpcRunner(ctx: IContext, next: Function, ext?: any): Prom
         const startTime = ctx.getMetaData("startTime");
         const status = StatusCodeConvert(ctx.status);
         const msg = `{"action":"${ctx.protocol}","code":"${status}","startTime":"${startTime}","duration":"${
-            now - Helper.toInt(startTime) || 0
+            now - lodash.toInteger(startTime) || 0
         }","traceId":"${ext.currTraceId}","endTime":"${now}","path":"${originalPath}"}`;
         Logger[status > 0 ? "Error" : "Info"](msg);
         // ctx = null;
