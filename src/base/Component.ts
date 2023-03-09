@@ -5,12 +5,12 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
+import { Middleware } from "koa";
 import { Kirinriki, IContext, INext } from '../core';
 import { CONTROLLER_ROUTER } from "../router";
 import { IOCContainer } from "../container";
 import { Exception } from "@vecmat/vendor";
 import { CAPTURER_KEY } from "./Constants";
-
 
 /**
  * Interface for Api output
@@ -74,13 +74,8 @@ export function Controller(path = ""): ClassDecorator {
 /**
  * Interface for Middleware
  */
-export type KirinrikiMiddleware = (ctx: IContext, next: INext) => Promise<any>
-
-/**
- * Interface for Middleware
- */
 export interface IMiddleware {
-    run: (options: any, app: Kirinriki) => KirinrikiMiddleware
+    run: (options: any, app: Kirinriki) => Middleware;
 }
 
 /**

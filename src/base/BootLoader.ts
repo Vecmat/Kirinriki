@@ -291,6 +291,7 @@ export class BootLoader {
 
         const middlewareConfList = middlewareConf.list;
         
+        // todo ？如何加载 @vecmat/svant
         //de-duplication
         // ! 必须排在最前面
         const defaultList = ["TraceMiddleware", "PayloadMiddleware"];
@@ -300,6 +301,7 @@ export class BootLoader {
                 appMiddlewareList.add(item);
             }
         });
+
         // ! ? 似乎没控制顺序？
         // Automatically call middleware
         for (const key of appMiddlewareList) {

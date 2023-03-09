@@ -127,7 +127,6 @@ export class Container implements IContainer {
             injectValues(target, target.prototype, this);
             // inject AOP
             injectAOP(target, target.prototype, this);
-            // $ todo 注入错误拦截？
             
 
             const ref = this.getClass(identifier, options.type);
