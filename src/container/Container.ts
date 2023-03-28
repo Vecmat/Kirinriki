@@ -280,8 +280,15 @@ export class Container implements IContainer {
         if (metaData) {
             return metaData.type;
         } else {
+            // chechk base class name
             let name = (<Function>target).name ?? "";
-            name = name || (target.constructor ? (target.constructor.name ?? "") : "");
+            const baseType = Object.getPrototypeOf(target);
+            const basename = baseType.constructor.name;
+            name = name || (target.constructor ? target.constructor.name ?? "" : "");
+            const reg =/(Action|Capturer|Controller|Middleware)/; 
+            if (!reg.test(name) && reg.test(basename)) {
+                name  =  basename;
+            }
             if (~name.indexOf("Action")) {
                 return "ACTION";
             } else if (~name.indexOf("Capturer")) {
@@ -290,7 +297,6 @@ export class Container implements IContainer {
                 return "CONTROLLER";
             } else if (~name.indexOf("Middleware")) {
                 return "MIDDLEWARE";
-        
             } else {
                 return "COMPONENT";
             }
