@@ -10,6 +10,21 @@ import { IOCContainer, TAGGED_PARAM } from "../container";
 import { paramterTypes } from "../validation";
 
 /**
+ * Get context.
+ *
+ * @export
+ * @param {string} [name]
+ * @returns
+ */
+export function Ctx(): ParameterDecorator {
+    return Inject((ctx: IContext) => {
+        return ctx;
+    }, "CTX");
+}
+
+
+
+/**
  * Get request header.
  *
  * @export
