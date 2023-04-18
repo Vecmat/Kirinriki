@@ -5,12 +5,15 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 // tslint:disable-next-line: no-import-side-effect
-import { Exception } from "@vecmat/vendor";
 import "reflect-metadata";
+import { Exception } from "@vecmat/vendor";
 import { IOCContainer } from '../container';
 
-export const CONTROLLER_ROUTER = 'CONTROLLER_ROUTER';
 export const ROUTER_KEY = 'ROUTER_KEY';
+export const ACTION_SCOPT = "ACTION_SCOPT";
+export const CONTROLLER_ROUTER = 'CONTROLLER_ROUTER';
+
+
 
 /**
  * Kirinriki router options

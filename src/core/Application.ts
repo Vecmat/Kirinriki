@@ -31,34 +31,39 @@ export class Kirinriki extends Koa implements Application {
     //   public env: string;
     public version: string;
     public options: InitOptions;
-    // 
+
+    //
     public appPath: string;
     public rootPath: string;
     public thinkPath: string;
     public appDebug: boolean;
 
-    // 
+    //
     public captor: Captor;
     public router: IRouter;
     public server: IApplication;
     private metadata: MetadataClass;
+
+    //
+    public vms: Record<string ,string>;
 
     /**
      * Creates an instance of Kirinriki.
      * @param {InitOptions} options
      * @memberof Kirinriki
      */
-    protected constructor(options: InitOptions = {
-        appDebug: true,
-        appPath: '',
-        rootPath: '',
-        thinkPath: '',
-    }) {
+    protected constructor(
+        options: InitOptions = {
+            appDebug: true,
+            appPath: "",
+            rootPath: "",
+            thinkPath: ""
+        }
+    ) {
         super();
         this.options = options ?? {};
         this.env = process.env.KIRINRIKI_ENV || process.env.NODE_ENV;
-        const { appDebug, appPath,
-            rootPath, thinkPath } = this.options;
+        const { appDebug, appPath, rootPath, thinkPath } = this.options;
         this.appDebug = appDebug;
         this.appPath = appPath;
         this.rootPath = rootPath;
@@ -73,7 +78,7 @@ export class Kirinriki extends Koa implements Application {
     /**
      * app custom init, must be defined options
      */
-    public init(): void { }
+    public init(): void {}
 
     /**
      * Set application metadata
@@ -114,7 +119,7 @@ export class Kirinriki extends Koa implements Application {
      */
     public use(fn: Function): any {
         if (!lodash.isFunction) {
-            Logger.Error('The paramter is not a function.');
+            Logger.Error("The paramter is not a function.");
             return;
         }
         return super.use(<any>fn);
@@ -129,7 +134,7 @@ export class Kirinriki extends Koa implements Application {
      */
     public useExp(fn: Function): any {
         if (!lodash.isFunction) {
-            Logger.Error('The paramter is not a function.');
+            Logger.Error("The paramter is not a function.");
             return;
         }
         fn = parseExp(fn);
@@ -143,9 +148,9 @@ export class Kirinriki extends Koa implements Application {
      * @param {string} [type="config"]
      * @memberof Kirinriki
      */
-    public config(name: string, type = 'config') {
+    public config(name: string, type = "config") {
         try {
-            const caches = this.getMetaData('_configs') ?? {};
+            const caches = this.getMetaData("_configs") ?? {};
             // tslint:disable-next-line: no-unused-expression
             caches[type] ?? (caches[type] = {});
             if (name === undefined) {
@@ -153,10 +158,10 @@ export class Kirinriki extends Koa implements Application {
             }
             if (lodash.isString(name)) {
                 // name不含. 一级
-                if (name.indexOf('.') === -1) {
+                if (name.indexOf(".") === -1) {
                     return caches[type][name];
-                }  // name包含. 二级
-                const keys = name.split('.');
+                } // name包含. 二级
+                const keys = name.split(".");
                 const value = caches[type][keys[0]] ?? {};
                 return value[keys[1]];
             }
@@ -179,9 +184,9 @@ export class Kirinriki extends Koa implements Application {
     public createContext(req: any, res: any, protocol?: string): IContext {
         let resp;
         // protocol
-        protocol = protocol ?? 'http';
+        protocol = protocol ?? "http";
 
-        if (['ws', 'wss', 'grpc'].includes(protocol)) {
+        if (["ws", "wss", "grpc"].includes(protocol)) {
             resp = new ServerResponse(req);
         } else {
             resp = res;
@@ -203,9 +208,11 @@ export class Kirinriki extends Koa implements Application {
      */
     public listen(server?: any, listenCallback?: any): any {
         this.server = server ?? this.server;
-        listenCallback = listenCallback ? listenCallback : () => {
-            Logger.Log("think", "", `Server running ...`);
-        };
+        listenCallback = listenCallback
+            ? listenCallback
+            : () => {
+                  Logger.Log("think", "", `Server running ...`);
+              };
         return this.server.Start(listenCallback);
     }
 
@@ -213,9 +220,9 @@ export class Kirinriki extends Koa implements Application {
      * return a request handler callback
      * for http/gRPC/ws server.
      *
-     * @param {KirinrikiProtocol} [protocol] 
+     * @param {KirinrikiProtocol} [protocol]
      * @param {(ctx: IContext) => Promise<any>} [reqHandler]
-     * @returns {*}  
+     * @returns {*}
      * @memberof Kirinriki
      */
     callback(protocol = "http", reqHandler?: (ctx: IContext) => Promise<any>) {
@@ -235,13 +242,10 @@ export class Kirinriki extends Koa implements Application {
      * @private
      * @param {IContext} ctx
      * @param {(ctx: IContext) => Promise<any>} fnMiddleware
-     * @returns {*}  
+     * @returns {*}
      * @memberof Kirinriki
      */
-    private async handleRequest(
-        ctx: IContext,
-        fnMiddleware: (ctx: IContext) => Promise<any>,
-    ) {
+    private async handleRequest(ctx: IContext, fnMiddleware: (ctx: IContext) => Promise<any>) {
         const res = ctx.res;
         res.statusCode = 404;
         const onerror = (err: Error) => ctx.onerror(err);
@@ -256,32 +260,32 @@ export class Kirinriki extends Koa implements Application {
      */
     private globalErrorCatch(): void {
         // koa error
-        this.removeAllListeners('error');
-        this.on('error', (err: Error) => {
+        this.removeAllListeners("error");
+        this.on("error", (err: Error) => {
             // if (!isPrevent(err)) {
             //     Logger.Error(err);
             // }
             return;
         });
         // process warning
-        process.removeAllListeners('warning');
-        process.on('warning', (warning) => {
+        process.removeAllListeners("warning");
+        process.on("warning", warning => {
             Logger.Warn(warning);
             return;
         });
 
         // promise reject error
-        process.removeAllListeners('unhandledRejection');
-        process.on('unhandledRejection', (reason: Error) => {
+        process.removeAllListeners("unhandledRejection");
+        process.on("unhandledRejection", (reason: Error) => {
             // if (!isPrevent(reason)) {
             //     Logger.Error(reason);
             // }
             return;
         });
         // uncaught exception
-        process.removeAllListeners('uncaughtException');
-        process.on('uncaughtException', (err) => {
-            if (err.message.indexOf('EADDRINUSE') > -1) {
+        process.removeAllListeners("uncaughtException");
+        process.on("uncaughtException", err => {
+            if (err.message.indexOf("EADDRINUSE") > -1) {
                 Logger.Error(lodash.toString(err));
                 process.exit(-1);
             }

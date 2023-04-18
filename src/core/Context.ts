@@ -5,6 +5,8 @@
  */
 
 import { MetadataClass } from "./Metadata";
+import { IOCContainer } from "../container";
+import { BaseAction } from "../base/BaseAction";
 import { Exception, ARROBJ } from "@vecmat/vendor";
 import { IRpcServerCallback, IRpcServerUnaryCall, IWebSocket, KoaContext, IContext, WsRequest } from "./IContext";
 
@@ -130,6 +132,19 @@ function initBaseContext(ctx: KoaContext): IContext {
     // sendMetadata
     context.sendMetadata = function (data: MetadataClass) {
         context.set(data.toJSON());
+    };
+
+    // Actions
+    context.Actions = new Map();
+    context.getAction = function <M extends BaseAction>(key: string): M {
+        // todo 先从app容器中获取，再从ctx容器中获取
+        if (!context.Actions.has(key)) {
+            const cls = IOCContainer.getClass(key, "ACTION");
+            const act = Reflect.construct(cls, context);
+            context.Actions.set(key, act);
+        }
+        return context.Actions.get(key);
+        
     };
 
     return context;

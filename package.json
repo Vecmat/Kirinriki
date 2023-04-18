@@ -9,6 +9,7 @@
         "build:doc": "del-cli --force docs/api && npx api-documenter markdown --input temp --output docs/api",
         "build:dts": "del-cli --force temp && npx tsc && npx api-extractor run --local --verbose",
         "eslint": "eslint --ext .ts,.js ./",
+        "watch": "concurrently \"tsc -w --project tsconfig.json\" \"tsc-alias -w --project tsconfig.json\"",
         "prepublishOnly": "npm test && npm run build",
         "prerelease": "npm test && npm run build",
         "release": "standard-version",
@@ -21,7 +22,7 @@
         "version": "conventional-changelog -p angular -i CHANGELOG.md -s"
     },
     "main": "./src/index.js",
-    "types": "./src/index.ts" ,
+    "types": "./src/index.ts",
     "exports": {
         "require": "./dist/index.js",
         "import": "./dist/index.mjs"
@@ -77,8 +78,8 @@
         "ioredis": "^4.28.5",
         "uuid": "^8.3.2",
         "ws": "^8.11.0",
-        "path-to-regexp": "~6.2.1"
-        
+        "path-to-regexp": "~6.2.1",
+        "concurrently": "~8.0.1"
     },
     "devDependencies": {
         "@microsoft/api-documenter": "7.16.0",
@@ -108,7 +109,6 @@
         "copyfiles": "2.4.1",
         "del-cli": "4.0.1",
         "eslint": "8.11.0",
-       
         "eslint-plugin-jest": "26.1.2",
         "husky": "7.0.4",
         "jest": "27.5.1",

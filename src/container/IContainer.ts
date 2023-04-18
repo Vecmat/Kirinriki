@@ -3,8 +3,8 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-export type Scope = 'Singleton' | 'Prototype';
-export type ComponentType = 'COMPONENT' | 'CONTROLLER' | 'MIDDLEWARE' | 'ACTION' | 'CAPTURER';
+export type Scope = 'Singleton' | 'Prototype' | 'Connect';
+export type ComponentType = "COMPONENT" | "CONTROLLER" | "MIDDLEWARE" | "ACTION" | "CAPTURER";
 
 // used to store class properties aop
 export const TAGGED_AOP = 'TAGGED_AOP';

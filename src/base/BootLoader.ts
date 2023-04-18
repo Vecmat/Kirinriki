@@ -11,6 +11,7 @@ import { Captor  } from "./Capturer";
 import { checkClass } from "./widget";
 import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "./config";
+import { ACTION_SCOPT } from "../router/mapping";
 import { BaseController } from "./BaseController";
 import { IMiddleware, IPlugin } from './Component';
 import { Logger, SetLogger, LoggerOption } from "./Logger";
@@ -350,7 +351,8 @@ export class BootLoader {
             if (item.id && Check.isClass(item.target)) {
                 Logger.Debug(`Load action: ${item.id}`);
                 // registering to IOC
-                IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "ACTION", args: [] });
+                const scope = IOCContainer.getClassMetadata(ACTION_SCOPT, "scope", item.target);
+                IOCContainer.reg(item.id, item.target, { scope: scope, type: "ACTION", args: [] });
             }
         });
     }
@@ -364,7 +366,6 @@ export class BootLoader {
      */
     public static LoadComponents(app: Kirinriki) {
         const componentList = IOCContainer.listClass("COMPONENT");
-
         componentList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("COMPONENT:", "");
             if (item.id && !(item.id).endsWith("Plugin") && Check.isClass(item.target)) {

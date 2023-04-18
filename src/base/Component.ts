@@ -6,11 +6,11 @@
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
 import { Middleware } from "koa";
-import { Kirinriki, IContext, INext } from '../core';
-import { CONTROLLER_ROUTER } from "../router";
 import { IOCContainer } from "../container";
-import { Exception } from "@vecmat/vendor";
 import { CAPTURER_KEY } from "./Constants";
+import { Exception } from "@vecmat/vendor";
+import { Kirinriki, IContext, INext } from '../core';
+import { ACTION_SCOPT, CONTROLLER_ROUTER } from "../router";
 
 /**
  * Interface for Api output
@@ -94,25 +94,28 @@ export function Middleware(identifier?: string): ClassDecorator {
 
 
 /**
- * Interface for Service
+ * Interface for Action
  */
 export interface IAction {
     readonly app: Kirinriki
 }
+
+
 /**
  * Indicates that an decorated class is a "acton".
  *
  * @export
+ * @param {string} [identifier] instce scope
  * @param {string} [identifier] class name
  * @returns {ClassDecorator}
  */
-export function Action(identifier?: string): ClassDecorator {
+export function Action(scope?: string, identifier?: string): ClassDecorator {
     return (target: any) => {
         identifier = identifier || IOCContainer.getIdentifier(target);
         IOCContainer.saveClass("ACTION", target, identifier);
+        IOCContainer.saveClassMetadata(ACTION_SCOPT, "scope", scope, target);
     };
 }
-
 
 
 /**

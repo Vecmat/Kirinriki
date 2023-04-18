@@ -102,6 +102,7 @@ export class Container implements IContainer {
                 args: [],
                 ...options
             };
+  
             options.args = options.args.length ? options.args : [];
             // inject options once
             Reflect.defineProperty(target.prototype, "_options", {
@@ -134,6 +135,9 @@ export class Container implements IContainer {
                 this.saveClass(options.type, target, identifier);
             }
 
+            if (options.scope == "Connect") {
+                return;
+            }
             // instantiation
             instance = Reflect.construct(target, options.args);
             if (options.scope === "Singleton") {

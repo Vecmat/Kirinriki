@@ -6,8 +6,8 @@
 import lodash from "lodash";
 import { IContext } from "../core";
 import { Exception } from "@vecmat/vendor";
+import { paramterTypes } from "../validation"; 
 import { IOCContainer, TAGGED_PARAM } from "../container";
-import { paramterTypes } from "../validation";
 
 /**
  * Get context.
@@ -22,6 +22,16 @@ export function Ctx(): ParameterDecorator {
     }, "CTX");
 }
 
+
+/**
+ * Get Action for ctx.
+ * ! 注意，改完后需要修改 Schedler 的引用
+ */
+export function Act(name: string): ParameterDecorator {
+    return Inject((ctx: IContext) => {
+        return ctx.getAction(name);
+    }, "Act");
+}
 
 
 /**

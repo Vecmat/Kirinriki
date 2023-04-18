@@ -79,8 +79,6 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // Create Catcher
         app.captor = new Captor();
 
-
-
         Logger.Log('Vecmat', '', 'ComponentScan ...');
 
         // Check all bean
@@ -150,7 +148,6 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
                 sign = err.name == "Error" ? err.constructor.name : "BOOT_COMMON_ERROR";
             }
         } else {
-            debugger;
             // todo 需要调试 （非错误类型）
             err = new Exception("BOOT_UNKNOW_ERROR", "" + err);
         }

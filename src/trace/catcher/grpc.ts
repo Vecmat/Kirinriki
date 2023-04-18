@@ -6,9 +6,9 @@
 
 import { IContext } from "../../core";
 import { Logger } from "../../base/Logger";
+import { Exception } from "@vecmat/vendor"; 
 import { StatusBuilder } from "@grpc/grpc-js";
 import { GrpcStatusCodeMap, HttpStatusCodeMap, StatusCodeConvert } from "../code";
-import { Exception } from "@vecmat/vendor";
 
 /**
  * gRPC error handler
@@ -18,7 +18,7 @@ import { Exception } from "@vecmat/vendor";
  * @param {Capturer} err
  * @returns {*}  {Promise<any>}
  */
-export function gRPCCatcher(ctx: IContext, err: Error): Promise<any> {
+export function gRPCCatcher(ctx: IContext, err: Exception): Promise<any> {
     try {
         let errObj;
         let code = 2;

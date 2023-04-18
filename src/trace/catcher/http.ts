@@ -15,7 +15,7 @@ import { HttpStatusCode, HttpStatusCodeMap } from "../code";
  * @param {Exception} err
  * @returns {*}
  */
-export function HTTPCatcher(ctx: any, err: Error) {
+export function HTTPCatcher(ctx: any, err: Exception) {
     try {
         ctx.status = ctx.status || 500;
         if (!HttpStatusCodeMap.has(ctx.status)) ctx.status = 500;
@@ -25,9 +25,14 @@ export function HTTPCatcher(ctx: any, err: Error) {
         // 分别处理
         ctx.type = contentType;
         // const msg = err.message || ctx.message || "";
-        const body = `{"sign":${err.message},"message":"${err.message}","data":${ctx.body ? JSON.stringify(ctx.body) : ctx.body || null}}`;
-        ctx.set("Content-Length", `${Buffer.byteLength(body)}`);
-        return ctx.res.end(body);
+        const body = {
+            sign: err.sign,
+            message: err.message,
+            data: ctx.body || {}
+        };
+        // `{"":${},"message":"${}","":${}}`;
+        ctx.set("Content-Length", `${Buffer.byteLength(JSON.stringify(body))}`);
+        return ctx.res.end(JSON.stringify(body));
     } catch (error) {
         Logger.Error(error);
         // 返回错误ID

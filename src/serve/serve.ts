@@ -47,14 +47,15 @@ export function Serve(app: Kirinriki, opt?: ListeningOptions): IApplication {
     // ws 和 https 共用 。grpc通过协议ws提供代理
 
     let server: IApplication;
-    // todo 如果是数组，则合并服务
+    // todo 添加 命令行 参数协议
+    // todo 如果是数组，则合并服务,
     switch (options.protocol) {
-        case "grpc":
-            server = new GrpcServer(app, options);
-            break;
         case "ws":
         case "wss":
             server = new WsServer(app, options);
+            break;
+        case "grpc":
+            server = new GrpcServer(app, options);
             break;
         case "https":
             server = new HttpsServer(app, options);

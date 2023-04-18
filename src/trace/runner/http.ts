@@ -5,7 +5,7 @@
  */
 import { catcher } from "../catcher";
 import { IContext } from "../../core";
-import { Exception,  ARROBJ } from "@vecmat/vendor";
+import { Exception, ARROBJ } from "@vecmat/vendor";
 import { DefaultLogger as Logger } from "@vecmat/printer";
 
 

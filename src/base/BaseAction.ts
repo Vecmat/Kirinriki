@@ -5,33 +5,39 @@
  */
 
 import "reflect-metadata";
-import { Kirinriki } from "../core";
 import { IAction } from "./Component";
+import type { IContext, Kirinriki } from "../core";
 
 /**
- * Base class
- *
+ * BaseAction class
+ * 
  * @export
  * @class Base
  */
-export class BaseAction implements IAction {
-    readonly app: Kirinriki;
+export abstract class BaseAction implements IAction {
+    public app: Kirinriki;
+    public ctx :IContext;
+    public scope = "CONNECT";
+
 
     /**
-     * instance of BaseController.
+     * instance of BaseAction.
      * @param {Kirinriki} app
      * @param {IContext} ctx
-     * @memberof BaseController
+     * @memberof BaseAction
      */
-    protected constructor(...arg: any[]) {
+    protected constructor(ctx:IContext,...arg: any[]) {
+        this.ctx = ctx;
         this.init(arg);
     }
 
     /**
      * init
-     *
+     * todo 改成虚函数？
      * @protected
-     * @memberof BaseController
+     * @memberof BaseAction
      */
-    protected init(...arg: any[]): void {}
+    protected init(...arg: any[]): void {
+        return;
+    }
 }

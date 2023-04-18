@@ -14,7 +14,7 @@ import { ApiInput, ApiOutput, IController } from './Component';
  * @class BaseController
  * @implements {IController}
  */
-export class BaseController implements IController {
+export  class BaseController implements IController {
     readonly app: Kirinriki;
     readonly ctx: IContext;
 
@@ -35,10 +35,7 @@ export class BaseController implements IController {
      * @protected
      * @memberof BaseController
      */
-    protected init(...arg: any[]): void {
-
-    }
-
+    protected init(...arg: any[]): void {}
 
     /**
      * Response to normalize json format content for success
@@ -57,9 +54,9 @@ export class BaseController implements IController {
     /**
      * Response to normalize json format content for fail
      *
-     * @param {(string | ApiInput)} msg   
-     * @param {*} [data]    
-     * @param {number} [code=1]    
+     * @param {(string | ApiInput)} msg
+     * @param {*} [data]
+     * @param {number} [code=1]
      * @returns {*}
      * @memberof BaseController
      */

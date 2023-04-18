@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "type": "npm",
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "script": "watch",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "npm: watch",
+            "detail": "concurrently \"tsc -w --project tsconfig.json\" \"tsc-alias -w --project tsconfig.json\""
+        }
+    ]
+}
