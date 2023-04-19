@@ -12,7 +12,7 @@ import { HttpStatusCode, HttpStatusCodeMap } from "../code";
  *
  * @export
  * @param {IContext} ctx
- * @param {Capturer} err
+ * @param {Exception} err
  * @returns {*}  {void}
  */
 export function WSCatcher(ctx: any, err: Exception): void {

@@ -78,7 +78,7 @@ export function Trace(options: TraceOptions, app: Kirinriki): Koa.Middleware {
             return respond(ctx);
         };
 
-        let currTraceId = "";
+        let currTraceId = options.IdFactory();
         if (openTrace) {
             if (ctx.protocol === "grpc") {
                 const request: any = ctx.getMetaData("_body") || {};

@@ -15,7 +15,7 @@ import { GrpcStatusCodeMap, HttpStatusCodeMap, StatusCodeConvert } from "../code
  *
  * @export
  * @param {IContext} ctx
- * @param {Capturer} err
+ * @param {Exception} err
  * @returns {*}  {Promise<any>}
  */
 export function gRPCCatcher(ctx: IContext, err: Exception): Promise<any> {

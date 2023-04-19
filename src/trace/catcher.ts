@@ -16,7 +16,7 @@ import { gRPCCatcher } from "./catcher/grpc";
  *
  * @template T
  * @param {IContext} ctx
- * @param {(Capturer | T)} err
+ * @param {(Exception)} err
  */
 export async function catcher(err: Error , ctx: IContext) {
     // todo 整合async-hook
