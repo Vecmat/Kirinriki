@@ -57,14 +57,14 @@ export function Header(name?: string): ParameterDecorator {
  * @param {string} [name] params name
  * @returns
  */
-export function PathVariable(name?: string): ParameterDecorator {
+export function Path(name?: string): ParameterDecorator {
     return Inject((ctx: IContext) => {
         const pathParams: any = ctx.params ?? {};
         if (name === undefined) {
             return pathParams;
         }
         return pathParams[name];
-    }, "PathVariable");
+    }, "Path");
 }
 
 /**
@@ -74,33 +74,14 @@ export function PathVariable(name?: string): ParameterDecorator {
  * @param {string} [name]
  * @returns
  */
-export function Get(name?: string): ParameterDecorator {
+export function Query(name?: string): ParameterDecorator {
     return Inject((ctx: IContext) => {
         const queryParams: any = ctx.query ?? {};
         if (name === undefined) {
             return queryParams;
         }
         return queryParams[name];
-    }, "Get");
-}
-
-/**
- * Get parsed POST/PUT... body.
- *
- * @export
- * @param {string} [name]
- * @returns
- */
-export function Post(name?: string): ParameterDecorator {
-    return Inject((ctx: IContext) => {
-        return ctx.bodyParser().then((body: { post: Object }) => {
-            const params: any = body.post ? body.post : body;
-            if (name === undefined) {
-                return params;
-            }
-            return params[name];
-        });
-    }, "Post");
+    }, "Query");
 }
 
 /**
@@ -123,23 +104,32 @@ export function File(name?: string): ParameterDecorator {
 }
 
 /**
- * Get request body (contains the values of @Post and @File).
+ * Get parsed POST/PUT... body.
  *
  * @export
+ * @param {string} [name]
  * @returns
  */
-export function RequestBody(): ParameterDecorator {
+export function Body(name?: string): ParameterDecorator {
     return Inject((ctx: IContext) => {
-        return ctx.bodyParser();
-    }, "RequestBody");
+        if(name){
+            return ctx.bodyParser().then((body: { post: Object }) => {
+                const params: any = body.post ? body.post : body;
+                if (name === undefined) {
+                    return params;
+                }
+                return params[name];
+            });
+        }else{
+            return  ctx.bodyParser();
+        }
+    }, "Body");
 }
 
-/**
- * Alias of @RequestBody
- * @param {*}
- * @return {*}
- */
-export const Body = RequestBody;
+
+
+
+
 
 /**
  * Get POST/GET parameters, POST priority
@@ -148,7 +138,7 @@ export const Body = RequestBody;
  * @param {string} [name]
  * @returns {ParameterDecorator}
  */
-export function RequestParam(name?: string): ParameterDecorator {
+export function Param(name?: string): ParameterDecorator {
     return Inject((ctx: IContext) => {
         return ctx.bodyParser().then((body: { post: Object }) => {
             const queryParams: any = ctx.queryParser() ?? {};
@@ -158,15 +148,9 @@ export function RequestParam(name?: string): ParameterDecorator {
             }
             return { ...queryParams, ...postParams };
         });
-    }, "RequestParam");
+    }, "Param");
 }
 
-/**
- * Alias of @RequestParam
- * @param {*}
- * @return {*}
- */
-export const Param = RequestParam;
 
 /**
  * Inject ParameterDecorator

@@ -55,7 +55,7 @@ export enum RequestMethod {
  *     }} [routerOptions={}]
  * @returns {*}  {MethodDecorator}
  */
-export const RequestMapping = (
+export const Request = (
     path = "/",
     reqMethod: RequestMethod = RequestMethod.GET,
     routerOptions: {
@@ -66,7 +66,7 @@ export const RequestMapping = (
     return (target, key: string, descriptor: PropertyDescriptor) => {
         const targetType = IOCContainer.getType(target);
         if (targetType !== "CONTROLLER") {
-            throw  new Exception("BOOTERR_DEPRO_UNSUITED","RequestMapping decorator is only used in controllers class.");
+            throw  new Exception("BOOTERR_DEPRO_UNSUITED","Request decorator is only used in controllers class.");
         }
         // tslint:disable-next-line: no-object-literal-type-assertion
         IOCContainer.attachPropertyData(ROUTER_KEY, {
@@ -89,13 +89,13 @@ export const RequestMapping = (
  *     }} [routerOptions={}]
  * @returns {MethodDecorator}
  */
-export const PostMapping = (
+export const Post = (
     path = "/",
     routerOptions: {
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return RequestMapping(path, RequestMethod.POST, routerOptions);
+    return Request(path, RequestMethod.POST, routerOptions);
 };
 
 /**
@@ -107,13 +107,13 @@ export const PostMapping = (
  *     }} [routerOptions={}]
  * @returns {MethodDecorator}
  */
-export const GetMapping = (
+export const Get = (
     path = "/",
     routerOptions: {
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return RequestMapping(path, RequestMethod.GET, routerOptions);
+    return Request(path, RequestMethod.GET, routerOptions);
 };
 
 /**
@@ -125,13 +125,13 @@ export const GetMapping = (
  *     }} [routerOptions={}]
  * @returns {MethodDecorator}
  */
-export const DeleteMapping = (
+export const Delete = (
     path = "/",
     routerOptions: {
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return RequestMapping(path, RequestMethod.DELETE, routerOptions);
+    return Request(path, RequestMethod.DELETE, routerOptions);
 };
 
 /**
@@ -143,13 +143,13 @@ export const DeleteMapping = (
  *     }} [routerOptions={}]
  * @returns {MethodDecorator}
  */
-export const PutMapping = (
+export const Put = (
     path = "/",
     routerOptions: {
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return RequestMapping(path, RequestMethod.PUT, routerOptions);
+    return Request(path, RequestMethod.PUT, routerOptions);
 };
 
 /**
@@ -161,13 +161,13 @@ export const PutMapping = (
  *     }} [routerOptions={}]
  * @returns {MethodDecorator}
  */
-export const PatchMapping = (
+export const Patch = (
     path = "/",
     routerOptions: {
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return RequestMapping(path, RequestMethod.PATCH, routerOptions);
+    return Request(path, RequestMethod.PATCH, routerOptions);
 };
 
 /**
@@ -179,13 +179,13 @@ export const PatchMapping = (
  *     }} [routerOptions={}]
  * @returns {MethodDecorator}
  */
-export const OptionsMapping = (
+export const Options = (
     path = "/",
     routerOptions: {
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return RequestMapping(path, RequestMethod.OPTIONS, routerOptions);
+    return Request(path, RequestMethod.OPTIONS, routerOptions);
 };
 
 /**
@@ -197,20 +197,20 @@ export const OptionsMapping = (
  *     }} [routerOptions={}]
  * @returns {MethodDecorator}
  */
-export const HeadMapping = (
+export const Head = (
     path = "/",
     routerOptions: {
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return RequestMapping(path, RequestMethod.HEAD, routerOptions);
+    return Request(path, RequestMethod.HEAD, routerOptions);
 };
 
-export const AllMapping = (
+export const All = (
     path = "/",
     routerOptions: {
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return RequestMapping(path, RequestMethod.ALL, routerOptions);
+    return Request(path, RequestMethod.ALL, routerOptions);
 };
