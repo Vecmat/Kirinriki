@@ -24,7 +24,7 @@ export enum AOPType {
 
 /**
  * Aspect interface
- *
+ * todo : remove IAspect ，and use action replace
  * @export
  * @interface IAspect
  */

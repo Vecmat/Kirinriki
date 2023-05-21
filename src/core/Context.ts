@@ -140,6 +140,9 @@ function initBaseContext(ctx: KoaContext): IContext {
         // todo 先从app容器中获取，再从ctx容器中获取
         if (!context.Actions.has(key)) {
             const cls = IOCContainer.getClass(key, "ACTION");
+            if(!cls) {
+                throw new Exception("SYSERR_ACTION_NOTFOUND", `Action '${key}' for ctx is not found. `);
+            }
             const act = Reflect.construct(cls, context);
             context.Actions.set(key, act);
         }

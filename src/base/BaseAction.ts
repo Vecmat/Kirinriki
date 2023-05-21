@@ -16,7 +16,7 @@ import type { IContext, Kirinriki } from "../core";
  */
 export abstract class BaseAction implements IAction {
     public app: Kirinriki;
-    public ctx :IContext;
+    public ctx?:IContext;
     public scope = "CONNECT";
 
 

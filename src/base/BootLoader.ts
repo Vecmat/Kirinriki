@@ -16,7 +16,7 @@ import { BaseController } from "./BaseController";
 import { IMiddleware, IPlugin } from './Component';
 import { Logger, SetLogger, LoggerOption } from "./Logger";
 import { TraceMiddleware } from "../middleware/TraceMiddleware";
-import { Exception, defineProp, Check, ARROBJ } from "@vecmat/vendor";
+import { Exception, Check, ARROBJ } from "@vecmat/vendor";
 import { PayloadMiddleware } from "../middleware/PayloadMiddleware";
 import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
 import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from './Constants';
