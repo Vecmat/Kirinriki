@@ -11,6 +11,8 @@ import { RequestMethod } from "../mapping";
 import { IOCContainer } from "../../container";
 import { Handler, injectParam, injectRouter } from "../inject";
 import { Kirinriki, IContext, INext, IRouter } from "../../core";
+import { IMiddleware } from "../../base";
+import { DefaultContext, DefaultState } from "koa";
 
 // HttpImplementation
 export type HttpImplementation = (ctx: IContext, next: INext) => Promise<any>;
@@ -52,7 +54,7 @@ export class HttpRouter implements IRouter {
      *
      * @returns {*}  {KoaRouter.Middleware<any, unknown>}
      */
-    ListRouter() {
+    ListRouter(): KoaRouter.Middleware<DefaultState, DefaultContext> {
         return this.router.routes();
     }
 

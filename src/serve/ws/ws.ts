@@ -36,7 +36,7 @@ export class WsServer implements IApplication {
         this.options = options;
         options.ext = options.ext || {};
         this.options.wsOptions = { ...options.ext, ...{ noServer: true } };
-
+        // todo 支持传入 server 作为参数
         this.server = new WebSocketServer(this.options.wsOptions);
         if (this.options.protocol == "wss") {
             const opt: httpsServerOptions = {
@@ -60,6 +60,7 @@ export class WsServer implements IApplication {
     // Start(listenCallback?: () => void): HttpServer<typeof IncomingMessage, typeof ServerResponse> {
     Start(listenCallback?: () => void): HttpServer {
         listenCallback = listenCallback ? listenCallback : this.listenCallback;
+        
         return this.httpServer
             .listen(
                 {

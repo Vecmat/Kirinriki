@@ -11,6 +11,7 @@ import { Logger } from "../../base/Logger";
 import { IOCContainer } from "../../container";
 import { Handler, injectParam, injectRouter } from "../inject";
 import { Kirinriki, IContext, INext, IRouter } from "../../core";
+import { DefaultContext, DefaultState } from "koa";
 
 
 /**
@@ -64,12 +65,12 @@ export class WebsocketRouter implements IRouter {
      *
      * @returns {*} {KoaRouter.Middleware<any, unknown>}
      */
-    ListRouter() {
+    ListRouter(): KoaRouter.Middleware<DefaultState, DefaultContext> {
         return this.router.routes();
     }
 
     /**
-     *
+     * todo ws 不是很适合使用 control 的模式，考虑混合拆分到 socket 
      *
      * @param {any[]} list
      */

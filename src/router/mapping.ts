@@ -214,3 +214,16 @@ export const All = (
 ): MethodDecorator => {
     return Request(path, RequestMethod.ALL, routerOptions);
 };
+
+// 临时代码
+export const Description = (
+    name:string
+): MethodDecorator => {
+    return (target, key: string, descriptor: PropertyDescriptor) => {
+        const targetType = IOCContainer.getType(target);
+        if (targetType !== "CONTROLLER") {
+            throw new Exception("BOOTERR_DEPRO_UNSUITED", "Description decorator is only used in controllers class.");
+        }
+        return descriptor;
+    };
+};

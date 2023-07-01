@@ -27,6 +27,8 @@ export function HTTPCatcher(ctx: any, err: Exception) {
         // 分别处理
         // ctx.type = contentType;
         // const msg = err.message || ctx.message || "";
+
+        // todo 应该放入 runner 的 finally处理中
         const body = {
             sign: err.sign,
             message: err.message,
@@ -36,7 +38,7 @@ export function HTTPCatcher(ctx: any, err: Exception) {
         // ctx.set("Content-Length", `${Buffer.byteLength(JSON.stringify(body))}`);
         ctx.body = body;
         // ctx.res.end(JSON.stringify(body));
-        return; 
+        return;
     } catch (error) {
         Logger.Error(error);
         // 返回错误ID

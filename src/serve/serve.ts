@@ -3,7 +3,7 @@ import { GrpcServer } from "./grpc/grpc";
 import { HttpServer } from "./http/http";
 import { Http2Server } from "./http/http2";
 import { HttpsServer } from "./http/https";
-import { WsServer } from "./websocket/ws";
+import { WsServer } from "./ws/ws";
 
 // KirinrikiProtocol
 export type KirinrikiProtocol = 'http' | "https" | 'http2' | 'grpc' | 'ws' | 'wss'

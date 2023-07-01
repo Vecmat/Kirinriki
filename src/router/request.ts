@@ -112,17 +112,13 @@ export function File(name?: string): ParameterDecorator {
  */
 export function Body(name?: string): ParameterDecorator {
     return Inject((ctx: IContext) => {
-        if(name){
-            return ctx.bodyParser().then((body: { post: Object }) => {
-                const params: any = body.post ? body.post : body;
-                if (name === undefined) {
-                    return params;
-                }
-                return params[name];
-            });
-        }else{
-            return  ctx.bodyParser();
-        }
+         return ctx.bodyParser().then((body: { post: Object }) => {
+             const params: any = body.post ? body.post : body;
+             if (name === undefined) {
+                 return params;
+             }
+             return params[name];
+         });
     }, "Body");
 }
 

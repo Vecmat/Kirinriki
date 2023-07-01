@@ -51,26 +51,25 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
 
     try {
         !app.silent && Logger.Log("🌈🌈🌈🌈🌈", LOGO, WELCOME);
-       
+
         // version
         ARROBJ.defineProp(app, "version", KIRINRIKI_VERSION);
 
-        // todo 
+        // todo
 
         // Initialize env
         BootLoader.initialize(app);
 
         // 输出版本信息
-        Logger.Log('🎨', "", '====================================');
-        Logger.Log('🎨', "", `Nodejs Version: ${process.version}`);
-        Logger.Log('🎨', "", `Kirinriki Version: v${app.version}`);
-        Logger.Log('🎨', "", `App Environment: ${app.env}`);
-        Logger.Log('🎨', "", "====================================");
-
+        Logger.Log("🎨", "", "====================================");
+        Logger.Log("🎨", "", `Nodejs Version: ${process.version}`);
+        Logger.Log("🎨", "", `Kirinriki Version: v${app.version}`);
+        Logger.Log("🎨", "", `App Environment: ${app.env}`);
+        Logger.Log("🎨", "", "====================================");
 
         // exec bootFunc
         if (lodash.isFunction(bootFunc)) {
-            Logger.Log('Vecmat', '', 'Execute bootFunc ...');
+            Logger.Log("Vecmat", "", "Execute bootFunc ...");
             await bootFunc(app);
         }
 
@@ -79,43 +78,40 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // Create Catcher
         app.captor = new Captor();
 
-        Logger.Log('Vecmat', '', 'ComponentScan ...');
+        Logger.Log("Vecmat", "", "ComponentScan ...");
 
         // Check all bean
         BootLoader.CheckAllComponents(app, target);
 
-
         // Load configuration
-        Logger.Log('Vecmat', '', 'Load Configurations ...');
+        Logger.Log("Vecmat", "", "Load Configurations ...");
         // configuration metadata
         const configurationMetas = BootLoader.GetConfigurationMetas(app, target);
         BootLoader.LoadConfigs(app, configurationMetas);
-
 
         // todo 先加载全局错误处理？
         BootLoader.loadCaptor(app);
 
         // Load Plugin
-        Logger.Log('Vecmat', '', 'Load Plugins ...');
+        Logger.Log("Vecmat", "", "Load Plugins ...");
         await BootLoader.LoadPlugins(app);
 
-        await asyncEvent(app, 'appBoot');
-
+        await asyncEvent(app, "appBoot");
 
         // Load App ready hooks
         BootLoader.LoadAppReadyHooks(app, target);
 
         // Load Middleware
-        Logger.Log('Vecmat', '', 'Load Middlewares ...');
+        Logger.Log("Vecmat", "", "Load Middlewares ...");
         await BootLoader.LoadMiddlewares(app);
         // Load Components
-        Logger.Log('Vecmat', '', 'Load Components ...');
+        Logger.Log("Vecmat", "", "Load Components ...");
         BootLoader.LoadComponents(app);
         // Load Services
-        Logger.Log('Vecmat', '', 'Load Services ...');
+        Logger.Log("Vecmat", "", "Load Services ...");
         BootLoader.LoadActions(app);
         // Load Controllers
-        Logger.Log('Vecmat', '', 'Load Controllers ...');
+        Logger.Log("Vecmat", "", "Load Controllers ...");
         const controllers = BootLoader.LoadControllers(app);
 
         // Create Server
@@ -123,18 +119,21 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // Create router
         app.router = newRouter(app);
 
-
         // Load Routers
-        Logger.Log('Vecmat', '', 'Load Routers ...');
+        Logger.Log("Vecmat", "", "Load Routers ...");
         app.router.LoadRouter(controllers);
 
         // Emit app ready event
-        Logger.Log('Vecmat', '', 'Emit App Ready ...');
-        await asyncEvent(app, 'appReady');
+        Logger.Log("Vecmat", "", "Emit App Ready ...");
+        await asyncEvent(app, "appReady");
 
         if (!isUTRuntime) {
             app.listen(app.server, listenCallback(app));
         }
+
+        // Emit app ready event
+        Logger.Log("Vecmat", "", "Emit App Ready ...");
+        await asyncEvent(app, "appStart");
 
         return app;
     } catch (err) {

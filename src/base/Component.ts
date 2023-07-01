@@ -143,9 +143,9 @@ export function Capturer(identifier?: string): ClassDecorator {
 export function Catching(name: string): MethodDecorator {
     return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
         const targetType = IOCContainer.getType(target);
-        if (targetType !== "CONTROLLER" && targetType !== "CAPTURER") {
-            throw new Exception("BOOTERR_DEPRO_UNSUITED", "Request decorator is only used in controllers class.");
-        }
+        // if (targetType !== "CONTROLLER" && targetType !== "CAPTURER") {
+        //     throw new Exception("BOOTERR_DEPRO_UNSUITED", "Request decorator is only used in controllers class.");
+        // }
         IOCContainer.savePropertyData(CAPTURER_KEY, name, target, propertyKey);
     };
 }

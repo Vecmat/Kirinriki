@@ -10,4 +10,4 @@ export * from "./mapping";
 export * from "./request";
 export * from "./protocol/http";
 export * from "./protocol/grpc";
-export * from "./protocol/websocket";
+export * from "./protocol/ws";

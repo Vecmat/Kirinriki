@@ -8,6 +8,6 @@ export * from "./http/http";
 export * from "./http/https";
 export * from "./http/http2";
 export * from "./grpc/grpc";
-export * from "./websocket/ws";
+export * from "./ws/ws";
 export * from "./serve";
 export * from "./terminus";

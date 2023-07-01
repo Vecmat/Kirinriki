@@ -63,6 +63,7 @@ export async function httpRunner(ctx: IContext, next: Function, ext?: any): Prom
                 next()
             ]);
         }
+
         // 改为默认
         // if (ctx.body !== undefined && ctx.status === 404) {
         //     ctx.status = 200;
@@ -71,6 +72,15 @@ export async function httpRunner(ctx: IContext, next: Function, ext?: any): Prom
         // if (ctx.status >= 400) {
         //     throw new Exception('KRNRK_SERVER_ERROR', "Server error");
         // }
+        // todo 应该放入 runner 的 finally处理中
+        const body = {
+            sign: "SUCCESS",
+            message: "请求处理正常",
+            data: ctx.body || {}
+        };
+        // `{"":${},"message":"${}","":${}}`;
+        // ctx.set("Content-Length", `${Buffer.byteLength(JSON.stringify(body))}`);
+        ctx.body = body;
         return null;
     } catch (err: any) {
         // skip prevent errors
