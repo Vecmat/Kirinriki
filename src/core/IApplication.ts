@@ -52,7 +52,7 @@ export interface IRouter {
     options: any;
     router: any;
 
-    SetRouter: (path: string, func: Function, method?: any) => void;
+    SetRouter: (path: string, func: any, method?: any) => void;
     LoadRouter: (list: any[]) => void;
     ListRouter?: () => any;
 }

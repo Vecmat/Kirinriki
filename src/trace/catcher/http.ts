@@ -6,6 +6,7 @@
 import { Exception } from "@vecmat/vendor";
 import { Logger } from "../../base/Logger";
 import { HttpStatusCode, HttpStatusCodeMap } from "../code";
+import { Stream } from "node:stream";
 
 /**
  * HTTP error handler
@@ -27,6 +28,13 @@ export function HTTPCatcher(ctx: any, err: Exception) {
         // 分别处理
         // ctx.type = contentType;
         // const msg = err.message || ctx.message || "";
+   
+        if (typeof ctx.body === "string") {
+            return null;
+        }
+        if (ctx.body instanceof Stream) {
+            return null;
+        }
 
         // todo 应该放入 runner 的 finally处理中
         const body = {
