@@ -1,8 +1,11 @@
 {
     "compilerOptions": {
         /* Basic Options */
-        "target": "ESNEXT" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'. */,
-        "module": "ESNext" /* Specify module code generation: 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
+       "baseUrl": "./",
+        "rootDir": "./",
+        "outDir": "./dist",
+        "target": "ES2017",
+        "module": "commonjs",
         "lib": ["ESNEXT"],
         /* Specify library files to be included in the compilation:  */ // "allowJs": true /* Allow javascript files to be compiled. */,
         // "checkJs": true,                       /* Report errors in .js files. */
@@ -11,7 +14,6 @@
         "declarationMap": true /* Generates a sourcemap for each corresponding '.d.ts' file. */,
         "sourceMap": true /* Generates corresponding '.map' file. */,
         // "outFile": "./",                       /* Concatenate and emit output to single file. */
-        "outDir": "./temp" /* Redirect output structure to the directory. */,
         // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
         "removeComments": true /* Do not emit comments to output. */,
         // "noEmit": true /* Do not emit outputs. */,
@@ -51,5 +53,5 @@
         "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */
     },
     "exclude": ["node_modules", "dist"],
-    "include": ["src/**/*"]
+    "include": [ "src/**/*"]
 }

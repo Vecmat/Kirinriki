@@ -4,6 +4,8 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import json from "@rollup/plugin-json";
+
+import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 // import babel from '@rollup/plugin-babel';
 import { uglify } from 'rollup-plugin-uglify';
@@ -15,7 +17,9 @@ export default [
             file: './dist/index.js',
             banner: require('./scripts/copyright')
         }],
+        external: ["@vecmat/printer","@vecmat/vendor"],
         plugins: [
+            commonjs(),
             // babel({
             //     babelHelpers: "runtime",
             //     configFile: './babel.config.js',
@@ -23,6 +27,7 @@ export default [
             // }),
             json(),
             typescript({
+                tsconfig: './tsconfig.json',
                 tsconfigOverride: {
                     compilerOptions: {
                         declaration: false,

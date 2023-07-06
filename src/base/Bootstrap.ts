@@ -132,7 +132,7 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         }
 
         // Emit app ready event
-        Logger.Log("Vecmat", "", "Emit App Ready ...");
+        Logger.Log("Vecmat", "", "Emit App Start ...");
         await asyncEvent(app, "appStart");
 
         return app;
@@ -217,8 +217,7 @@ const newServe = function (app: Kirinriki) {
     const protocol = app.config("protocol") || "http";
     const port = process.env.PORT || process.env.APP_PORT ||
         app.config('app_port') || 3000;
-    const hostname = process.env.IP ||
-        process.env.HOSTNAME?.replace(/-/g, '.') || app.config('app_host') || '127.0.0.1';
+    const hostname = process.env.IP || app.config('app_host') || '127.0.0.1';
 
     const options: ListeningOptions = {
         hostname, port, protocol,

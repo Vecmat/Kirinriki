@@ -16,7 +16,6 @@ tsconfig.json
 node_modules
 npm-debug.log
 coverage
-src
 temp
 test
 demo
