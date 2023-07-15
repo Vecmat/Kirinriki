@@ -1,5 +1,5 @@
 <p align="center">
-  <pre style="font-size: 6px; text-align: center;">
+  <pre align="center" style="font-size: 6px;">
   _    _      _            _ _    _ 
  | |  (_)    (_)          (_) |  (_)
  | | ___ _ __ _ _ __  _ __ _| | ___ 
@@ -8,9 +8,7 @@
  |_|\_\_|_|  |_|_| |_|_|  |_|_|\_\_|
                                     
   == https://github.com/vecmat ==   
-     🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑       
-  </pre>
-
+     🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑        </pre>
   <p align="center">
     <a href="https://www.npmjs.com/package/kirinriki">
       <img src="https://badge.fury.io/js/kirinriki.svg">
