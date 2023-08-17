@@ -11,7 +11,7 @@ import { RequestMethod } from "../mapping";
 import { IOCContainer } from "../../container";
 import { Handler, injectParam, injectRouter } from "../inject";
 import { Kirinriki, IContext, INext, IRouter } from "../../core";
-import { IMiddleware } from "../../base";
+import { ISavant } from "../../base";
 import { DefaultContext, DefaultState } from "koa";
 
 // HttpImplementation
@@ -90,7 +90,7 @@ export class HttpRouter implements IRouter {
                 }
             }
 
-            // exp: in middleware
+            // exp: in savant
             // app.Router.SetRouter('/xxx',  (ctx: Koa.IContext): any => {...}, 'GET')
             this.app.use(this.ListRouter()).use(this.router.allowedMethods());
         } catch (err) {

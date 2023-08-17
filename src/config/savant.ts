@@ -5,14 +5,15 @@
  */
 
 export default {
-    // List of loaded middleware(except for the middleware loaded by default),
+    // List of loaded savant(except for the savant loaded by default),
     // executed in the order of elements
     list: [],
-    config: { // middleware configuration
-        TraceMiddleware: {
+    config: { 
+        // savant configuration
+        TraceSavant: {
             HeaderName: "X-Request-Id",
         },
-        PayloadMiddleware: {
+        PayloadSavant: {
             extTypes: {
                 json: ["application/json"],
                 form: ["application/x-www-form-urlencoded"],

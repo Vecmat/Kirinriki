@@ -101,9 +101,9 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // Load App ready hooks
         BootLoader.LoadAppReadyHooks(app, target);
 
-        // Load Middleware
-        Logger.Log("Vecmat", "", "Load Middlewares ...");
-        await BootLoader.LoadMiddlewares(app);
+        // Load Savant
+        Logger.Log("Vecmat", "", "Load Savants ...");
+        await BootLoader.LoadSavants(app);
         // Load Components
         Logger.Log("Vecmat", "", "Load Components ...");
         BootLoader.LoadComponents(app);

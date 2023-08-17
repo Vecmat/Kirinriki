@@ -41,8 +41,8 @@ export function Autowired(identifier?: string, type?: ComponentType, constructAr
                 type = "CAPTURER";
             } else if (identifier.indexOf("Controller") > -1) {
                 type = "CONTROLLER";
-            } else if (identifier.indexOf("Middleware") > -1) {
-                type = "MIDDLEWARE";
+            } else if (identifier.indexOf("Savant") > -1) {
+                type = "SAVANT";
             } else {
                 type = "COMPONENT";
             }

@@ -111,7 +111,7 @@ export class Kirinriki extends Koa implements Application {
     }
 
     /**
-     * Use the given koa middleware `fn`.
+     * Use the given koa savant `fn`.
      * support generator func
      * @param {Function} fn
      * @returns {any}
@@ -126,7 +126,7 @@ export class Kirinriki extends Koa implements Application {
     }
 
     /**
-     * Use the given Express middleware `fn`.
+     * Use the given Express savant `fn`.
      *
      * @param {function} fn
      * @returns {any}
@@ -241,16 +241,16 @@ export class Kirinriki extends Koa implements Application {
      *
      * @private
      * @param {IContext} ctx
-     * @param {(ctx: IContext) => Promise<any>} fnMiddleware
+     * @param {(ctx: IContext) => Promise<any>} fnSavant
      * @returns {*}
      * @memberof Kirinriki
      */
-    private async handleRequest(ctx: IContext, fnMiddleware: (ctx: IContext) => Promise<any>) {
+    private async handleRequest(ctx: IContext, fnSavant: (ctx: IContext) => Promise<any>) {
         const res = ctx.res;
         res.statusCode = 404;
         const onerror = (err: Error) => ctx.onerror(err);
         onFinished(res, onerror);
-        return fnMiddleware(ctx);
+        return fnSavant(ctx);
     }
 
     /**
@@ -324,7 +324,7 @@ export class Kirinriki extends Koa implements Application {
 
 
 /**
- * Convert express middleware for koa
+ * Convert express savant for koa
  *
  * @param {function} fn
  * @returns

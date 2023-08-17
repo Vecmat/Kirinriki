@@ -13,11 +13,11 @@ import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "./config";
 import { MIXTURE_SCOPT } from "../router/mapping";
 import { BaseController } from "./BaseController";
-import { IMiddleware, IPlugin } from './Component';
+import { ISavant, IPlugin } from './Component';
 import { Logger, SetLogger, LoggerOption } from "./Logger";
-import { TraceMiddleware } from "../middleware/TraceMiddleware";
+import { TraceSavant } from "../savant/TraceSavant";
 import { Exception, Check, ARROBJ } from "@vecmat/vendor";
-import { PayloadMiddleware } from "../middleware/PayloadMiddleware";
+import { PayloadSavant } from "../savant/PayloadSavant";
 import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
 import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from './Constants';
 
@@ -221,7 +221,6 @@ export class BootLoader {
      * @memberof BootLoader
      */
     public static loadCaptor(app: Kirinriki) {
-        // 使用LoadDir(） 加载 CAPTURER 目录？
         LoadDir(["./Capturer"], app.thinkPath);
         const clsList = IOCContainer.listClass("CAPTURER");
         clsList.forEach((item: ComponentItem) => {
@@ -256,70 +255,70 @@ export class BootLoader {
     }
 
     /**
-     * Load middlewares
+     * Load savants
      * [async]
      * @static
      * @param {*} app
      * @param {(string | string[])} [loadPath]
      * @memberof BootLoader
      */
-    public static async LoadMiddlewares(app: Kirinriki, loadPath?: string[]) {
-        let middlewareConf = app.config(undefined, "middleware");
-        if (lodash.isEmpty(middlewareConf)) {
-            middlewareConf = { config: {}, list: [] };
+    public static async LoadSavants(app: Kirinriki, loadPath?: string[]) {
+        let savantConf = app.config(undefined, "savant");
+        if (lodash.isEmpty(savantConf)) {
+            savantConf = { config: {}, list: [] };
         }
 
-        // Mount default middleware
-        LoadDir(loadPath || ["./middleware"], app.thinkPath);
-        // Mount application middleware
-        // const middleware: any = {};
-        const appMiddleware = IOCContainer.listClass("MIDDLEWARE") ?? [];
+        // Mount default savant
+        LoadDir(loadPath || ["./Savant"], app.thinkPath);
+        // Mount application savant
+        // const savant: any = {};
+        const appSavant = IOCContainer.listClass("SAVANT") ?? [];
 
-        appMiddleware.push({ id: "TraceMiddleware", target: TraceMiddleware });
-        appMiddleware.push({ id: "PayloadMiddleware", target: PayloadMiddleware });
-        appMiddleware.forEach((item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("MIDDLEWARE:", "");
+        appSavant.push({ id: "TraceSavant", target: TraceSavant });
+        appSavant.push({ id: "PayloadSavant", target: PayloadSavant });
+        appSavant.forEach((item: ComponentItem) => {
+            item.id = (item.id ?? "").replace("SAVANT:", "");
             if (item.id && Check.isClass(item.target)) {
-                IOCContainer.reg(item.id, item.target, { scope: "Prototype", type: "MIDDLEWARE", args: [] });
+                IOCContainer.reg(item.id, item.target, { scope: "Prototype", type: "SAVANT", args: [] });
             }
         });
 
-        const middlewareConfList = middlewareConf.list;
+        const savantConfList = savantConf.list;
 
         // todo ？如何加载 @vecmat/svant
         //de-duplication
         // ! 必须排在最前面
-        const defaultList = ["TraceMiddleware", "PayloadMiddleware"];
-        const appMiddlewareList = new Set(defaultList);
-        middlewareConfList.forEach((item: string) => {
+        const defaultList = ["TraceSavant", "PayloadSavant"];
+        const appSavantList = new Set(defaultList);
+        savantConfList.forEach((item: string) => {
             if (!defaultList.includes(item)) {
-                appMiddlewareList.add(item);
+                appSavantList.add(item);
             }
         });
 
         // ! ? 似乎没控制顺序？
-        // Automatically call middleware
-        for (const key of appMiddlewareList) {
-            const handle: IMiddleware = IOCContainer.get(key, "MIDDLEWARE");
+        // Automatically call savant
+        for (const key of appSavantList) {
+            const handle: ISavant = IOCContainer.get(key, "SAVANT");
             if (!handle) {
-                Logger.Error(`Middleware ${key} load error.`);
+                Logger.Error(`Savant ${key} load error.`);
                 continue;
             }
             if (!lodash.isFunction(handle.run)) {
-                Logger.Error(`Middleware ${key} must be implements method 'run'.`);
+                Logger.Error(`Savant ${key} must be implements method 'run'.`);
                 continue;
             }
-            if (middlewareConf.config[key] === false) {
-                // Default middleware cannot be disabled
+            if (savantConf.config[key] === false) {
+                // Default savant cannot be disabled
                 if (defaultList.includes(key)) {
-                    Logger.Warn(`Middleware ${key} cannot be disabled.`);
+                    Logger.Warn(`Savant ${key} cannot be disabled.`);
                 } else {
-                    Logger.Warn(`Middleware ${key} already loaded but not effective.`);
+                    Logger.Warn(`Savant ${key} already loaded but not effective.`);
                     continue;
                 }
             }
-            Logger.Debug(`Load middleware: ${key}`);
-            const result = await handle.run(middlewareConf.config[key] || {}, app);
+            Logger.Debug(`Load savant: ${key}`);
+            const result = await handle.run(savantConf.config[key] || {}, app);
             if (lodash.isFunction(result)) {
                 if (result.length < 3) {
                     app.use(result);

@@ -72,23 +72,23 @@ export function Controller(path = ""): ClassDecorator {
 
 
 /**
- * Interface for Middleware
+ * Interface for Savant
  */
-export interface IMiddleware {
+export interface ISavant {
     run: (options: any, app: Kirinriki) => Middleware;
 }
 
 /**
- * Indicates that an decorated class is a "middleware".
+ * Indicates that an decorated class is a "savant".
  *
  * @export
  * @param {string} [identifier] class name
  * @returns {ClassDecorator}
  */
-export function Middleware(identifier?: string): ClassDecorator {
+export function Savant(identifier?: string): ClassDecorator {
     return (target: any) => {
         identifier = identifier || IOCContainer.getIdentifier(target);
-        IOCContainer.saveClass("MIDDLEWARE", target, identifier);
+        IOCContainer.saveClass("SAVANT", target, identifier);
     };
 }
 

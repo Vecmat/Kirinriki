@@ -25,7 +25,6 @@ export function Ctx(): ParameterDecorator {
 
 /**
  * Get mixture for ctx.
- * ! 注意，改完后需要修改 Schedler 的引用
  */
 export function Mix(name: string): ParameterDecorator {
     return Inject((ctx: IContext) => {

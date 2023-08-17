@@ -42,11 +42,11 @@ const defaultOptions = {
 };
 
 /**
- * Trace middleware
+ * Trace savant
  *
  * @param {TraceOptions} options
  * @param {Kirinriki} app
- * @returns {*}  {Koa.Middleware}
+ * @returns {*}  {Koa.Savant}
  */
 export function Trace(options: TraceOptions, app: Kirinriki): Koa.Middleware {
     options = { ...defaultOptions, ...options };
