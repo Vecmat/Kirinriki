@@ -4,11 +4,9 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import json from "@rollup/plugin-json";
-
+import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
-// import babel from '@rollup/plugin-babel';
-import { uglify } from 'rollup-plugin-uglify';
 export default [
     {
         input: './src/index.ts',
@@ -48,11 +46,11 @@ export default [
             banner: require('./scripts/copyright')
         }],
         plugins: [
-            // babel({
-            //     babelHelpers: "runtime",
-            //     configFile: './babel.config.js',
-            //     exclude: 'node_modules/**',
-            // }),
+            babel({
+                babelHelpers: "runtime",
+                configFile: './babel.config.js',
+                exclude: 'node_modules/**',
+            }),
             json(),
             typescript({
                 tsconfigOverride: {

@@ -7,8 +7,8 @@
  |   <| | |  | | | | | |  | |   <| |
  |_|\_\_|_|  |_|_| |_|_|  |_|_|\_\_|
                                     
-  == https://github.com/vecmat ==   
-     🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑        </pre>
+   == https://github.com/vecmat ==  
+       🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑      </pre>
   <p align="center">
     <a href="https://www.npmjs.com/package/kirinriki">
       <img src="https://badge.fury.io/js/kirinriki.svg">
@@ -16,8 +16,8 @@
     <a href="https://bundlephobia.com/result?p=kirinriki@latest">
       <img src="https://badgen.net/bundlephobia/min/kirinriki">
     </a>
-    <a href="https://gitter.im/_rakkit_/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge">
-      <img src="https://badges.gitter.im/_rakkit_/community.svg">
+    <a href="https://discord.gg/XpVjCQCe">
+      <img src="https://img.shields.io/badge/Chat_in-Discord-blue">
     </a>
   </p>
 </p>
@@ -67,7 +67,17 @@ Decorator Support
 Hybrid Protocol (`HTTP`/ `WS` /`GRPC`)  
 
 
-## Specific Definition
+## 🔨 Features 
 
-`Action` like to service, it is related to requests and can read `ctx` attributes
 
+
+## 🚀 Getting started  
+```
+npm i kirinriki
+```
+```
+yarn add kirinriki
+```
+
+## 📜 Documentation
+The documentation is pending 

@@ -24,12 +24,12 @@ export function Ctx(): ParameterDecorator {
 
 
 /**
- * Get Action for ctx.
+ * Get mixture for ctx.
  * ! 注意，改完后需要修改 Schedler 的引用
  */
-export function Act(name: string): ParameterDecorator {
+export function Mix(name: string): ParameterDecorator {
     return Inject((ctx: IContext) => {
-        return ctx.getAction(name);
+        return ctx.getMixture(name);
     }, "Act");
 }
 

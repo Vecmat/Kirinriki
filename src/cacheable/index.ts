@@ -69,8 +69,8 @@ async function InitCacheStore() {
 export function CacheAble(cacheName: string, timeout = 3600): MethodDecorator {
     return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
         const componentType = IOCContainer.getType(target);
-        if (componentType !== "ACTION" && componentType !== "COMPONENT") {
-            throw new Exception("BOOTERR_DEMET_UNSUITED","This decorator only used in the service、component class.");
+        if (componentType !== "MIXTURE" && componentType !== "COMPONENT") {
+            throw new Exception("BOOTERR_DEMET_UNSUITED", "This decorator only used in the mixture、component class.");
         }
         let identifier = IOCContainer.getIdentifier(target);
         identifier = identifier || (target.constructor ? (target.constructor.name || "") : "");
@@ -137,8 +137,8 @@ export type eventTimes = "Before" | "After";
 export function CacheEvict(cacheName: string, eventTime: eventTimes = "Before") {
     return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
         const componentType = IOCContainer.getType(target);
-        if (componentType !== "SERVICE" && componentType !== "COMPONENT") {
-            throw new Exception("BOOTERR_DEPRO_UNSUITED","This decorator only used in the service、component class.");
+        if (componentType !== "MIXTURE" && componentType !== "COMPONENT") {
+            throw new Exception("BOOTERR_DEPRO_UNSUITED", "This decorator only used in the mixture、component class.");
         }
         const identifier = IOCContainer.getIdentifier(target);
         const { value, configurable, enumerable } = descriptor;

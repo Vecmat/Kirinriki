@@ -11,7 +11,7 @@ import { Captor  } from "./Capturer";
 import { checkClass } from "./widget";
 import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "./config";
-import { ACTION_SCOPT } from "../router/mapping";
+import { MIXTURE_SCOPT } from "../router/mapping";
 import { BaseController } from "./BaseController";
 import { IMiddleware, IPlugin } from './Component';
 import { Logger, SetLogger, LoggerOption } from "./Logger";
@@ -36,7 +36,6 @@ interface ComponentItem {
  * 
  */
 export class BootLoader {
-
     /**
      * initialize env
      *
@@ -48,35 +47,34 @@ export class BootLoader {
         const env = (process.execArgv ?? []).join(",");
         // app.env
         app.env = process.env.KRNRK_ENV || process.env.NODE_ENV;
-        if ((env.indexOf('--production') > -1) || ((app.env ?? '').indexOf('pro') > -1)) {
+        if (env.indexOf("--production") > -1 || (app.env ?? "").indexOf("pro") > -1) {
             app.appDebug = false;
         }
-        if (env.indexOf('ts-node') > -1 || env.indexOf('--debug') > -1) {
+        if (env.indexOf("ts-node") > -1 || env.indexOf("--debug") > -1) {
             app.appDebug = true;
         }
-        // set mode 
+        // set mode
         if (app.appDebug) {
-            app.env = 'development';
-            process.env.NODE_ENV = 'development';
-            process.env.APP_DEBUG = 'true';
+            app.env = "development";
+            process.env.NODE_ENV = "development";
+            process.env.APP_DEBUG = "true";
         } else {
-            app.env = 'production';
-            process.env.NODE_ENV = 'production';
+            app.env = "production";
+            process.env.NODE_ENV = "production";
         }
 
         // define path
         const rootPath = app.rootPath || process.cwd();
-        const appPath = app.appPath || path.resolve(rootPath, env.indexOf('ts-node') > -1 ? 'src' : 'dist');
-        const thinkPath = path.resolve(__dirname, '..');
-        ARROBJ.defineProp(app, "rootPath", rootPath);
-        ARROBJ.defineProp(app, "appPath", appPath);
-        ARROBJ.defineProp(app, "thinkPath", thinkPath);
+        const appPath = app.appPath || path.resolve(rootPath, env.indexOf("ts-node") > -1 ? "src" : "dist");
+        const thinkPath = path.resolve(__dirname, "..");
 
-        process.env.ROOT_PATH = rootPath;
         process.env.APP_PATH = appPath;
+        process.env.ROOT_PATH = rootPath;
         process.env.THINK_PATH = thinkPath;
 
-
+        ARROBJ.defineProp(app, "appPath", appPath);
+        ARROBJ.defineProp(app, "rootPath", rootPath);
+        ARROBJ.defineProp(app, "thinkPath", thinkPath);
     }
 
     /**
@@ -173,7 +171,6 @@ export class BootLoader {
         }
     }
 
-
     /**
      * Load app ready hook funcs
      *
@@ -186,7 +183,7 @@ export class BootLoader {
         const funcs = IOCContainer.getClassMetadata(TAGGED_CLS, APP_READY_HOOK, target);
         if (lodash.isArray(funcs)) {
             funcs.forEach((element: AppReadyHookFunc): any => {
-                app.once('appReady', () => element(app));
+                app.once("appReady", () => element(app));
                 return null;
             });
         }
@@ -215,8 +212,6 @@ export class BootLoader {
 
         app.setMetaData("_configs", appConfig);
     }
-
-
 
     /**
      * Load Captor
@@ -260,7 +255,6 @@ export class BootLoader {
         });
     }
 
-
     /**
      * Load middlewares
      * [async]
@@ -280,7 +274,7 @@ export class BootLoader {
         // Mount application middleware
         // const middleware: any = {};
         const appMiddleware = IOCContainer.listClass("MIDDLEWARE") ?? [];
-     
+
         appMiddleware.push({ id: "TraceMiddleware", target: TraceMiddleware });
         appMiddleware.push({ id: "PayloadMiddleware", target: PayloadMiddleware });
         appMiddleware.forEach((item: ComponentItem) => {
@@ -291,7 +285,7 @@ export class BootLoader {
         });
 
         const middlewareConfList = middlewareConf.list;
-        
+
         // todo ？如何加载 @vecmat/svant
         //de-duplication
         // ! 必须排在最前面
@@ -336,23 +330,22 @@ export class BootLoader {
         }
     }
 
-
     /**
-     * Load action
+     * Load mixture
      *
      * @static
      * @param {*} app
      * @memberof BootLoader
      */
-    public static LoadActions(app: Kirinriki) {
-        const actionList = IOCContainer.listClass("ACTION");
-        actionList.forEach((item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("ACTION:", "");
+    public static LoadMixtures(app: Kirinriki) {
+        const mixtureList = IOCContainer.listClass("MIXTURE");
+        mixtureList.forEach((item: ComponentItem) => {
+            item.id = (item.id ?? "").replace("MIXTURE:", "");
             if (item.id && Check.isClass(item.target)) {
-                Logger.Debug(`Load action: ${item.id}`);
+                Logger.Debug(`Load mixture: ${item.id}`);
                 // registering to IOC
-                const scope = IOCContainer.getClassMetadata(ACTION_SCOPT, "scope", item.target);
-                IOCContainer.reg(item.id, item.target, { scope: scope, type: "ACTION", args: [] });
+                const scope = IOCContainer.getClassMetadata(MIXTURE_SCOPT, "scope", item.target);
+                IOCContainer.reg(item.id, item.target, { scope: scope, type: "MIXTURE", args: [] });
             }
         });
     }
@@ -368,7 +361,7 @@ export class BootLoader {
         const componentList = IOCContainer.listClass("COMPONENT");
         componentList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("COMPONENT:", "");
-            if (item.id && !(item.id).endsWith("Plugin") && Check.isClass(item.target)) {
+            if (item.id && !item.id.endsWith("Plugin") && Check.isClass(item.target)) {
                 Logger.Debug(`Load component: ${item.id}`);
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
@@ -377,12 +370,12 @@ export class BootLoader {
     }
 
     /**
- * Load controllers
- *
- * @static
- * @param {*} app
- * @memberof BootLoader
- */
+     * Load controllers
+     *
+     * @static
+     * @param {*} app
+     * @memberof BootLoader
+     */
     public static LoadControllers(app: Kirinriki) {
         const controllerList = IOCContainer.listClass("CONTROLLER");
 
@@ -403,7 +396,6 @@ export class BootLoader {
         return controllers;
     }
 
-
     /**
      * Load plugins
      *
@@ -422,7 +414,7 @@ export class BootLoader {
         const pluginList = [];
         componentList.forEach(async (item: ComponentItem) => {
             item.id = (item.id ?? "").replace("COMPONENT:", "");
-            if (item.id && (item.id).endsWith("Plugin") && Check.isClass(item.target)) {
+            if (item.id && item.id.endsWith("Plugin") && Check.isClass(item.target)) {
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
                 pluginList.push(item.id);
@@ -440,8 +432,8 @@ export class BootLoader {
                 Logger.Warn(`Plugin ${key} already loaded but not effective.`);
                 continue;
             }
-            
-            // sync exec 
+
+            // sync exec
             await handle.run(pluginsConf.config[key] ?? {}, app);
         }
     }

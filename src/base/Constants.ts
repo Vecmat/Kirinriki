@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-export const WELCOME = "\n  == https://github.com/vecmat == " + "\n     🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑    \n";
+export const WELCOME = "\n  == https://github.com/vecmat == " + "\n     🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑    \n\n";
 // const LOGOSTR = "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKX18gICAgIF9fICAgICAgICAgICAgICAgICAgICAgICAgXyAgIApcIFwgICAvIC9fXyAgX19fIF8gX18gX19fICAgX18gX3wgfF8gCiBcIFwgLyAvIF8gXC8gX198ICdfIGAgXyBcIC8gX2AgfCBfX3wKICBcIFYgLyAgX18vIChfX3wgfCB8IHwgfCB8IChffCB8IHxfIAogICBcXy8gXF9fX3xcX19ffF98IHxffCB8X3xcX18sX3xcX198CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg";
 const LOGOSTR = "ICBfICAgIF8gICAgICBfICAgICAgICAgICAgXyBfICAgIF8gCiB8IHwgIChfKSAgICAoXykgICAgICAgICAgKF8pIHwgIChfKQogfCB8IF9fXyBfIF9fIF8gXyBfXyAgXyBfXyBffCB8IF9fXyAKIHwgfC8gLyB8ICdfX3wgfCAnXyBcfCAnX198IHwgfC8gLyB8CiB8ICAgPHwgfCB8ICB8IHwgfCB8IHwgfCAgfCB8ICAgPHwgfAogfF98XF9cX3xffCAgfF98X3wgfF98X3wgIHxffF98XF9cX3wKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg";
 

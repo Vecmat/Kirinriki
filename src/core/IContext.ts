@@ -10,7 +10,7 @@ import { ServerDuplexStream, ServerReadableStream, ServerUnaryCall, ServerWritab
 import { sendUnaryData, ServerUnaryCallImpl } from "@grpc/grpc-js/build/src/server-call";
 import { MetadataClass } from "./Metadata";
 import { IncomingMessage } from "http";
-import { BaseAction } from "../base";
+import { BaseMixture } from "../base";
 
 // KoaContext
 export type KoaContext = Koa.BaseContext & Koa.DefaultContext;
@@ -79,9 +79,9 @@ export interface IContext extends AppContext {
     status: number;
 
     /**
-     * Action  container
+     * Mixture  container
      */
-    Actiors: [];
+    Mixtures: [];
     /**
      * metadata
      *
@@ -145,6 +145,6 @@ export interface IContext extends AppContext {
     getMetaData: (key: string) => unknown;
     setMetaData: (key: string, value: any) => any;
 
-    // actions
-    getAction: <M extends BaseAction>(key: string) => M;
+    //
+    getMixture: <M extends BaseMixture>(key: string) => M;
 }

@@ -35,8 +35,8 @@ export function Autowired(identifier?: string, type?: ComponentType, constructAr
             throw new Exception("BOOTERR_DEPRO_MISSATTR","identifier cannot be empty when circular dependency exists");
         }
         if (type === undefined) {
-            if (identifier.indexOf("Action") > -1) {
-                type = "ACTION";
+            if (identifier.indexOf("MIXTURE") > -1) {
+                type = "MIXTURE";
             } else if (identifier.indexOf("Capturer") > -1) {
                 type = "CAPTURER";
             } else if (identifier.indexOf("Controller") > -1) {

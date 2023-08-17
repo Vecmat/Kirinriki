@@ -107,9 +107,9 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // Load Components
         Logger.Log("Vecmat", "", "Load Components ...");
         BootLoader.LoadComponents(app);
-        // Load Services
-        Logger.Log("Vecmat", "", "Load Services ...");
-        BootLoader.LoadActions(app);
+        // Load Mixtures
+        Logger.Log("Vecmat", "", "Load Mixtures ...");
+        BootLoader.LoadMixtures(app);
         // Load Controllers
         Logger.Log("Vecmat", "", "Load Controllers ...");
         const controllers = BootLoader.LoadControllers(app);

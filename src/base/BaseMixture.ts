@@ -5,28 +5,27 @@
  */
 
 import "reflect-metadata";
-import { IAction } from "./Component";
+import { IMixture } from "./Component";
 import type { IContext, Kirinriki } from "../core";
 
 /**
- * BaseAction class
+ * BaseMixture class
  * 
  * @export
  * @class Base
  */
-export abstract class BaseAction implements IAction {
+export abstract class BaseMixture implements IMixture {
     public app: Kirinriki;
-    public ctx?:IContext;
+    public ctx?: IContext;
     public scope = "CONNECT";
 
-
     /**
-     * instance of BaseAction.
+     * instance of BaseMixture.
      * @param {Kirinriki} app
      * @param {IContext} ctx
-     * @memberof BaseAction
+     * @memberof BaseMixture
      */
-    protected constructor(ctx:IContext,...arg: any[]) {
+    protected constructor(ctx: IContext, ...arg: any[]) {
         this.ctx = ctx;
         this.init(arg);
     }
@@ -35,7 +34,7 @@ export abstract class BaseAction implements IAction {
      * init
      * todo 改成虚函数？
      * @protected
-     * @memberof BaseAction
+     * @memberof BaseMixture
      */
     protected init(...arg: any[]): void {
         return;

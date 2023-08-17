@@ -28,7 +28,7 @@ export class Container implements IContainer {
     private static instance: Container;
 
     /**
-     * 
+     *
      *
      * @static
      * @returns
@@ -79,12 +79,12 @@ export class Container implements IContainer {
      * @returns {T}
      * @memberof Container
      */
-    public reg<T>(target: T, options?: ObjectDefinitionOptions): T
-    public reg<T>(identifier: string, target: T, options?: ObjectDefinitionOptions): T
+    public reg<T>(target: T, options?: ObjectDefinitionOptions): T;
+    public reg<T>(identifier: string, target: T, options?: ObjectDefinitionOptions): T;
     public reg<T>(identifier: any, target?: any, options?: ObjectDefinitionOptions): T {
         if (Check.isClass(identifier) || lodash.isFunction(identifier)) {
             options = target;
-            target = (identifier as any);
+            target = identifier as any;
             identifier = this.getIdentifier(target);
         }
         if (!Check.isClass(target)) {
@@ -102,7 +102,7 @@ export class Container implements IContainer {
                 args: [],
                 ...options
             };
-  
+
             options.args = options.args.length ? options.args : [];
             // inject options once
             Reflect.defineProperty(target.prototype, "_options", {
@@ -128,7 +128,6 @@ export class Container implements IContainer {
             injectValues(target, target.prototype, this);
             // inject AOP
             injectAOP(target, target.prototype, this);
-            
 
             const ref = this.getClass(identifier, options.type);
             if (!ref) {
@@ -153,12 +152,12 @@ export class Container implements IContainer {
      * get instance from IOC container.
      *
      * @param {string} identifier
-     * @param {ComponentType} [type="ACTION"]
+     * @param {ComponentType} [type="MIXTURE"]
      * @param {any[]} [args=[]]
      * @returns {*}
      * @memberof Container
      */
-    public get(identifier: string, type: ComponentType , args: any[] = []): any {
+    public get(identifier: string, type: ComponentType, args: any[] = []): any {
         // const [,t] = identifier.match(/(\S+):/);
         // type = type || <ComponentType> t;
         const target = this.getClass(identifier, type);
@@ -180,11 +179,11 @@ export class Container implements IContainer {
      * get class from IOC container by identifier.
      *
      * @param {string} identifier
-     * @param {ComponentType} [type="ACTION"]
+     * @param {ComponentType} [type="MIXTURE"]
      * @returns {Function}
      * @memberof Container
      */
-    public getClass(identifier: string, type: ComponentType = "ACTION"): Function {
+    public getClass(identifier: string, type: ComponentType = "MIXTURE"): Function {
         //   const [,t] = identifier.match(/(\S+):/);
         // type = type || <ComponentType> t;
         return this.classMap.get(`${type}:${identifier}`);
@@ -208,7 +207,7 @@ export class Container implements IContainer {
         // require Prototype instance
         if (args.length > 0) {
             // instantiation
-            return Reflect.construct(<Function><unknown>target, args);
+            return Reflect.construct(<Function>(<unknown>target), args);
         } else {
             return instance;
         }
@@ -267,7 +266,7 @@ export class Container implements IContainer {
                 name = (<Function>target).name ?? "";
             }
         } else {
-            name = target.constructor ? (target.constructor.name ?? "") : "";
+            name = target.constructor ? target.constructor.name ?? "" : "";
         }
         return name;
     }
@@ -289,12 +288,12 @@ export class Container implements IContainer {
             const baseType = Object.getPrototypeOf(target);
             const basename = baseType.constructor.name;
             name = name || (target.constructor ? target.constructor.name ?? "" : "");
-            const reg =/(Action|Capturer|Controller|Middleware)/; 
+            const reg = /(MIXTURE|Capturer|Controller|Middleware)/;
             if (!reg.test(name) && reg.test(basename)) {
-                name  =  basename;
+                name = basename;
             }
-            if (~name.indexOf("Action")) {
-                return "ACTION";
+            if (~name.indexOf("Mixture")) {
+                return "MIXTURE";
             } else if (~name.indexOf("Capturer")) {
                 return "CAPTURER";
             } else if (~name.indexOf("Controller")) {
@@ -330,7 +329,7 @@ export class Container implements IContainer {
      * @returns
      * @memberof Container
      */
-    public listClass(type?: ComponentType ) {
+    public listClass(type?: ComponentType) {
         type = type || <ComponentType>"";
         const modules: any[] = [];
         this.classMap.forEach((v, k) => {
@@ -347,11 +346,10 @@ export class Container implements IContainer {
     public allClass() {
         const modules: any[] = [];
         this.classMap.forEach((v, k) => {
-                modules.push({
-                    id: k,
-                    target: v
-                });
-            
+            modules.push({
+                id: k,
+                target: v
+            });
         });
         return modules;
     }
@@ -386,7 +384,13 @@ export class Container implements IContainer {
      * @param {string} [propertyName]
      * @memberof Container
      */
-    public attachClassMetadata(type: string, decoratorNameKey: string | symbol, data: any, target: Function | Object, propertyName?: string) {
+    public attachClassMetadata(
+        type: string,
+        decoratorNameKey: string | symbol,
+        data: any,
+        target: Function | Object,
+        propertyName?: string
+    ) {
         let originMap;
         if (propertyName) {
             originMap = this.getMetadataMap(type, target, propertyName);

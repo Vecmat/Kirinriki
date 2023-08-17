@@ -99,8 +99,8 @@ export function Scheduled(cron: string): MethodDecorator {
 
     return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
         const componentType = IOCContainer.getType(target);
-        if (componentType !== "ACTION" && componentType !== "COMPONENT") {
-            throw new Exception("BOOTERR_DEPRO_UNSUITED","This decorator only used in the service、component class.");
+        if (componentType !== "MIXTURE" && componentType !== "COMPONENT") {
+            throw new Exception("BOOTERR_DEPRO_UNSUITED", "This decorator only used in the mixture、component class.");
         }
         // IOCContainer.attachPropertyData(SCHEDULE_KEY, {
         //     cron,
@@ -124,8 +124,8 @@ export function Scheduled(cron: string): MethodDecorator {
 export function SchedulerLock(name?: string, lockTimeOut?: number, waitLockInterval?: number, waitLockTimeOut?: number): MethodDecorator {
     return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
         const componentType = IOCContainer.getType(target);
-        if (componentType !== "ACTION" && componentType !== "COMPONENT") {
-            throw new  Exception("BOOTERR_DEPRO_UNSUITED","This decorator only used in the service、component class.");
+        if (componentType !== "MIXTURE" && componentType !== "COMPONENT") {
+            throw new Exception("BOOTERR_DEPRO_UNSUITED", "This decorator only used in the mixture、component class.");
         }
         const { value, configurable, enumerable } = descriptor;
         if (Check.isEmpty(name)) {

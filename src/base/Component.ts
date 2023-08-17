@@ -10,7 +10,7 @@ import { IOCContainer } from "../container";
 import { CAPTURER_KEY } from "./Constants";
 import { Exception } from "@vecmat/vendor";
 import { Kirinriki, IContext, INext } from '../core';
-import { ACTION_SCOPT, CONTROLLER_ROUTER } from "../router";
+import { MIXTURE_SCOPT, CONTROLLER_ROUTER } from "../router";
 
 /**
  * Interface for Api output
@@ -94,10 +94,10 @@ export function Middleware(identifier?: string): ClassDecorator {
 
 
 /**
- * Interface for Action
+ * Interface for Mixture
  */
-export interface IAction {
-    readonly app: Kirinriki
+export interface IMixture {
+    readonly app: Kirinriki;
 }
 
 
@@ -109,11 +109,11 @@ export interface IAction {
  * @param {string} [identifier] class name
  * @returns {ClassDecorator}
  */
-export function Action(scope?: string, identifier?: string): ClassDecorator {
+export function Mixture(scope?: string, identifier?: string): ClassDecorator {
     return (target: any) => {
         identifier = identifier || IOCContainer.getIdentifier(target);
-        IOCContainer.saveClass("ACTION", target, identifier);
-        IOCContainer.saveClassMetadata(ACTION_SCOPT, "scope", scope, target);
+        IOCContainer.saveClass("MIXTURE", target, identifier);
+        IOCContainer.saveClassMetadata(MIXTURE_SCOPT, "scope", scope, target);
     };
 }
 

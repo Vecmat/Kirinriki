@@ -6,7 +6,7 @@
 
 import { MetadataClass } from "./Metadata";
 import { IOCContainer } from "../container";
-import { BaseAction } from "../base/BaseAction";
+import { BaseMixture } from "../base/BaseMixture";
 import { Exception, ARROBJ } from "@vecmat/vendor";
 import { IRpcServerCallback, IRpcServerUnaryCall, IWebSocket, KoaContext, IContext, WsRequest } from "./IContext";
 
@@ -134,20 +134,19 @@ function initBaseContext(ctx: KoaContext): IContext {
         context.set(data.toJSON());
     };
 
-    // Actions
-    context.Actions = new Map();
-    context.getAction = function <M extends BaseAction>(key: string): M {
+    // mixtures
+    context.Mixtures = new WeakMap();
+    context.getMixture = function <M extends BaseMixture>(key: string): M {
         // todo 先从app容器中获取，再从ctx容器中获取
-        if (!context.Actions.has(key)) {
-            const cls = IOCContainer.getClass(key, "ACTION");
-            if(!cls) {
-                throw new Exception("SYSERR_ACTION_NOTFOUND", `Action '${key}' for ctx is not found. `);
+        if (!context.Mixtures.has(key)) {
+            const cls = IOCContainer.getClass(key, "MIXTURE");
+            if (!cls) {
+                throw new Exception("SYSERR_MIXTURE_NOTFOUND", `MIXTURE '${key}' for ctx is not found. `);
             }
             const act = Reflect.construct(cls, context);
-            context.Actions.set(key, act);
+            context.Mixtures.set(key, act);
         }
-        return context.Actions.get(key);
-        
+        return context.Mixtures.get(key);
     };
 
     return context;

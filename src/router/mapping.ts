@@ -10,7 +10,7 @@ import { Exception } from "@vecmat/vendor";
 import { IOCContainer } from '../container';
 
 export const ROUTER_KEY = 'ROUTER_KEY';
-export const ACTION_SCOPT = "ACTION_SCOPT";
+export const MIXTURE_SCOPT = "MIXTURE_SCOPT";
 export const CONTROLLER_ROUTER = 'CONTROLLER_ROUTER';
 
 
