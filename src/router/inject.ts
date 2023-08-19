@@ -71,8 +71,8 @@ interface RouterMetadataObject {
  */
 export function injectRouter(app: Kirinriki, target: any, instance?: any): RouterMetadataObject {
     // Controller router path
-    const metaDatas = IOCContainer.listPropertyData(CONTROLLER_ROUTER, target);
     let path = "";
+    const metaDatas = IOCContainer.listPropertyData(CONTROLLER_ROUTER, target);
     const identifier = IOCContainer.getIdentifier(target);
     if (metaDatas) {
         path = metaDatas[identifier] ?? "";

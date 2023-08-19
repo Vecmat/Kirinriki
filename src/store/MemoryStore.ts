@@ -3,10 +3,10 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { CacheStore } from "../store";
+import { CacheStore } from ".";
 import { StoreOptions } from "./options";
 import { Exception } from "@vecmat/vendor";
-import { MemoryCache, messages } from "./cache";
+import { MemoryCache, messages } from "./Cache";
 
 export class MemoryStore extends CacheStore {
     declare client: any;

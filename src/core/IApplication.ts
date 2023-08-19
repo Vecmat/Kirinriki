@@ -15,7 +15,7 @@ export interface InitOptions {
     appPath?: string;
     appDebug?: boolean;
     rootPath?: string;
-    thinkPath?: string;
+    krnrkPath?: string;
 }
 
 type unknownServer = unknown;

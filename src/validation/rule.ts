@@ -6,17 +6,17 @@
 import { CountryCode } from "libphonenumber-js";
 
 import {
-    contains,
-    equals,
-    isEmail,
-    isHash,
     isIn,
     isIP,
-    isNotIn,
-    isPhoneNumber,
     isURL,
-    notEquals,
+    isHash,
+    equals,
+    isNotIn,
+    isEmail,
+    contains,
     validate,
+    notEquals,
+    isPhoneNumber,
     ValidationError
 } from "class-validator";
 import lodash from "lodash";

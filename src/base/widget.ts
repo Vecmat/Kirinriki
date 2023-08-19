@@ -68,7 +68,7 @@ export function getParamNames(func: { toString: () => { replace: (arg0: RegExp, 
  */
 export function checkClass(fileName: string, xpath: string, target: any, exSet?: Set<unknown>) {
     if (!exSet) return;
-    // * 不要有相同类名就可以了
+    // *  同一类型下不要有相同类名就可以了
     let calssname = "";
     if(target.__esModule && target.name === undefined ){
         const keys = Object.keys(target);
@@ -84,7 +84,6 @@ export function checkClass(fileName: string, xpath: string, target: any, exSet?:
     if (exSet.has(calssname))
         throw new Exception("BOOTERR_LOADER_CHECK",`A same class (${calssname}) already exists. at \`${xpath}\`.`);
     exSet.add(calssname);
-    
 }
 
 /**

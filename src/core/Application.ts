@@ -35,7 +35,7 @@ export class Kirinriki extends Koa implements Application {
     //
     public appPath: string;
     public rootPath: string;
-    public thinkPath: string;
+    public krnrkPath: string;
     public appDebug: boolean;
 
     //
@@ -57,17 +57,17 @@ export class Kirinriki extends Koa implements Application {
             appDebug: true,
             appPath: "",
             rootPath: "",
-            thinkPath: ""
+            krnrkPath: ""
         }
     ) {
         super();
         this.options = options ?? {};
         this.env = process.env.KIRINRIKI_ENV || process.env.NODE_ENV;
-        const { appDebug, appPath, rootPath, thinkPath } = this.options;
+        const { appDebug, appPath, rootPath, krnrkPath } = this.options;
         this.appDebug = appDebug;
         this.appPath = appPath;
         this.rootPath = rootPath;
-        this.thinkPath = thinkPath;
+        this.krnrkPath = krnrkPath;
         this.metadata = new MetadataClass();
         // constructor
         this.init();
@@ -262,9 +262,7 @@ export class Kirinriki extends Koa implements Application {
         // koa error
         this.removeAllListeners("error");
         this.on("error", (err: Error) => {
-            // if (!isPrevent(err)) {
-            //     Logger.Error(err);
-            // }
+            console.trace(err);
             return;
         });
         // process warning
@@ -276,10 +274,8 @@ export class Kirinriki extends Koa implements Application {
 
         // promise reject error
         process.removeAllListeners("unhandledRejection");
-        process.on("unhandledRejection", (reason: Error) => {
-            // if (!isPrevent(reason)) {
-            //     Logger.Error(reason);
-            // }
+        process.on("unhandledRejection", (err: Error) => {
+            console.trace(err);
             return;
         });
         // uncaught exception
@@ -289,39 +285,10 @@ export class Kirinriki extends Koa implements Application {
                 Logger.Error(lodash.toString(err));
                 process.exit(-1);
             }
-            // if (!isPrevent(err)) {
-            //     Logger.Error(err);
-            // }
             return;
         });
     }
 }
-
-// const properties = ["constructor", "init"];
-// export const Kirinriki = new Proxy(Application, {
-//     set(target, key, value, receiver) {
-//         if (Reflect.get(target, key, receiver) === undefined) {
-//             return Reflect.set(target, key, value, receiver);
-//         } else if (key === "init") {
-//             return Reflect.set(target, key, value, receiver);
-//         } else {
-//             throw Error("Cannot redefine getter-only property");
-//         }
-//     },
-//     deleteProperty(target, key) {
-//         throw Error("Cannot delete getter-only property");
-//     },
-//     construct(target, args, newTarget) {
-//         Reflect.ownKeys(target.prototype).map((n) => {
-//             if (newTarget.prototype.hasOwnProperty(n) && !properties.includes(lodash.toString(n))) {
-//                 throw Error(`Cannot override the final method '${lodash.toString(n)}'`);
-//             }
-//         });
-//         return Reflect.construct(target, args, newTarget);
-//     }
-// });
-
-
 
 /**
  * Convert express savant for koa

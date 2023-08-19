@@ -215,7 +215,7 @@ export const All = (
     return Request(path, RequestMethod.ALL, routerOptions);
 };
 
-// 临时代码
+// todo User table list routers
 export const Description = (
     name:string
 ): MethodDecorator => {

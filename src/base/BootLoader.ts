@@ -66,15 +66,15 @@ export class BootLoader {
         // define path
         const rootPath = app.rootPath || process.cwd();
         const appPath = app.appPath || path.resolve(rootPath, env.indexOf("ts-node") > -1 ? "src" : "dist");
-        const thinkPath = path.resolve(__dirname, "..");
+        const krnrkPath = path.resolve(__dirname, "..");
 
         process.env.APP_PATH = appPath;
         process.env.ROOT_PATH = rootPath;
-        process.env.THINK_PATH = thinkPath;
+        process.env.THINK_PATH = krnrkPath;
 
         ARROBJ.defineProp(app, "appPath", appPath);
         ARROBJ.defineProp(app, "rootPath", rootPath);
-        ARROBJ.defineProp(app, "thinkPath", thinkPath);
+        ARROBJ.defineProp(app, "krnrkPath", krnrkPath);
     }
 
     /**
@@ -199,8 +199,8 @@ export class BootLoader {
      */
     public static LoadConfigs(app: Kirinriki, loadPath?: string[]) {
         const frameConfig: any = {};
-        // Logger.Debug(`Load configuration path: ${app.thinkPath}/config`);
-        LoadDir(["./config"], app.thinkPath, function (name: string, path: string, exp: any) {
+        // Logger.Debug(`Load configuration path: ${app.krnrkPath}/config`);
+        LoadDir(["./config"], app.krnrkPath, function (name: string, path: string, exp: any) {
             frameConfig[name] = exp;
         });
 
@@ -221,7 +221,7 @@ export class BootLoader {
      * @memberof BootLoader
      */
     public static loadCaptor(app: Kirinriki) {
-        LoadDir(["./Capturer"], app.thinkPath);
+        LoadDir(["./Capturer"], app.krnrkPath);
         const clsList = IOCContainer.listClass("CAPTURER");
         clsList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("CAPTURER:", "");
@@ -269,7 +269,7 @@ export class BootLoader {
         }
 
         // Mount default savant
-        LoadDir(loadPath || ["./Savant"], app.thinkPath);
+        LoadDir(loadPath || ["./Savant"], app.krnrkPath);
         // Mount application savant
         // const savant: any = {};
         const appSavant = IOCContainer.listClass("SAVANT") ?? [];
@@ -345,6 +345,25 @@ export class BootLoader {
                 // registering to IOC
                 const scope = IOCContainer.getClassMetadata(MIXTURE_SCOPT, "scope", item.target);
                 IOCContainer.reg(item.id, item.target, { scope: scope, type: "MIXTURE", args: [] });
+            }
+        });
+    }
+
+    /**
+     * Load components
+     *
+     * @static
+     * @param {*} app
+     * @memberof BootLoader
+     */
+    public static LoadAspects(app: Kirinriki) {
+        const aspectList = IOCContainer.listClass("ASPECT");
+        aspectList.forEach((item: ComponentItem) => {
+            item.id = (item.id ?? "").replace("COMPONENT:", "");
+            if (item.id && !item.id.endsWith("Plugin") && Check.isClass(item.target)) {
+                Logger.Debug(`Load component: ${item.id}`);
+                // registering to IOC
+                IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
             }
         });
     }

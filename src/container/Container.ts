@@ -288,7 +288,7 @@ export class Container implements IContainer {
             const baseType = Object.getPrototypeOf(target);
             const basename = baseType.constructor.name;
             name = name || (target.constructor ? target.constructor.name ?? "" : "");
-            const reg = /(MIXTURE|Capturer|Controller|Savant)/;
+            const reg = /(Mixture|Capturer|Controller|Savant|Aspect)/;
             if (!reg.test(name) && reg.test(basename)) {
                 name = basename;
             }
@@ -300,6 +300,9 @@ export class Container implements IContainer {
                 return "CONTROLLER";
             } else if (~name.indexOf("Savant")) {
                 return "SAVANT";
+            }
+            else if (~name.indexOf("Aspect")) {
+                return "ASPECT";
             } else {
                 return "COMPONENT";
             }

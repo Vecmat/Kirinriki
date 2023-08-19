@@ -69,6 +69,7 @@ async function InitCacheStore() {
 export function CacheAble(cacheName: string, timeout = 3600): MethodDecorator {
     return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
         const componentType = IOCContainer.getType(target);
+        // 如何支持更多？
         if (componentType !== "MIXTURE" && componentType !== "COMPONENT") {
             throw new Exception("BOOTERR_DEMET_UNSUITED", "This decorator only used in the mixture、component class.");
         }

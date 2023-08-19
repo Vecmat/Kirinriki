@@ -5,7 +5,7 @@
  */
 import lodash from "lodash";
 import IORedis from "ioredis";
-import { CacheStore } from "./store";
+import { CacheStore } from "./CacheStore";
 import genericPool from "generic-pool";
 import { StoreOptions } from "./options";
 import { Check, getDefer } from "@vecmat/vendor";

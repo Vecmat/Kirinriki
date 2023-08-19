@@ -3,15 +3,12 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { CacheStore } from "./store";
-export { CacheStore } from "./store";
-import { MemoryStore } from "./memory";
-import { RedisStore } from "./redis";
+import { CacheStore } from "./CacheStore";
+import { MemoryStore } from "./MemoryStore";
+import { RedisStore } from "./RedisStore";
 import { StoreOptions } from "./options";
 // export
-export { MemoryStore } from "./memory";
-
-export { StoreOptions } from "./options";
+export { CacheStore, RedisStore, MemoryStore, StoreOptions };
 /**
  *
  *
