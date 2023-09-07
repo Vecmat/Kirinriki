@@ -9,7 +9,7 @@ import { RouterOptions } from "../option";
 import { Logger } from "../../base/Logger";
 import { RequestMethod } from "../mapping";
 import { IOCContainer } from "../../container";
-import { Handler, injectParam, injectRouter } from "../inject";
+import { Handler, buildParams, buildRouter } from "../builder";
 import { Kirinriki, IContext, INext, IRouter } from "../../core";
 import { ISavant } from "../../base";
 import { DefaultContext, DefaultState } from "koa";
@@ -68,9 +68,9 @@ export class HttpRouter implements IRouter {
             for (const n of list) {
                 const ctlClass = IOCContainer.getClass(n, "CONTROLLER");
                 // inject router
-                const ctlRouters = injectRouter(this.app, ctlClass);
+                const ctlRouters = buildRouter(this.app, ctlClass);
                 // inject param
-                const ctlParams = injectParam(this.app, ctlClass);
+                const ctlParams = buildParams(this.app, ctlClass);
                 // tslint:disable-next-line: forin
                 for (const it in ctlRouters) {
                     const router = ctlRouters[it];
@@ -83,6 +83,7 @@ export class HttpRouter implements IRouter {
                         path,
                         (ctx: IContext): Promise<any> => {
                             const ctl = IOCContainer.getInsByClass(ctlClass, [ctx]);
+                            // todo : 获取Aspect 
                             return Handler(this.app, ctx, ctl, method, params);
                         },
                         requestMethod

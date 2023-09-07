@@ -9,9 +9,9 @@ import "reflect-metadata";
 import { Exception } from "@vecmat/vendor";
 import { IOCContainer } from '../container';
 
-export const ROUTER_KEY = 'ROUTER_KEY';
-export const MIXTURE_SCOPT = "MIXTURE_SCOPT";
-export const CONTROLLER_ROUTER = 'CONTROLLER_ROUTER';
+export const ROUTER_KEY = Symbol("ROUTER_KEY"); 
+export const MIXTURE_SCOPT = Symbol("MIXTURE_SCOPT"); 
+export const CONTROLLER_ROUTER = Symbol("CONTROLLER_ROUTER"); 
 
 
 

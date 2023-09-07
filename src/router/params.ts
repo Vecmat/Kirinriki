@@ -6,7 +6,7 @@
 
 import lodash from "lodash";
 import { Exception } from "@vecmat/vendor";
-import { ParamMetadata } from "./inject";
+import { ParamMetadata } from "./builder";
 import { IOCContainer } from "../container";
 import { Kirinriki, IContext } from "../core";
 
@@ -29,6 +29,8 @@ import {
  * @returns
  */
 export async function getParamter(app: Kirinriki, ctx: IContext, params?: ParamMetadata[]) {
+    // todo 参考这个，实现为插件，将函数注入到容器中处理
+    
     //convert type
     params = params || <ParamMetadata[]>[];
     const props: any[] = params.map(async (v: ParamMetadata, k: number) => {

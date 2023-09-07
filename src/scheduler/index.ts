@@ -72,7 +72,7 @@ export async function GetScheduleLocker(app: Application): Promise<LockerInterfa
  */
 async function InitScheduleLocker() {
     const app = IOCContainer.getApp();
-    app?.once("appStart", async function () {
+    app?.once("APP_BOOT_FINISH", async function () {
         await GetScheduleLocker(app);
     });
 }
@@ -209,7 +209,7 @@ export const Lock = SchedulerLock;
  */
 const execInjectSchedule = function (target: any, method: string, cron: string) {
     const app = IOCContainer.getApp();
-    app?.once("appStart", () => {
+    app?.once("APP_BOOT_FINISH", () => {
         const identifier = IOCContainer.getIdentifier(target);
         const componentType = IOCContainer.getType(target);
         const instance: any = IOCContainer.get(identifier, componentType);

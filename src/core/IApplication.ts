@@ -48,11 +48,11 @@ export interface IApplication {
  * @interface IRouter
  */
 export interface IRouter {
-    app: Kirinriki;
-    options: any;
     router: any;
+    options: any;
+    app: Kirinriki;
 
-    SetRouter: (path: string, func: any, method?: any) => void;
-    LoadRouter: (list: any[]) => void;
     ListRouter?: () => any;
+    LoadRouter: (list: any[]) => void;
+    SetRouter: (path: string, func: any, method?: any) => void;
 }

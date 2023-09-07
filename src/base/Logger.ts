@@ -6,19 +6,30 @@
 
 
 import { Kirinriki } from "../core";
+export { LoggerOption } from "@vecmat/printer";
 import { DefaultLogger, LoggerOption } from "@vecmat/printer";
-
+import type { Logger as Printer } from "@vecmat/printer";
 
 // Export Logger
-export const Logger = DefaultLogger;
-export {LoggerOption} from "@vecmat/printer";
+export let Logger = DefaultLogger;
+
 /**
- * SetLogger
+ * Set an customize Logger
+ *
+ * @export
+ * @param {Printer} ins
+ */
+export async function SetLogger(ins: Printer) {
+    Logger = ins;
+}
+
+/**
+ * updateLogger
  *
  * @export
  * @param {LoggerOption} config
  */
-export function SetLogger(app: Kirinriki, config:LoggerOption) {
-    // 更新配置？
+export function updateLogger(config:LoggerOption) {
+    // 建议交给应用自行提供
     DefaultLogger.update(config);
 }

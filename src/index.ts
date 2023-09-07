@@ -13,7 +13,6 @@ export * from "./cacheable";
 export * from "./container";
 export * from "./scheduler";
 export * from "./validation";
-export * from "./controller";
 
 
 

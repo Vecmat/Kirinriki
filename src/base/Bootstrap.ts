@@ -7,14 +7,15 @@ import "reflect-metadata";
 import fs from "fs";
 import lodash from "lodash";
 import EventEmitter from "events";
-import { Kirinriki } from '../core';
 import { Logger } from "./Logger";
+import { asyncEvent } from "./eve";
+import { Kirinriki } from '../core';
 import { Captor } from "./Capturer";
 import { BootLoader } from "./BootLoader";
 import { Exception, ARROBJ } from "@vecmat/vendor";
 import { NewRouter, RouterOptions } from "../router";
 import { IOCContainer, TAGGED_CLS } from "../container";
-import { checkRuntime, checkUTRuntime, KIRINRIKI_VERSION } from "./Check";
+import { checkNodeVer, isUnintTest, KIRINRIKI_VERSION } from "./Check";
 import { APP_READY_HOOK, COMPONENT_SCAN, CONFIGURATION_SCAN, LOGO, WELCOME } from "./Constants";
 import { BindProcessEvent, Serve, ListeningOptions } from "../serve";
 
@@ -29,21 +30,22 @@ import { BindProcessEvent, Serve, ListeningOptions } from "../serve";
  */
 const executeBootstrap = async function (target: any, bootFunc: Function, isInitiative = false): Promise<Kirinriki> {
     // checked runtime
-    checkRuntime();
+    checkNodeVer();
     // unittest running environment
-    const isUTRuntime = checkUTRuntime();
-    if (!isInitiative && isUTRuntime) {
+    const inUnintTest = isUnintTest();
+    if (!isInitiative && inUnintTest) {
         return;
     }
 
     const app: Kirinriki = Reflect.construct(target, []);
-    // 类型检查
+    // type check
     if (!(app instanceof Kirinriki)) {
         console.error(`class ${target.name} does not inherit from Kirinriki`);
         process.exit(-1);
     }
+
     // unittest does not print startup logs
-    if (isUTRuntime) {
+    if (inUnintTest) {
         app.silent = true;
         Logger.enable(false);
     }
@@ -67,7 +69,7 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         Logger.Log("🎨", "", `App Environment: ${app.env}`);
         Logger.Log("🎨", "", "====================================");
 
-        // exec bootFunc
+        // Exec bootFunc first
         if (lodash.isFunction(bootFunc)) {
             Logger.Log("Vecmat", "", "Execute bootFunc ...");
             await bootFunc(app);
@@ -75,68 +77,75 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
 
         // Set IOCContainer.app
         IOCContainer.setApp(app);
+
         // Create Catcher
         app.captor = new Captor();
 
-        Logger.Log("Vecmat", "", "ComponentScan ...");
-
-        // Check all bean
-        BootLoader.CheckAllComponents(app, target);
-
-        // Load configuration
-        Logger.Log("Vecmat", "", "Load Configurations ...");
-        // configuration metadata
-        const configurationMetas = BootLoader.GetConfigurationMetas(app, target);
-        BootLoader.LoadConfigs(app, configurationMetas);
-
-        // todo 先加载全局错误处理？
+        // Load Global Error Captor
+        // todo: Load global error catcher first
         BootLoader.loadCaptor(app);
 
+        // Check all bean
+        Logger.Log("Vecmat", "", "Scan Component ...");
+        BootLoader.CheckAllComponents(app, target);
+
+        // async event APP boot start
+        await asyncEvent(app, "APP_BOOT_START");
+
+        // Load configuration
+        // configuration metadata
+        BootLoader.LoadConfigs(app, target);
+        await asyncEvent(app, "APP_CONFIG_LOADED");
+        Logger.Log("Vecmat", "", "Loaded Config ...");
+
         // Load Plugin
-        Logger.Log("Vecmat", "", "Load Plugins ...");
         await BootLoader.LoadPlugins(app);
+        await asyncEvent(app, "APP_PLUGIN_LOADED");
+        Logger.Log("Vecmat", "", "Loaded Plugins ...");
 
-        await asyncEvent(app, "appBoot");
-
-        // Load App ready hooks
-        BootLoader.LoadAppReadyHooks(app, target);
-        // Load Aspect
-        Logger.Log("Vecmat", "", "Load Aspect ...");
-        await BootLoader.LoadAspects(app);
         // Load Savant
-        Logger.Log("Vecmat", "", "Load Savants ...");
         await BootLoader.LoadSavants(app);
+        await asyncEvent(app, "APP_SAVANT_LOADED");
+        Logger.Log("Vecmat", "", "Loaded Savants ...");
 
         // Load Components
-        Logger.Log("Vecmat", "", "Load Components ...");
         BootLoader.LoadComponents(app);
+        await asyncEvent(app, "APP_COMPONENT_LOADED");
+        Logger.Log("Vecmat", "", "Loaded Components ...");
+
         // Load Mixtures
-        Logger.Log("Vecmat", "", "Load Mixtures ...");
         BootLoader.LoadMixtures(app);
+        await asyncEvent(app, "APP_MIXTURE_LOADED");
+        Logger.Log("Vecmat", "", "Loaded Mixtures ...");
+
         // Load Controllers
-        Logger.Log("Vecmat", "", "Load Controllers ...");
         const controllers = BootLoader.LoadControllers(app);
 
-        // Create Server
+        Logger.Log("Vecmat", "", "Loaded Controllers ...");
+
+        // todo: 将加载路由细节移动到 BootLoader内部
         app.server = newServe(app);
-        // Create router
         app.router = newRouter(app);
 
+        //
+
         // Load Routers
-        Logger.Log("Vecmat", "", "Load Routers ...");
+        Logger.Log("Vecmat", "", "Loaded Routers ...");
         app.router.LoadRouter(controllers);
 
-        // Emit app ready event
-        Logger.Log("Vecmat", "", "Emit App Ready ...");
-        await asyncEvent(app, "appReady");
+        await asyncEvent(app, "APP_ROUTER_LOADED");
 
-        if (!isUTRuntime) {
+        // ! check: 似乎重复了
+        // Load App ready hooks
+        BootLoader.LoadAppReadyHooks(app, target);
+        Logger.Log("Vecmat", "", "Emit App Ready ...");
+
+        // APP boot finish event
+        await asyncEvent(app, "APP_BOOT_FINISH");
+
+        if (!inUnintTest) {
             app.listen(app.server, listenCallback(app));
         }
-
-        // Emit app ready event
-        Logger.Log("Vecmat", "", "Emit App Start ...");
-        await asyncEvent(app, "appStart");
 
         return app;
     } catch (err) {
@@ -182,33 +191,6 @@ const newRouter = function (app: Kirinriki) {
     return router;
 };
 
-/**
- * Listening callback function
- *
- * @param {Kirinriki} app
- * @returns {*} 
- */
-const listenCallback = (app: Kirinriki) => {
-    return function () {
-        const options = app.server.options;
-
-        // binding event "appStop"
-        Logger.Log('Vecmat', '', 'Bind App Stop event ...');
-        BindProcessEvent(app, 'appStop');
-
-        // Emit app started event
-        Logger.Log('Vecmat', '', 'Emit App Start ...');
-        asyncEvent(app, 'appStart');
-
-        Logger.Log('Vecmat', '', `Server Protocol: ${(options.protocol).toUpperCase()}`);
-        Logger.Log('Vecmat', "", `Server running at ${options.protocol === "http2" ? "https" : options.protocol}://${options.hostname || '127.0.0.1'}:${options.port}/`);
-
-        // tslint:disable-next-line: no-unused-expression
-        app.appDebug && Logger.Warn(`🚧 RUNNING IN DEBUG MODE! 🚧 `);
-        // update Logger 
-        BootLoader.SetLogger(app);
-    };
-};
 
 /**
  * create serve
@@ -250,22 +232,34 @@ const newServe = function (app: Kirinriki) {
 };
 
 /**
- * Execute event as async
+ * Listening callback function
  *
- * @param {Kirinriki} event
- * @param {string} eventName
+ * @param {Kirinriki} app
+ * @returns {*} 
  */
+const listenCallback = (app: Kirinriki) => {
+    return async function () {
+        const options = app.server.options;
 
-const asyncEvent = async function (event: EventEmitter, eventName: string) {
-    const ls: any[] = event.listeners(eventName);
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const func of ls) {
-        if (lodash.isFunction(func)) {
-            func();
-        }
-    }
-    return event.removeAllListeners(eventName);
+        // binding event "appStop"
+        Logger.Log('Vecmat', '', 'Bind App Stop event ...');
+        BindProcessEvent(app, 'appStop');
+
+        // Emit app started event
+        Logger.Log('Vecmat', '', 'Emit App Start Listen ...');
+        await asyncEvent(app, 'APP_START_LISTEN');
+
+        Logger.Log('Vecmat', '', `Server Protocol: ${(options.protocol).toUpperCase()}`);
+        Logger.Log('Vecmat', "", `Server running at ${options.protocol === "http2" ? "https" : options.protocol}://${options.hostname || '127.0.0.1'}:${options.port}/`);
+
+        // tslint:disable-next-line: no-unused-expression
+        app.appDebug && Logger.Warn(`🚧 RUNNING IN DEBUG MODE! 🚧 `);
+        // update Logger 
+        BootLoader.SetLogger(app);
+    };
 };
+
+
 
 /**
  * Bootstrap application

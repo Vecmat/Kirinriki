@@ -51,9 +51,10 @@ export async function GetCacheStore(app: Application): Promise<CacheStore> {
  */
 async function InitCacheStore() {
     const app = IOCContainer.getApp();
-    app && app.once("appStart", async function () {
-        await GetCacheStore(app);
-    });
+    app &&
+        app.once("APP_BOOT_FINISH", async function () {
+            await GetCacheStore(app);
+        });
 }
 
 /**

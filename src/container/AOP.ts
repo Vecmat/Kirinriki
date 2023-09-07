@@ -9,6 +9,16 @@ import { Exception, Check } from "@vecmat/vendor";
 import { Container, IOCContainer } from "./Container";
 import { TAGGED_AOP, TAGGED_CLS } from "./IContainer";
 
+//todo: AOP 替换为 数组管理，动态添加，支持插件和注解两中注入方式
+
+
+// 可以保留 Mixture ，因为传递参数使用的是
+
+
+// 移动到Handler 内处理
+// 参考参数的处理，改为一个函数数组，引用注解工厂生成的函数
+
+
 /**
  * defined AOP type
  *
@@ -18,8 +28,8 @@ import { TAGGED_AOP, TAGGED_CLS } from "./IContainer";
 export enum AOPType {
     "After" = "After",
     "Before" = "Before",
-    "AfterEach" = "AfterEach",
-    "BeforeEach" = "BeforeEach",
+    "AfterAll" = "AfterAll",
+    "BeforeAll" = "BeforeAll",
 }
 
 /**
@@ -86,13 +96,13 @@ export function Before(aopName: string | Function,...args:any[]): MethodDecorato
  * @param {string} [aopName]
  * @returns {Function}
  */
-export function BeforeEach(aopName?: string | Function, ...args: any[]): ClassDecorator {
+export function BeforeAll(aopName?: string | Function, ...args: any[]): ClassDecorator {
     return (target: any) => {
         IOCContainer.saveClassMetadata(
             TAGGED_CLS,
             TAGGED_AOP,
             {
-                type: AOPType.BeforeEach,
+                type: AOPType.BeforeAll,
                 name: aopName,
                 args
             },
@@ -135,13 +145,13 @@ export function After(aopName: string | Function, ...args: any[]): MethodDecorat
  * @param {string} aopName
  * @returns {Function}
  */
-export function AfterEach(aopName?: string | Function, ...args: any[]): ClassDecorator {
+export function AfterAll(aopName?: string | Function, ...args: any[]): ClassDecorator {
     return (target: any) => {
         IOCContainer.saveClassMetadata(
             TAGGED_CLS,
             TAGGED_AOP,
             {
-                type: AOPType.AfterEach,
+                type: AOPType.AfterAll,
                 name: aopName,
                 args
             },
@@ -199,11 +209,11 @@ export function injectAOP(target: any, instance: any, container: Container) {
 
     const classMetaData = container.getClassMetadata(TAGGED_CLS, TAGGED_AOP, target);
     const { type, name, method } = classMetaData || {};
-    if (name && [AOPType.Before, AOPType.BeforeEach, AOPType.After, AOPType.AfterEach].includes(type)) {
+    if (name && [AOPType.Before, AOPType.BeforeAll, AOPType.After, AOPType.AfterAll].includes(type)) {
         methodsFilter(selfMethods).forEach((element: string) => {
             if (element === method) {
-                // If the class has defined the default AOP method, @BeforeEach and @AfterEach will not take effect
-                if (hasDefault && (type === AOPType.BeforeEach || type === AOPType.AfterEach)) {
+                // If the class has defined the default AOP method, @BeforeAll and @AfterAll will not take effect
+                if (hasDefault && (type === AOPType.BeforeAll || type === AOPType.AfterAll)) {
                     return;
                 }
                 // Logger.Debug(`Register inject AOP ${target.name} method: ${element} => ${type}`);
@@ -227,15 +237,15 @@ function injectDefaultAOP(target: any, instance: any, methods: string[]) {
     // const methods = getMethodNames(target, true).filter((m: string) =>
     //     !["constructor", "init", "__before", "__after"].includes(m)
     // );
-    // logger.Warn(`The ${target.name} class has a default AOP method, @BeforeEach and @AfterEach maybe not take effect`);
+    // logger.Warn(`The ${target.name} class has a default AOP method, @BeforeAll and @AfterAll maybe not take effect`);
     methods.forEach((element) => {
         if (lodash.isFunction(instance.__before)) {
             // logger.Debug(`Register inject default AOP ${target.name} method: ${element} => __before`);
-            defineAOPProperty(target, element, "__before", AOPType.BeforeEach);
+            defineAOPProperty(target, element, "__before", AOPType.BeforeAll);
         }
         if (lodash.isFunction(instance.__after)) {
             // logger.Debug(`Register inject default AOP ${target.name} method: ${element} => __after`);
-            defineAOPProperty(target, element, "__after", AOPType.AfterEach);
+            defineAOPProperty(target, element, "__after", AOPType.AfterAll);
         }
     });
 }
@@ -248,12 +258,13 @@ function injectDefaultAOP(target: any, instance: any, methods: string[]) {
  * @param {(string | Function)} aopName
  */
 function defineAOPProperty(classes: Function, protoName: string, aopName: string | Function, type: AOPType) {
+    // todo 目前通过拦截方法实现，但是最好是不用
     const oldMethod = Reflect.get(classes.prototype, protoName);
     if (oldMethod) {
         Reflect.defineProperty(classes.prototype, protoName, {
             writable: true,
             async value(...props: any[]) {
-                if ([AOPType.Before, AOPType.BeforeEach].includes(type)) {
+                if ([AOPType.Before, AOPType.BeforeAll].includes(type)) {
                     if (aopName === "__before") {
                         // logger.Info(`Execute the aspect ${classes.name}.__before`);
                         // tslint:disable-next-line: no-invalid-this

@@ -87,7 +87,6 @@ export const Inject = Autowired;
  */
 export function injectAutowired(target: any, instance: any, container: Container, isLazy = false) {
     const metaData = RecursiveGetMetadata(TAGGED_PROP, target);
-
     // tslint:disable-next-line: forin
     for (const metaKey in metaData) {
         let dep;
@@ -109,13 +108,10 @@ export function injectAutowired(target: any, instance: any, container: Container
             } else {
                 // Delay loading solves the problem of cyclic dependency
                 const app = container.getApp();
-                // tslint:disable-next-line: no-unused-expression
-                if (app?.once) {
-                    app.once("appReady", () => {
-                        // lazy inject autowired
-                        injectAutowired(target, instance, container, true);
-                    });
-                }
+                app.once("APP_BOOT_FINISH", () => {
+                    // lazy inject autowired
+                    injectAutowired(target, instance, container, true);
+                });
             }
         }
     }

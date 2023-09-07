@@ -205,6 +205,8 @@ export class Container implements IContainer {
         // get instance from the Container
         const instance: any = this.instanceMap.get(target);
         // require Prototype instance
+        debugger;
+        // Controler 默认不再保存ctx，所以也用单例
         if (args.length > 0) {
             // instantiation
             return Reflect.construct(<Function>(<unknown>target), args);
@@ -300,8 +302,7 @@ export class Container implements IContainer {
                 return "CONTROLLER";
             } else if (~name.indexOf("Savant")) {
                 return "SAVANT";
-            }
-            else if (~name.indexOf("Aspect")) {
+            } else if (~name.indexOf("Aspect")) {
                 return "ASPECT";
             } else {
                 return "COMPONENT";
@@ -367,7 +368,24 @@ export class Container implements IContainer {
      * @param {string} [propertyName]
      * @memberof Container
      */
-    public saveClassMetadata(type: string, decoratorNameKey: string | symbol, data: any, target: Function | Object, propertyName?: string) {
+    public saveClassMetadata(
+        type: string | symbol,
+        decoratorNameKey: string | symbol,
+        data: any,
+        target: Function | Object,
+        propertyName?: string
+    ) {
+        if (propertyName) {
+            const originMap = this.getMetadataMap(type, target, propertyName);
+            originMap.set(decoratorNameKey, data);
+        } else {
+            const originMap = this.getMetadataMap(type, target);
+            originMap.set(decoratorNameKey, data);
+        }
+    }
+
+    // 似乎不需要！
+    public appendClassMeta(type: string, decoratorNameKey: string | symbol, data: any, target: Function | Object, propertyName?: string) {
         if (propertyName) {
             const originMap = this.getMetadataMap(type, target, propertyName);
             originMap.set(decoratorNameKey, data);
@@ -416,7 +434,7 @@ export class Container implements IContainer {
      * @returns
      * @memberof Container
      */
-    public getClassMetadata(type: string, decoratorNameKey: string | symbol, target: Function | Object, propertyName?: string) {
+    public getClassMetadata(type: string | symbol, decoratorNameKey: string | symbol, target: Function | Object, propertyName?: string) {
         if (propertyName) {
             const originMap = this.getMetadataMap(type, target, propertyName);
             return originMap.get(decoratorNameKey);

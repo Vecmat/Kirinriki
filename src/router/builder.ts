@@ -11,6 +11,7 @@ import { Kirinriki, IContext } from "../core";
 import { CONTROLLER_ROUTER, ROUTER_KEY } from "./mapping";
 import { getOriginMetadata, IOCContainer, RecursiveGetMetadata, TAGGED_PARAM } from "../container";
 import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY, ValidOtpions, ValidRules } from "../validation";
+import { Exception } from "@vecmat/vendor";
 
 /**
  * controller handler
@@ -23,19 +24,23 @@ import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY, ValidOtpions, ValidRul
  * @returns
  */
 export async function Handler(app: Kirinriki, ctx: IContext, ctl: any, method: string, ctlParams: any) {
-    if (!ctx || !ctl) {
-        // ! todo 需要转为 Exception抛出
-        return ctx.throw(404, `Controller not found.`);
+    if ( !ctl) {
+        throw new Exception("SYSTEM_CTL_ABSENT", "Controller not found.");
     }
-    if (!ctl.ctx) {
-        ctl.ctx = ctx;
+    if(!ctx ){
+        throw new Exception("SYSTEM_CTX_ABSENT", "Context not found.");
     }
-    // inject param
+
+    // todo 转为 获取参数方式 
+    // inject param 
     let args = [];
     if (ctlParams) {
         args = await getParamter(app, ctx, ctlParams);
     }
-    // method
+    // method 
+    // todo: 遍历处理 中间件、插件等
+
+    // 调用函数
     const res = await ctl[method](...args);
     ctx.body = ctx.body || res;
 }
@@ -69,7 +74,7 @@ interface RouterMetadataObject {
  * @param {*} [instance]
  * @returns {*}
  */
-export function injectRouter(app: Kirinriki, target: any, instance?: any): RouterMetadataObject {
+export function buildRouter(app: Kirinriki, target: any, instance?: any): RouterMetadataObject {
     // Controller router path
     let path = "";
     const metaDatas = IOCContainer.listPropertyData(CONTROLLER_ROUTER, target);
@@ -132,11 +137,13 @@ export interface ParamMetadataObject {
  * @param {*} [instance]
  * @returns {*}
  */
-export function injectParam(app: Kirinriki, target: any, instance?: any): ParamMetadataObject {
+export function buildParams(app: Kirinriki, target: any, instance?: any): ParamMetadataObject {
     instance = instance || target.prototype;
     const metaDatas = RecursiveGetMetadata(TAGGED_PARAM, target);
     const validMetaDatas = RecursiveGetMetadata(PARAM_RULE_KEY, target);
     const validatedMetaDatas = RecursiveGetMetadata(PARAM_CHECK_KEY, target);
+    // 如果
+    
     const argsMetaObj: ParamMetadataObject = {};
     for (const meta in metaDatas) {
         // 实例方法带规则形参必须小于等于原型形参(如果不存在验证规则，则小于)

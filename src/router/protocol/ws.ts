@@ -9,7 +9,7 @@ import { RouterOptions } from "../option";
 import { RequestMethod } from "../mapping";
 import { Logger } from "../../base/Logger";
 import { IOCContainer } from "../../container";
-import { Handler, injectParam, injectRouter } from "../inject";
+import { Handler, buildParams, buildRouter } from "../builder";
 import { Kirinriki, IContext, INext, IRouter } from "../../core";
 import { DefaultContext, DefaultState } from "koa";
 
@@ -79,9 +79,9 @@ export class WebsocketRouter implements IRouter {
             for (const n of list) {
                 const ctlClass = IOCContainer.getClass(n, "CONTROLLER");
                 // inject router
-                const ctlRouters = injectRouter(this.app, ctlClass);
+                const ctlRouters = buildRouter(this.app, ctlClass);
                 // inject param
-                const ctlParams = injectParam(this.app, ctlClass);
+                const ctlParams = buildParams(this.app, ctlClass);
                 // tslint:disable-next-line: forin
                 for (const it in ctlRouters) {
                     const router = ctlRouters[it];

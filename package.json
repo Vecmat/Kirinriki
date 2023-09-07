@@ -4,7 +4,6 @@
     "description": "Koa2 + Typescript = kirinriki. Use Typescript's decorator implement auto injection.",
     "main": "./dist/src/index.js",
     "types": "./src/index.ts",
-    
     "publishConfig": {
         "access": "public",
         "main": "./src/index.js",
@@ -54,19 +53,20 @@
         }
     ],
     "dependencies": {
+
+        "@types/koa-compose": "~3.2.5",
+        "@types/formidable": "^2.0.4",
+        "@rollup/plugin-babel": "~6.0.3",
         "@vecmat/vendor": "workspace:~0.0.11",
         "@vecmat/printer": "workspace:~0.0.11",
-        "@godaddy/terminus": "^4.10.2",
         "@grpc/grpc-js": "1.5.9",
         "@grpc/proto-loader": "~0.7.4",
         "@rollup/plugin-json": "^4.1.0",
-        "@types/formidable": "^2.0.4",
         "@koa/router": "^12.0.0",
         "class-validator": "^0.13.2",
         "formidable": "^2.0.1",
         "inflation": "^2.0.0",
         "koa": "2.13.4",
-        "libphonenumber-js": "^1.9.50",
         "lodash": "^4.17.21",
         "mathjs": "^11.5.0",
         "moment": "^2.29.4",
@@ -78,7 +78,6 @@
         "tslib": "^2.4.1",
         "xml2js": "^0.4.23",
         "koa-compose": "~4.1.0",
-        "@types/koa-compose": "~3.2.5",
         "globby": "^11.1.0",
         "protobufjs": "~7.1.2",
         "cron": "~2.1.0",
@@ -88,8 +87,7 @@
         "ws": "^8.11.0",
         "path-to-regexp": "~6.2.1",
         "concurrently": "~8.0.1",
-        "@rollup/plugin-babel": "~6.0.3",
-        "commitlint-config-gitmoji": "~2.3.1"
+        "libphonenumber-js": "^1.9.50"
     },
     "devDependencies": {
         "tsc-alias": "~1.8.2",
@@ -133,6 +131,7 @@
         "ts-jest": "^28.x.x",
         "ts-node": "10.7.0",
         "typescript": "~4.9.5",
+        "commitlint-config-gitmoji": "~2.3.1",
         "@rollup/plugin-commonjs": "~25.0.2"
     }
 }

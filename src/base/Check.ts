@@ -11,10 +11,11 @@ export const KIRINRIKI_VERSION = version;
 export const ENGINES_VERSION = engines.node.slice(1) || "12.0.0";
 
 /**
- * check node version
+ * check node version 
+ * 
  * @return {void} []
  */
-export function checkRuntime() {
+export function checkNodeVer() {
     let nodeEngines = ENGINES_VERSION;
     nodeEngines = nodeEngines.slice(0, nodeEngines.lastIndexOf("."));
     let nodeVersion = process.version;
@@ -34,7 +35,7 @@ export function checkRuntime() {
  * only support jest
  * @returns {boolean}
  */
-export const checkUTRuntime = (): boolean => {
+export const isUnintTest = (): boolean => {
     let isUTRuntime = false;
     // UT运行环境判断，暂时先只判断jest
     const argv = JSON.stringify(process.argv[1]);

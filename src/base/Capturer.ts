@@ -7,6 +7,7 @@
 import { Exception } from "@vecmat/vendor";
 import { IOCContainer } from "../container";
 import { IContext, Kirinriki } from "../core";
+import { CAPTURER_KEY } from "./Constants";
 /**
  * Kirinriki system error capture 
  */
@@ -16,6 +17,42 @@ export interface ICapturer {
     (err: Error, ctx?: IContext|Kirinriki ): Promise<boolean>
 }
 
+// 基类
+export class BaseCapturer {
+    
+}
+
+/**
+ * Indicates that an decorated class is a "capturer".
+ * todo : 移除掉本注解，不单独设置模型，统一到Plugin 中或者 归纳到COMPONENT
+ * @export 
+ * @param {string} [identifier] class name
+ * @returns {ClassDecorator}
+ */
+export function Capturer(identifier?: string): ClassDecorator {
+    return (target: any) => {
+        identifier = identifier || IOCContainer.getIdentifier(target);
+        IOCContainer.saveClass("CAPTURER", target, identifier);
+    };
+}
+
+
+/**
+ * Register error capture function
+ * @example @Catching("*")
+ * @example @Catching("Sequlize*")
+ * @param name  ErrorType for matching (support '*' match any char )
+ * @returns 
+ */
+export function Catching(name: string): MethodDecorator {
+    return (target, method: string, descriptor: PropertyDescriptor) => {
+        const targetType = IOCContainer.getType(target);
+        // if (targetType !== "CONTROLLER" && targetType !== "CAPTURER") {
+        //     throw new Exception("BOOTERR_DEPRO_UNSUITED", "Request decorator is only used in controllers class.");
+        // }
+        IOCContainer.savePropertyData(CAPTURER_KEY, name, target, method);
+    };
+}
 
 
 export class Captor {

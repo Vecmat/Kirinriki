@@ -19,6 +19,7 @@ interface ResInterface {
 }
 // callbackFunc function
 type callbackFunc = (fileName: string, xpath: string, target: any) => void;
+
 /**
  *
  * @param baseDir

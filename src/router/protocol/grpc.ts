@@ -8,7 +8,7 @@ import { RouterOptions } from "../option";
 import { Logger } from "../../base/Logger";
 import { IOCContainer } from "../../container";
 import { ListServices, LoadProto } from "../../proto";
-import { Handler, injectParam, injectRouter } from "../inject";
+import { Handler, buildParams, buildRouter } from "../builder";
 import { ServiceDefinition, UntypedHandleCall, UntypedServiceImplementation } from "@grpc/grpc-js";
 import { Kirinriki, IRouter, IRpcServerUnaryCall, IRpcServerCallback } from "../../core";
 
@@ -124,9 +124,9 @@ export class GrpcRouter implements IRouter {
             for (const n of list) {
                 const ctlClass = IOCContainer.getClass(n, "CONTROLLER");
                 // inject router
-                const ctlRouters = injectRouter(this.app, ctlClass);
+                const ctlRouters = buildRouter(this.app, ctlClass);
                 // inject param
-                const ctlParams = injectParam(this.app, ctlClass);
+                const ctlParams = buildParams(this.app, ctlClass);
 
                 for (const it in ctlRouters) {
                     const router = ctlRouters[it];

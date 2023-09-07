@@ -6,6 +6,7 @@
 import lodash from "lodash";
 import * as path from "path";
 import { LoadDir } from "./Loader";
+import { IPlugin } from "src/base";
 import { Kirinriki } from '../core';
 import { Captor  } from "./Capturer";
 import { checkClass } from "./widget";
@@ -13,13 +14,15 @@ import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "./config";
 import { MIXTURE_SCOPT } from "../router/mapping";
 import { BaseController } from "./BaseController";
-import { ISavant, IPlugin } from './Component';
-import { Logger, SetLogger, LoggerOption } from "./Logger";
+import { ISavant } from './Component';
+import { Logger, updateLogger, LoggerOption } from "./Logger";
 import { TraceSavant } from "../savant/TraceSavant";
 import { Exception, Check, ARROBJ } from "@vecmat/vendor";
 import { PayloadSavant } from "../savant/PayloadSavant";
 import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
 import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from './Constants';
+import { asyncEvent } from "./eve";
+
 
 
 /**
@@ -167,7 +170,7 @@ export class BootLoader {
                 opt.File.level = "info";
                 opt.output.delete("Console");
             }
-            SetLogger(app, opt);
+            updateLogger(opt);
         }
     }
 
@@ -183,7 +186,7 @@ export class BootLoader {
         const funcs = IOCContainer.getClassMetadata(TAGGED_CLS, APP_READY_HOOK, target);
         if (lodash.isArray(funcs)) {
             funcs.forEach((element: AppReadyHookFunc): any => {
-                app.once("appReady", () => element(app));
+                app.once("APP_BOOT_FINISH", () => element(app));
                 return null;
             });
         }
@@ -197,8 +200,10 @@ export class BootLoader {
      * @param {string[]} [loadPath]
      * @memberof BootLoader
      */
-    public static LoadConfigs(app: Kirinriki, loadPath?: string[]) {
+    public static LoadConfigs(app: Kirinriki, target: any) {
         const frameConfig: any = {};
+        let loadPath = BootLoader.GetConfigurationMetas(app, target);
+
         // Logger.Debug(`Load configuration path: ${app.krnrkPath}/config`);
         LoadDir(["./config"], app.krnrkPath, function (name: string, path: string, exp: any) {
             frameConfig[name] = exp;
@@ -237,9 +242,10 @@ export class BootLoader {
         // 获取函数并注入到Captor map
         // $ 是否可以加载全部错误拦截？
         // 获取所有class，然后解析所有的 CAPTURER_KEY 并注入
-        app.once("appReady", async () => {
+        app.once("APP_BOOT_FINISH", async () => {
             const allcls = IOCContainer.listClass();
             allcls.forEach((item: ComponentItem) => {
+                // 防止重复
                 if ((item.id ?? "").startsWith("CAPTURER")) return;
                 // 动态获取类型
                 const [, type, name] = item.id.match(/(\S+):(\S+)/);
@@ -273,9 +279,9 @@ export class BootLoader {
         // Mount application savant
         // const savant: any = {};
         const appSavant = IOCContainer.listClass("SAVANT") ?? [];
-
         appSavant.push({ id: "TraceSavant", target: TraceSavant });
         appSavant.push({ id: "PayloadSavant", target: PayloadSavant });
+
         appSavant.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("SAVANT:", "");
             if (item.id && Check.isClass(item.target)) {
@@ -295,6 +301,11 @@ export class BootLoader {
                 appSavantList.add(item);
             }
         });
+
+        // todo 全局事件 APP_before_USE_Savant
+        // 用于某些插件调整某些插件拦截中间件加载，重置中间件顺序
+        // todo 如何携带参数？
+        asyncEvent(app, "APP_before_USE_Savant", [appSavantList]);
 
         // ! ? 似乎没控制顺序？
         // Automatically call savant
@@ -351,7 +362,7 @@ export class BootLoader {
 
     /**
      * Load components
-     *
+     * ! todo Aspects 移除掉,改为注解注入
      * @static
      * @param {*} app
      * @memberof BootLoader
@@ -422,7 +433,10 @@ export class BootLoader {
      * @memberof BootLoader
      */
     public static async LoadPlugins(app: Kirinriki) {
-        const componentList = IOCContainer.listClass("COMPONENT");
+        const componentList = IOCContainer.listClass("PLUGIN");
+
+        // todo: refer tiejs for IPlugin add event parse
+        // todo: 改造成可以监听多重事件，并处理，植入一些函数等
 
         let pluginsConf = app.config(undefined, "plugin");
         if (Check.isEmpty(pluginsConf)) {
@@ -431,7 +445,7 @@ export class BootLoader {
 
         const pluginList = [];
         componentList.forEach(async (item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("COMPONENT:", "");
+            item.id = (item.id ?? "").replace("PLUGIN:", "");
             if (item.id && item.id.endsWith("Plugin") && Check.isClass(item.target)) {
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
@@ -440,19 +454,24 @@ export class BootLoader {
         });
 
         const pluginConfList = pluginsConf.list;
+
         for (const key of pluginConfList) {
-            const handle: IPlugin = IOCContainer.get(key, "COMPONENT");
-            if (!lodash.isFunction(handle.run)) {
-                Logger.Error(`plugin ${key} must be implements method 'run'.`);
-                continue;
-            }
-            if (pluginsConf.config[key] === false) {
-                Logger.Warn(`Plugin ${key} already loaded but not effective.`);
-                continue;
-            }
+            const handle: IPlugin = IOCContainer.get(key, "PLUGIN");
+            console.log(handle);
+            // if (!lodash.isFunction(handle.run)) {
+            //     Logger.Error(`plugin ${key} must be implements method 'run'.`);
+            //     continue;
+            // }
+            // if (pluginsConf.config[key] === false) {
+            //     Logger.Warn(`Plugin ${key} already loaded but not effective.`);
+            //     continue;
+            // }
 
             // sync exec
-            await handle.run(pluginsConf.config[key] ?? {}, app);
+            // await handle.run(pluginsConf.config[key] ?? {}, app);
         }
+
+        // todo 绑定app事件监听，并逐个下发事件
+        // 顺序按照加载顺序？
     }
 }
