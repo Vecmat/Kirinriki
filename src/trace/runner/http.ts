@@ -73,21 +73,17 @@ export async function httpRunner(ctx: IContext, next: Function, ext?: any): Prom
         // if (ctx.status >= 400) {
         //     throw new Exception('KRNRK_SERVER_ERROR', "Server error");
         // }
-        // todo 应该放入 runner 的 finally处理中
         if (typeof ctx.body === "string") {
             return null;
         }
-         if (ctx.body instanceof Stream) {
-             return null;
-         }
+        if (ctx.body instanceof Stream) {
+            return null;
+        }
         const body = {
             sign: "SUCCESS",
             message: "请求处理正常",
             data: ctx.body || {}
         };
-        // `{"":${},"message":"${}","":${}}`;
-        // ctx.set("Content-Length", `${Buffer.byteLength(JSON.stringify(body))}`);
-    
         ctx.body = body;
         return null;
     } catch (err: any) {

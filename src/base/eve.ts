@@ -7,7 +7,7 @@ import EventEmitter from "events";
  * @param {Kirinriki} eve
  * @param {string} eventName
  */
-export const asyncEvent = async function (eve: EventEmitter, eventName: string ,args?:any[]) {
+export const asyncEvent = async function (eve: EventEmitter, eventName: string ,args:any[]=[]) {
     const list: any[] = eve.listeners(eventName);
     for await (const func of list) {
         if (lodash.isFunction(func)) {

@@ -6,7 +6,6 @@
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
 import lodash from "lodash";
-import { injectAOP } from "./AOP";
 import { injectValues } from "./Values";
 import { Kirinriki } from "../core";
 import { Check } from "@vecmat/vendor";
@@ -122,12 +121,10 @@ export class Container implements IContainer {
                 enumerable: false
             });
 
-            // inject autowired
-            injectAutowired(target, target.prototype, this);
             // inject properties values
             injectValues(target, target.prototype, this);
-            // inject AOP
-            injectAOP(target, target.prototype, this);
+            // inject autowired 
+            injectAutowired(target, target.prototype, this);
 
             const ref = this.getClass(identifier, options.type);
             if (!ref) {
@@ -205,8 +202,6 @@ export class Container implements IContainer {
         // get instance from the Container
         const instance: any = this.instanceMap.get(target);
         // require Prototype instance
-        debugger;
-        // Controler 默认不再保存ctx，所以也用单例
         if (args.length > 0) {
             // instantiation
             return Reflect.construct(<Function>(<unknown>target), args);

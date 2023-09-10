@@ -68,49 +68,24 @@ export function getParamNames(func: { toString: () => { replace: (arg0: RegExp, 
  */
 export function checkClass(fileName: string, xpath: string, target: any, exSet?: Set<unknown>) {
     if (!exSet) return;
-    // *  同一类型下不要有相同类名就可以了
+
     let calssname = "";
-    if(target.__esModule && target.name === undefined ){
+    if (target.__esModule && target.name === undefined) {
         const keys = Object.keys(target);
-        if(Check.isClass(target[keys[0]])){
-            calssname  = keys[0];
+        if (Check.isClass(target[keys[0]])) {
+            calssname = keys[0];
         }
     }
     calssname = calssname || target.name || fileName;
-    if(!calssname){
-        throw new Exception("BOOTERR_LOADER_CHECK",`The file(${xpath}) export error name.`);
+    if (!calssname) {
+        throw new Exception("BOOTERR_LOADER_CHECK", `The file(${xpath}) export error name.`);
     }
 
-    if (exSet.has(calssname))
-        throw new Exception("BOOTERR_LOADER_CHECK",`A same class (${calssname}) already exists. at \`${xpath}\`.`);
+    // *  同一类型下不要有相同类名就可以了
+    // 暂时无法不能判断类别
+    // if (exSet.has(calssname)){
+    //     throw new Exception("BOOTERR_LOADER_CHECK",`A same class (${calssname}) already exists. at \`${xpath}\`.`);
+    // }
     exSet.add(calssname);
 }
 
-/**
- * Format api interface data format
- *
- * @private
- * @param {Error | string | ApiInput} msg   待处理的接口数据信息｜接口msg
- * @param {*} data    待返回的数据
- * @param {number} defaultCode   默认错误码
- * @returns {ApiOutput}   格式化之后的接口数据
- * @memberof BaseController
- */
-export function formatApiData(msg: any, data: any, defaultCode: number): ApiOutput {
-    let obj: ApiOutput = {
-        code: defaultCode,
-        message: "",
-        data: null,
-    };
-    if (lodash.isError(msg)) {
-        const { code, message, } = <any>msg;
-        obj.code = code || defaultCode;
-        obj.message = message;
-    } else if (lodash.isObject(msg)) {
-        obj = { ...obj, ...msg, };
-    } else {
-        obj.message = msg;
-        obj.data = data;
-    }
-    return obj;
-}

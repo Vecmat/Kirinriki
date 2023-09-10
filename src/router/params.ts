@@ -3,138 +3,146 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-
 import lodash from "lodash";
+import { IContext } from "../core";
+import { InjectParams } from "./inject";
 import { Exception } from "@vecmat/vendor";
-import { ParamMetadata } from "./builder";
-import { IOCContainer } from "../container";
-import { Kirinriki, IContext } from "../core";
-
-import {
-    ClassValidator,
-    FunctionValidator,
-    convertParamsType,
-    plainToClass,
-    ValidRules,
-    ValidOtpions,
-    checkParamsType
-} from "../validation";
+import { paramterTypes } from "../validation"; 
+import { IOCContainer, TAGGED_PARAM } from "../container";
 
 /**
- * Parameter binding assignment.
- *
- * @param {Kirinriki} app
- * @param {IContext} ctx
- * @param {any[]} params
- * @returns
- */
-export async function getParamter(app: Kirinriki, ctx: IContext, params?: ParamMetadata[]) {
-    // todo 参考这个，实现为插件，将函数注入到容器中处理
-    
-    //convert type
-    params = params || <ParamMetadata[]>[];
-    const props: any[] = params.map(async (v: ParamMetadata, k: number) => {
-        let value: any = null;
-        if (v.fn && lodash.isFunction(v.fn)) {
-            value = await v.fn(ctx);
-        }
-
-        // check params
-        return checkParams(app, value, {
-            index: k,
-            isDto: v.isDto,
-            type: v.type,
-            validRule: v.rule,
-            validOpt: v.options,
-            dtoCheck: v.dtoCheck,
-            dtoRule: v.dtoRule,
-            clazz: v.clazz
-        });
-    });
-    return Promise.all(props);
-}
-
-/**
- *
- *
- * @interface ParamOptions
- */
-interface ParamOptions {
-    index: number;
-    isDto: boolean;
-    type: string;
-    validRule: Function | ValidRules | ValidRules[];
-    validOpt: ValidOtpions;
-    dtoCheck: boolean;
-    dtoRule: any;
-    clazz: any;
-}
-
-/**
- * Parameter binding assignment and rule verification.
- * If the input parameter type is inconsistent with the calibration,
- * it will cause the parameter type conversion
- *
- * @param {Kirinriki} app
- * @param {*} value
- * @param {ParamOptions} opt
- * @returns {*}
- */
-async function checkParams(app: Kirinriki, value: any, opt: ParamOptions) {
-    try {
-        //@Validated
-        if (opt.isDto) {
-            // DTO class
-            if (!opt.clazz) {
-                opt.clazz = IOCContainer.getClass(opt.type, "COMPONENT");
-            }
-            if (opt.dtoCheck) {
-                value = await ClassValidator.valid(opt.clazz, value, false);
-            } else {
-                value = plainToClass(opt.clazz, value, false);
-            }
-        } else {
-            // querystring must be convert type
-            value = convertParamsType(value, opt.type);
-            //@Valid()
-            if (opt.validRule) {
-                validatorFuncs(`${opt.index}`, value, opt.type, opt.validRule, opt.validOpt);
-            }
-        }
-        return value;
-    } catch (err) {
-        throw new Exception("APIMID_PARAMS_INVALID", err.message || `ValidatorError: invalid arguments.`);
-    }
-}
-
-/**
- * Validated by funcs.
+ * Get context.
  *
  * @export
- * @param {string} name
- * @param {*} value
- * @param {string} type
- * @param {(ValidRules | ValidRules[] | Function)} rule
- * @param {ValidOtpions} [options]
- * @param {boolean} [checkType=true]
+ * @param {string} [name]
  * @returns
  */
-function validatorFuncs(name: string, value: any, type: string, rule: ValidRules | ValidRules[] | Function, options?: ValidOtpions) {
-    if (rule instanceof Function) {
-        // Function no return value
-        rule(value);
-    } else {
-        const funcs: any[] = [];
-        if (lodash.isString(rule)) {
-            funcs.push(rule);
-        } else if (lodash.isArray(rule)) {
-            funcs.push(...(<any[]>rule));
-        }
-        for (const func of funcs) {
-            if (Object.hasOwnProperty.call(FunctionValidator, func)) {
-                // FunctionValidator just throws error, no return value
-                FunctionValidator[<ValidRules>func](value, options);
-            }
-        }
-    }
+export function Ctx(): ParameterDecorator {
+    return InjectParams("Ctx", (ctx: IContext) => {
+        return ctx;
+    });
 }
+
+
+/**
+ * Get mixture for ctx.
+ * @export
+ * @param {string} [name]
+ * @returns
+ */
+export function Mix(name: string): ParameterDecorator {
+    return InjectParams("Mix", (ctx: IContext) => {
+        return ctx.getMixture(name);
+    });
+}
+
+
+/**
+ * Get request header.
+ *
+ * @export
+ * @param {string} [name]
+ * @returns
+ */
+export function Header(name?: string): ParameterDecorator {
+    return InjectParams("Header", (ctx: IContext) => {
+        if (name !== undefined) {
+            return ctx.get(name);
+        }
+        return ctx.headers;
+    });
+}
+
+/**
+ * Get path variable (take value from ctx.params).
+ *
+ * @export
+ * @param {string} [name] params name
+ * @returns
+ */
+export function Path(name?: string): ParameterDecorator {
+    return InjectParams("Path", (ctx: IContext) => {
+        const pathParams: any = ctx.params ?? {};
+        if (name === undefined) {
+            return pathParams;
+        }
+        return pathParams[name];
+    });
+}
+
+/**
+ * Get query-string parameters (take value from ctx.query).
+ *
+ * @export
+ * @param {string} [name]
+ * @returns
+ */
+export function Query(name?: string): ParameterDecorator {
+    return InjectParams("Query", (ctx: IContext) => {
+        const queryParams: any = ctx.query ?? {};
+        if (name === undefined) {
+            return queryParams;
+        }
+        return queryParams[name];
+    });
+}
+
+/**
+ * Get parsed upload file object.
+ *
+ * @export
+ * @param {string} [name]
+ * @returns
+ */
+export function File(name?: string): ParameterDecorator {
+    return InjectParams("File", (ctx: IContext) => {
+        return ctx.bodyParser().then((body: { file: Object }) => {
+            const params: any = body.file ?? {};
+            if (name === undefined) {
+                return params;
+            }
+            return params[name];
+        });
+    });
+}
+
+/**
+ * Get parsed POST/PUT... body.
+ *
+ * @export
+ * @param {string} [name]
+ * @returns
+ */
+export function Body(name?: string): ParameterDecorator {
+    return InjectParams("Body", (ctx: IContext) => {
+        return ctx.bodyParser().then((body: { post: Object }) => {
+            const params: any = body.post ? body.post : body;
+            if (name === undefined) {
+                return params;
+            }
+            return params[name];
+        });
+    });
+}
+
+
+/**
+ * Get POST/GET parameters, POST priority
+ *
+ * @export
+ * @param {string} [name]
+ * @returns {ParameterDecorator}
+ */
+export function Param(name?: string): ParameterDecorator {
+    return InjectParams("Param", (ctx: IContext) => {
+        return ctx.bodyParser().then((body: { post: Object }) => {
+            const queryParams: any = ctx.queryParser() ?? {};
+            const postParams: any = (body.post ? body.post : body) ?? {};
+            if (name !== undefined) {
+                return postParams[name] === undefined ? queryParams[name] : postParams[name];
+            }
+            return { ...queryParams, ...postParams };
+        });
+    });
+}
+

@@ -6,79 +6,11 @@
 // tslint:disable-next-line: no-import-side-effect
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
-import { Exception } from "@vecmat/vendor";
+import { InjectRouter } from "./inject";
 import { IOCContainer } from '../container';
+import { RequestMethod } from "./define";
+import { Exception } from "@vecmat/vendor";
 
-export const ROUTER_KEY = Symbol("ROUTER_KEY"); 
-export const MIXTURE_SCOPT = Symbol("MIXTURE_SCOPT"); 
-export const CONTROLLER_ROUTER = Symbol("CONTROLLER_ROUTER"); 
-
-
-
-/**
- * Kirinriki router options
- *
- * @export
- * @interface RouterOption
- */
-export interface RouterOption {
-    path?: string
-    requestMethod: string
-    routerName?: string
-    method: string
-}
-
-/**
- * http request methods
- *
- * @export
- * @var RequestMethod
- */
-export enum RequestMethod {
-    "GET" = "get",
-    "POST" = "post",
-    "PUT" = "put",
-    "DELETE" = "delete",
-    "PATCH" = "patch",
-    "ALL" = "all",
-    "OPTIONS" = "options",
-    "HEAD" = "head"
-}
-
-/**
- * Routes HTTP requests to the specified path.
- *
- * @param {string} [path="/"]
- * @param {RequestMethod} [reqMethod=RequestMethod.GET]
- * @param {{
- *         routerName?: string;
- *     }} [routerOptions={}]
- * @returns {*}  {MethodDecorator}
- */
-export const Request = (
-    path = "/",
-    reqMethod: RequestMethod = RequestMethod.GET,
-    routerOptions: {
-        routerName?: string
-    } = {}
-): MethodDecorator => {
-    const routerName = routerOptions.routerName ?? "";
-    return (target, key: string, descriptor: PropertyDescriptor) => {
-        const targetType = IOCContainer.getType(target);
-        if (targetType !== "CONTROLLER") {
-            throw  new Exception("BOOTERR_DEPRO_UNSUITED","Request decorator is only used in controllers class.");
-        }
-        // tslint:disable-next-line: no-object-literal-type-assertion
-        IOCContainer.attachPropertyData(ROUTER_KEY, {
-            path,
-            requestMethod: reqMethod,
-            routerName,
-            method: key
-        } as RouterOption, target, key);
-
-        return descriptor;
-    };
-};
 
 /**
  * Routes HTTP POST requests to the specified path.
@@ -95,7 +27,7 @@ export const Post = (
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return Request(path, RequestMethod.POST, routerOptions);
+    return InjectRouter(path, RequestMethod.POST, routerOptions);
 };
 
 /**
@@ -113,7 +45,7 @@ export const Get = (
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return Request(path, RequestMethod.GET, routerOptions);
+    return InjectRouter(path, RequestMethod.GET, routerOptions);
 };
 
 /**
@@ -131,7 +63,7 @@ export const Delete = (
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return Request(path, RequestMethod.DELETE, routerOptions);
+    return InjectRouter(path, RequestMethod.DELETE, routerOptions);
 };
 
 /**
@@ -149,7 +81,7 @@ export const Put = (
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return Request(path, RequestMethod.PUT, routerOptions);
+    return InjectRouter(path, RequestMethod.PUT, routerOptions);
 };
 
 /**
@@ -167,7 +99,7 @@ export const Patch = (
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return Request(path, RequestMethod.PATCH, routerOptions);
+    return InjectRouter(path, RequestMethod.PATCH, routerOptions);
 };
 
 /**
@@ -185,7 +117,7 @@ export const Options = (
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return Request(path, RequestMethod.OPTIONS, routerOptions);
+    return InjectRouter(path, RequestMethod.OPTIONS, routerOptions);
 };
 
 /**
@@ -203,7 +135,7 @@ export const Head = (
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return Request(path, RequestMethod.HEAD, routerOptions);
+    return InjectRouter(path, RequestMethod.HEAD, routerOptions);
 };
 
 export const All = (
@@ -212,10 +144,17 @@ export const All = (
         routerName?: string
     } = {}
 ): MethodDecorator => {
-    return Request(path, RequestMethod.ALL, routerOptions);
+    return InjectRouter(path, RequestMethod.ALL, routerOptions);
 };
 
-// todo User table list routers
+
+// export const WS ={}
+// export const GRPC ={}
+
+
+
+// 移到其他地方？
+// todo User table list routers description
 export const Description = (
     name:string
 ): MethodDecorator => {

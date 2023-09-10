@@ -22,8 +22,8 @@ export  class BaseController implements IController {
      * @param {IContext} ctx
      * @memberof BaseController
      */
-    protected constructor( ...arg: any[]) {
-        this.init(arg);
+    protected constructor(...arg: any[]) {
+        this.init(...arg);
     }
 
     /**
@@ -33,6 +33,8 @@ export  class BaseController implements IController {
      * @memberof BaseController
      */
     protected init(...arg: any[]): void {}
+
+
 
 
 }

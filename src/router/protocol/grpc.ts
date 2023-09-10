@@ -4,11 +4,11 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import { Check } from "@vecmat/vendor";
-import { RouterOptions } from "../option";
+import { RouterOptions } from "../define";
 import { Logger } from "../../base/Logger";
 import { IOCContainer } from "../../container";
 import { ListServices, LoadProto } from "../../proto";
-import { Handler, buildParams, buildRouter } from "../builder";
+import { buildHandler, buildParams, buildRouter } from "../builder";
 import { ServiceDefinition, UntypedHandleCall, UntypedServiceImplementation } from "@grpc/grpc-js";
 import { Kirinriki, IRouter, IRpcServerUnaryCall, IRpcServerCallback } from "../../core";
 
@@ -159,8 +159,7 @@ export class GrpcRouter implements IRouter {
                         Logger.Debug(`[GPRC]: "${path}" => ${ctlItem.name}.${ctlItem.method}`);
                         impl[handler.name] = (call: IRpcServerUnaryCall<any, any>, callback: IRpcServerCallback<any>) => {
                             return this.app.callback("grpc", ctx => {
-                                const ctl = IOCContainer.getInsByClass(ctlItem.ctl, [ctx]);
-                                return Handler(this.app, ctx, ctl, ctlItem.method, ctlItem.params);
+                                return buildHandler(this.app, ctx, ctlItem.ctl, ctlItem.method, ctlItem.params);
                             })(call, callback);
                         };
                     }

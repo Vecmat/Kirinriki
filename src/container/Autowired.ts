@@ -64,17 +64,7 @@ export function Autowired(identifier?: string, type?: ComponentType, constructAr
         }, target, propertyKey);
     };
 }
-/**
- * Marks a constructor method as to be Inject by Kirinriki"s dependency injection facilities.
- * alias for AutoWired
- * @export
- * @param {string} [identifier]
- * @param {ComponentType} [type]
- * @param {any[]} [constructArgs]
- * @param {boolean} [isDelay=false]
- * @returns {PropertyDecorator}
- */
-export const Inject = Autowired;
+
 
 /**
  * inject autowired class

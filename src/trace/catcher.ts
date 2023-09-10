@@ -19,28 +19,26 @@ import { gRPCCatcher } from "./catcher/grpc";
  * @param {(Exception)} err
  */
 export async function catcher(err: Error , ctx: IContext) {
-    // todo 整合async-hook
     let skip = false;
     let sign = "COMMON_ERROR";
-    let exce: Exception;
+    let excep: Exception;
     // 有些错误类为复制name属性
     if (err instanceof Error) {
         if (err instanceof Exception) {
-            exce = err;
+            excep = err;
             sign = err.sign;
         } else {
             sign = err.name == "Error" ? err.constructor.name : err.name;
-            exce = new Exception(sign, err.message);
+            excep = new Exception(sign, err.message);
         }
     } else {
-        // todo 需要调试 （非错误类型）
         sign = "UNKNOW_ERROR";
-        exce = new Exception("UNKNOW_ERROR", "" + err);
+        excep = new Exception("UNKNOW_ERROR", "" + err);
     }
     // 多个函数处理,可控制跳过后续处理
     const handls = Captor.match(sign);
     for (const hand of handls) {
-        skip = await hand(exce, ctx);
+        skip = await hand(excep, ctx);
         if (skip) {
             break;
         }
@@ -51,11 +49,11 @@ export async function catcher(err: Error , ctx: IContext) {
     // 更改为返回数据即可
     switch (ctx.protocol) {
         case "grpc":
-            return gRPCCatcher(ctx, exce);
+            return gRPCCatcher(ctx, excep);
         case "ws":
         case "wss":
-            return WSCatcher(ctx, exce);
+            return WSCatcher(ctx, excep);
         default:
-            return HTTPCatcher(ctx, exce);
+            return HTTPCatcher(ctx, excep);
     }
 }

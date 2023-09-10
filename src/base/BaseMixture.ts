@@ -32,7 +32,6 @@ export abstract class BaseMixture implements IMixture {
 
     /**
      * init
-     * todo 改成虚函数？
      * @protected
      * @memberof BaseMixture
      */

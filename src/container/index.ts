@@ -8,4 +8,3 @@ export * from "./Container";
 export * from "./IContainer";
 export * from "./Util";
 export { Autowired } from "./Autowired";
-export { AOPType, IAspect, Aspect, Before, BeforeAll, After, AfterAll } from "./AOP";

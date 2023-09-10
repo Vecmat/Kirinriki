@@ -5,17 +5,21 @@
  */
 
 import lodash from "lodash";
-import { getParamter } from "./params";
+import { getParamter } from "./widget";
 import { Logger } from "../base/Logger";
+import { Exception } from "@vecmat/vendor";
 import { Kirinriki, IContext } from "../core";
-import { CONTROLLER_ROUTER, ROUTER_KEY } from "./mapping";
+import { ASPECT_BEFORE, ASPECT_BEHIND, CONTROLLER_ROUTER, ParamMetadata, ParamMetadataObject, ROUTER_KEY, RouterMetadataObject, SAVANT_KEY } from "./define";
 import { getOriginMetadata, IOCContainer, RecursiveGetMetadata, TAGGED_PARAM } from "../container";
 import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY, ValidOtpions, ValidRules } from "../validation";
-import { Exception } from "@vecmat/vendor";
+
+
+
+
+
 
 /**
  * controller handler
- *
  * @param {Kirinriki} app
  * @param {IContext} ctx
  * @param {*} ctl
@@ -23,48 +27,49 @@ import { Exception } from "@vecmat/vendor";
  * @param {*} ctlParams
  * @returns
  */
-export async function Handler(app: Kirinriki, ctx: IContext, ctl: any, method: string, ctlParams: any) {
-    if ( !ctl) {
+export async function buildHandler(app: Kirinriki, ctx: IContext, ctlClass: any, method: string, ctlParams: any) {
+    const ctl = IOCContainer.getInsByClass(ctlClass);
+
+    if (!ctl) {
         throw new Exception("SYSTEM_CTL_ABSENT", "Controller not found.");
     }
-    if(!ctx ){
+    if (!ctx) {
         throw new Exception("SYSTEM_CTX_ABSENT", "Context not found.");
     }
 
-    // todo 转为 获取参数方式 
-    // inject param 
+    // call ctl.__before()
+    if (ctl.__before && lodash.isFunction(ctl.__before)) {
+        await ctl.__before(ctx);
+    }
+
+    // Aspect（before）
+    const beforeAspects = IOCContainer.getPropertyData(ASPECT_BEFORE, ctlClass, method) || [];
+    for await (const { name, exec } of beforeAspects) {
+        await exec(ctx);
+    }
+
+    // fetch param
     let args = [];
     if (ctlParams) {
         args = await getParamter(app, ctx, ctlParams);
     }
-    // method 
-    // todo: 遍历处理 中间件、插件等
 
-    // 调用函数
     const res = await ctl[method](...args);
+
+    // call ctl.__behind()
+    if (ctl.__behind && lodash.isFunction(ctl.__behind)) {
+        await ctl.__behind(ctx);
+    }
+
+    // Aspect（behind）
+    const behindAspects = IOCContainer.getPropertyData(ASPECT_BEHIND, ctlClass, method) || [];
+    for await (const { name, exec } of behindAspects) {
+        await exec(ctx);
+    }
+
     ctx.body = ctx.body || res;
 }
 
-/**
- *
- *
- * @interface RouterMetadata
- */
-interface RouterMetadata {
-    method: string;
-    path: string;
-    requestMethod: string;
-    routerName: string;
-}
-
-/**
- *
- *
- * @interface RouterMetadataObject
- */
-interface RouterMetadataObject {
-    [key: string]: RouterMetadata;
-}
 
 /**
  *
@@ -102,32 +107,6 @@ export function buildRouter(app: Kirinriki, target: any, instance?: any): Router
     return router;
 }
 
-/**
- *
- *
- * @interface ParamMetadata
- */
-export interface ParamMetadata {
-    fn: any;
-    name: string;
-    index: number;
-    clazz: any;
-    type: string;
-    isDto: boolean;
-    rule: Function | ValidRules | ValidRules[];
-    options: ValidOtpions;
-    dtoCheck: boolean;
-    dtoRule: any;
-}
-
-/**
- *
- *
- * @interface ParamMetadataObject
- */
-export interface ParamMetadataObject {
-    [key: string]: ParamMetadata[];
-}
 
 /**
  *

@@ -4,15 +4,14 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import KoaRouter from "@koa/router";
-import { Check } from "@vecmat/vendor";
-import { RouterOptions } from "../option";
-import { Logger } from "../../base/Logger";
-import { RequestMethod } from "../mapping";
-import { IOCContainer } from "../../container";
-import { Handler, buildParams, buildRouter } from "../builder";
-import { Kirinriki, IContext, INext, IRouter } from "../../core";
 import { ISavant } from "../../base";
-import { DefaultContext, DefaultState } from "koa";
+import { Check } from "@vecmat/vendor";
+import { Logger } from "../../base/Logger";
+import { IOCContainer } from "../../container";
+import { DefaultContext, DefaultState, Middleware } from "koa";
+import { RequestMethod, RouterOptions, SAVANT_KEY } from "../define";
+import { Kirinriki, IContext, INext, IRouter } from "../../core";
+import { buildHandler, buildParams, buildRouter } from "../builder";
 
 // HttpImplementation
 export type HttpImplementation = (ctx: IContext, next: INext) => Promise<any>;
@@ -49,6 +48,10 @@ export class HttpRouter implements IRouter {
         this.router[method](path, func);
     }
 
+    useSavant(path: string, ...func: Middleware[]) {
+        this.router.use(path, ...func);
+    }
+
     /**
      * ListRouter
      *
@@ -78,13 +81,20 @@ export class HttpRouter implements IRouter {
                     const path = router.path;
                     const requestMethod = <RequestMethod>router.requestMethod;
                     const params = ctlParams[method];
+                    // todo record into mapdata for show table
                     Logger.Debug(`[HTTP/${requestMethod}]: "${path}" => ${n}.${method}`);
+
+                    // ！！
+                    // todo ws 协议暂不支持
+                    const beforeAspects: Middleware[] = IOCContainer.getPropertyData(SAVANT_KEY, ctlClass, method);
+
+                    if (beforeAspects && beforeAspects.length) {
+                        this.useSavant(path, ...beforeAspects);
+                    }
                     this.SetRouter(
                         path,
                         (ctx: IContext): Promise<any> => {
-                            const ctl = IOCContainer.getInsByClass(ctlClass, [ctx]);
-                            // todo : 获取Aspect 
-                            return Handler(this.app, ctx, ctl, method, params);
+                            return buildHandler(this.app, ctx, ctlClass, method, params);
                         },
                         requestMethod
                     );

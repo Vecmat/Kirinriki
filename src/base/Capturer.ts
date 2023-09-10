@@ -24,7 +24,7 @@ export class BaseCapturer {
 
 /**
  * Indicates that an decorated class is a "capturer".
- * todo : 移除掉本注解，不单独设置模型，统一到Plugin 中或者 归纳到COMPONENT
+ * todo : 移除掉本注解，不单独设置模型，统一到Plugin 中或者 归纳到 COMPONENT
  * @export 
  * @param {string} [identifier] class name
  * @returns {ClassDecorator}

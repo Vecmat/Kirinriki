@@ -337,7 +337,6 @@ export type AppReadyHookFunc = (app: Kirinriki) => Promise<any>
  * export function TestDecorator(): ClassDecorator {
  *  return (target: any) => {
  *   BindAppReadyHook((app: Kirinriki) => {
- *      // todo
  *      return Promise.resolve();
  *   }, target)   
  *  }

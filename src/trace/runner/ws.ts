@@ -72,7 +72,6 @@ export async function wsRunner(ctx: IContext, next: Function, ext?: any): Promis
         //     throw new Exception('KRNRK_SERVER_ERROR', "Server error");
         // }
         // 发送数据应该交给
-        //  todo ws 不是很适合使用 control 的模式，考虑混合拆分到 socket
         // ws 需要 nsp 等处理 可能仅仅做基础兼容
         // 参考 socket-controllers 实现
         ctx.websocket.send(inspect(ctx.body || ""), null);

@@ -28,7 +28,7 @@ export function gRPCCatcher(ctx: IContext, err: Exception): Promise<any> {
         const body = ctx.body || GrpcStatusCodeMap.get(code) || null;
 
         if (typeof body == "string") errObj = new StatusBuilder().withCode(code).withDetails(body).build();
-        //todo 将错误信息返回
+        
         else errObj = new StatusBuilder().withCode(code).build();
 
         ctx.rpc.callback(errObj, null);

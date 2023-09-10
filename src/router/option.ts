@@ -1,46 +1,14 @@
-import { ARROBJ } from "@vecmat/vendor";
-import { GrpcRouter } from "./protocol/grpc";
-import { HttpRouter } from "./protocol/http";
+import { RouterOptions } from "./define";
 import { Kirinriki, IRouter } from "../core";
+import { HttpRouter } from "./protocol/http";
+import { GrpcRouter } from "./protocol/grpc";
 import { WebsocketRouter } from "./protocol/ws";
+import { ARROBJ, Exception } from "@vecmat/vendor";
+
+
 
 /**
- * RouterOptions
- *
- * @export
- * @interface RouterOptions
- */
-export interface RouterOptions {
-    prefix: string
-    /**
-     * Methods which should be supported by the router.
-     */
-    methods?: string[]
-    routerPath?: string
-    /**
-     * Whether or not routing should be case-sensitive.
-     */
-    sensitive?: boolean
-    /**
-     * Whether or not routes should matched strictly.
-     *
-     * If strict matching is enabled, the trailing slash is taken into
-     * account when matching routes.
-     */
-    strict?: boolean
-    /**
-     * gRPC protocol file
-     */
-    protoFile?: string
-    // 
-    /**
-     * Other extended configuration
-     */
-    ext?: any
-}
-
-/**
- * get instance of Router
+ * Get instance of Router
  *
  * @export
  * @param {Kirinriki} app
@@ -64,3 +32,4 @@ export function NewRouter(app: Kirinriki, options: RouterOptions, protocol?: str
     ARROBJ.defineProp(router, "protocol", protocol);
     return router;
 }
+

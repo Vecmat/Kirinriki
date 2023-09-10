@@ -5,13 +5,13 @@
  */
 import KoaRouter from "@koa/router";
 import { Check } from "@vecmat/vendor";
-import { RouterOptions } from "../option";
-import { RequestMethod } from "../mapping";
+import { RouterOptions } from "../define";
+import { RequestMethod } from "../define";
 import { Logger } from "../../base/Logger";
 import { IOCContainer } from "../../container";
-import { Handler, buildParams, buildRouter } from "../builder";
-import { Kirinriki, IContext, INext, IRouter } from "../../core";
 import { DefaultContext, DefaultState } from "koa";
+import { buildHandler, buildParams, buildRouter } from "../builder";
+import { Kirinriki, IContext, INext, IRouter } from "../../core";
 
 
 /**
@@ -70,7 +70,7 @@ export class WebsocketRouter implements IRouter {
     }
 
     /**
-     * todo ws 不是很适合使用 control 的模式，考虑混合拆分到 socket 
+     * 
      *
      * @param {any[]} list
      */
@@ -95,8 +95,7 @@ export class WebsocketRouter implements IRouter {
                         this.SetRouter(
                             path,
                             (ctx: IContext): Promise<any> => {
-                                const ctl = IOCContainer.getInsByClass(ctlClass, [ctx]);
-                                return Handler(this.app, ctx, ctl, method, params);
+                                return buildHandler(this.app, ctx, ctlClass, method, params);
                             },
                             requestMethod
                         );

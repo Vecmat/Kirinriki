@@ -51,10 +51,12 @@ export function Component(identifier?: string): ClassDecorator {
  * Interface for Controller
  */
 export interface IController {
-    readonly app: Kirinriki
-    __befor?: () => Promise<any>
-    __after?: () => Promise<any>
+    readonly app: Kirinriki;
+
+    __before?: (ctx: IContext) => Promise<any>;
+    __behind?: (ctx: IContext) => Promise<any>;
 }
+
 
 /**
  * Indicates that an decorated class is a "controller".
@@ -83,7 +85,7 @@ export interface ISavant {
 
 /**
  * Indicates that an decorated class is a "savant".
- *
+ * 
  * @export
  * @param {string} [identifier] class name
  * @returns {ClassDecorator}
@@ -98,11 +100,11 @@ export function Savant(identifier?: string): ClassDecorator {
 
 /**
  * Interface for Mixture
+ * 
  */
 export interface IMixture {
     readonly app: Kirinriki;
 }
-
 
 /**
  * Indicates that an decorated class is a "acton".

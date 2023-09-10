@@ -6,13 +6,12 @@
 import lodash from "lodash";
 import * as path from "path";
 import { LoadDir } from "./Loader";
-import { IPlugin } from "src/base";
 import { Kirinriki } from '../core';
 import { Captor  } from "./Capturer";
 import { checkClass } from "./widget";
 import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "./config";
-import { MIXTURE_SCOPT } from "../router/mapping";
+import { MIXTURE_SCOPT } from "../router/define";
 import { BaseController } from "./BaseController";
 import { ISavant } from './Component';
 import { Logger, updateLogger, LoggerOption } from "./Logger";
@@ -22,6 +21,7 @@ import { PayloadSavant } from "../savant/PayloadSavant";
 import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
 import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from './Constants';
 import { asyncEvent } from "./eve";
+import { IPlugin } from "./Plugin";
 
 
 
@@ -291,9 +291,7 @@ export class BootLoader {
 
         const savantConfList = savantConf.list;
 
-        // todo ？如何加载 @vecmat/svant
-        //de-duplication
-        // ! 必须排在最前面
+        // TraceSavant must be at the top
         const defaultList = ["TraceSavant", "PayloadSavant"];
         const appSavantList = new Set(defaultList);
         savantConfList.forEach((item: string) => {
@@ -302,12 +300,8 @@ export class BootLoader {
             }
         });
 
-        // todo 全局事件 APP_before_USE_Savant
-        // 用于某些插件调整某些插件拦截中间件加载，重置中间件顺序
-        // todo 如何携带参数？
-        asyncEvent(app, "APP_before_USE_Savant", [appSavantList]);
+        asyncEvent(app, "LOAD_APP_SAVANT_BEFORE", [appSavantList]);
 
-        // ! ? 似乎没控制顺序？
         // Automatically call savant
         for (const key of appSavantList) {
             const handle: ISavant = IOCContainer.get(key, "SAVANT");
@@ -362,7 +356,7 @@ export class BootLoader {
 
     /**
      * Load components
-     * ! todo Aspects 移除掉,改为注解注入
+     * 
      * @static
      * @param {*} app
      * @memberof BootLoader

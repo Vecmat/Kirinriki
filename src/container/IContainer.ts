@@ -9,6 +9,12 @@ export type ComponentType = "COMPONENT" | "CAPTURER" | "CONTROLLER" | "MIXTURE" 
 // used to store class properties aop
 export const TAGGED_AOP = 'TAGGED_AOP';
 
+
+export const TAGGED_ASPECT = "TAGGED_ASPECT";
+
+export const TAGGED_SAVENT = "TAGGED_SAVENT";
+
+
 // used to store class properties args (value)
 export const TAGGED_ARGS = 'TAGGED_ARGS';
 
@@ -18,11 +24,13 @@ export const TAGGED_CLS = 'TAGGED_CLS';
 // used to store class properties tags (autowired)
 export const TAGGED_PROP = 'TAGGED_PROP';
 
+// used to store class method to be injected
+export const TAGGED_METHOD = 'TAGGED_METHOD';
+
 // used to store class properties parameters (get/post...)
 export const TAGGED_PARAM = 'TAGGED_PARAM';
 
-// used to store class method to be injected
-export const TAGGED_METHOD = 'TAGGED_METHOD';
+
 
 /**
  * Base Application
