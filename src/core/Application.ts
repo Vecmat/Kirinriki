@@ -32,19 +32,16 @@ export class Kirinriki extends Koa implements Application {
     public version: string;
     public options: InitOptions;
 
-    //
     public appPath: string;
     public rootPath: string;
     public krnrkPath: string;
     public appDebug: boolean;
 
-    //
     public captor: Captor;
     public router: IRouter;
     public server: IApplication;
     private metadata: MetadataClass;
 
-    //
     public vms: Record<string ,string>;
 
     /**
@@ -157,10 +154,9 @@ export class Kirinriki extends Koa implements Application {
                 return caches[type];
             }
             if (lodash.isString(name)) {
-                // name不含. 一级
                 if (name.indexOf(".") === -1) {
                     return caches[type][name];
-                } // name包含. 二级
+                } 
                 const keys = name.split(".");
                 const value = caches[type][keys[0]] ?? {};
                 return value[keys[1]];
@@ -259,6 +255,9 @@ export class Kirinriki extends Koa implements Application {
      * @memberof Kirinriki
      */
     private globalErrorCatch(): void {
+        
+        // todo: Bind Captor system 
+
         // koa error
         this.removeAllListeners("error");
         this.on("error", (err: Error) => {

@@ -81,8 +81,8 @@ export function checkClass(fileName: string, xpath: string, target: any, exSet?:
         throw new Exception("BOOTERR_LOADER_CHECK", `The file(${xpath}) export error name.`);
     }
 
-    // *  同一类型下不要有相同类名就可以了
-    // 暂时无法不能判断类别
+    // todo: Check duplicate class name
+    //
     // if (exSet.has(calssname)){
     //     throw new Exception("BOOTERR_LOADER_CHECK",`A same class (${calssname}) already exists. at \`${xpath}\`.`);
     // }

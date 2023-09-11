@@ -1,8 +1,12 @@
 /**
- * @ Author: Hanrea
- * @ version: 2022-03-21 13:14:21
- * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
+ * @Author: Hanrea
+ * @Date: 2023/9/11 17:36:53
+ * @LastEditors: Hanrea
+ * @LastEditTime: 2023/9/11 17:36:53
+ * Description: 
+ * Copyright: Copyright (©)}) 2023 Vecmat.com. All rights reserved.
  */
+
 import json from "@rollup/plugin-json";
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';

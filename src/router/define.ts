@@ -11,7 +11,6 @@ export const ROUTER_KEY = Symbol("ROUTER_KEY");
 export const ASPECT_BEFORE = Symbol("ASPECT_BEFORE");
 export const ASPECT_BEHIND = Symbol("ASPECT_BEHIND");
 
-export const MIXTURE_SCOPT = Symbol("MIXTURE_SCOPT");
 export const CONTROLLER_ROUTER = Symbol("CONTROLLER_ROUTER");
 
 export type TAspect = (context: IContext) => Promise<void>;

@@ -32,23 +32,20 @@ export interface ListeningOptions {
 export function Serve(app: Kirinriki, opt?: ListeningOptions): IApplication {
     const options: ListeningOptions = {
         ...{
-            hostname: '127.0.0.1',
+            hostname: "127.0.0.1",
             port: 3000,
             protocol: "http",
             ext: {
                 key: "",
                 cert: "",
-                protoFile: "",
-            },
-        }, ...opt
+                protoFile: ""
+            }
+        },
+        ...opt
     };
-    // todo 修改为可配置为整体server，公用端口或者
-    // https 不提供支持，可以提供http2支持。http/http2 切换
-    // ws 和 https 共用 。grpc通过协议ws提供代理
+    // todo: Hybrid http, ws, and grpc protocols
 
     let server: IApplication;
-    // todo 添加 命令行 参数协议
-    // todo 如果是数组，则合并服务,
     switch (options.protocol) {
         case "ws":
         case "wss":

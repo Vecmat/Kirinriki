@@ -24,18 +24,6 @@ export function Ctx(): ParameterDecorator {
 }
 
 
-/**
- * Get mixture for ctx.
- * @export
- * @param {string} [name]
- * @returns
- */
-export function Mix(name: string): ParameterDecorator {
-    return InjectParams("Mix", (ctx: IContext) => {
-        return ctx.getMixture(name);
-    });
-}
-
 
 /**
  * Get request header.

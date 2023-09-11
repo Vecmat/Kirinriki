@@ -5,7 +5,7 @@
  */
 import lodash from "lodash";
 import { catcher } from "../catcher";
-import { IContext } from "../../core";
+import { IContext, INext } from "../../core";
 import { Exception } from "@vecmat/vendor";
 import { StatusCodeConvert } from "../code";
 import { DefaultLogger as Logger } from "@vecmat/printer";
@@ -13,10 +13,12 @@ import { DefaultLogger as Logger } from "@vecmat/printer";
 /**
  * grpcRunner
  *
- * @param {Kirinriki} app
- * @returns {*}
+ * @param {IContext} ctx 
+ * @param {Function} next 
+ * @param {*} ext 
+ * @returns 
  */
-export async function grpcRunner(ctx: IContext, next: Function, ext?: any): Promise<any> {
+export async function grpcRunner(ctx: IContext, next: INext, ext?: any): Promise<any> {
     const timeout = ext.timeout || 10000;
     // set ctx start time
     const startTime = Date.now();
@@ -51,7 +53,7 @@ export async function grpcRunner(ctx: IContext, next: Function, ext?: any): Prom
                     response.timeout = setTimeout(reject, timeout, new Exception("APIERR_TIMEOUT", "Deadline exceeded"));
                     return;
                 }),
-                next()
+                await next()
             ]);
         }
 
@@ -64,7 +66,6 @@ export async function grpcRunner(ctx: IContext, next: Function, ext?: any): Prom
     } catch (err: any) {
         return await catcher(err, ctx);
     } finally {
-        // !? gRPC不应该是长连接么？
         ctx.res.emit("finish");
         clearTimeout(response.timeout);
     }

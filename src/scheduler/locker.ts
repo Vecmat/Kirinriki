@@ -188,7 +188,7 @@ export class Locker {
                 return null;
             }
             const { value } = this.lockMap.get(key);
-            // 适配memory类型cacheStore
+            
             await this.cacheStore.getCompare(key, value);
 
             this.lockMap.delete(key);

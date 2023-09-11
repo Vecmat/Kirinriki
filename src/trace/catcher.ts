@@ -20,9 +20,10 @@ import { gRPCCatcher } from "./catcher/grpc";
  */
 export async function catcher(err: Error , ctx: IContext) {
     let skip = false;
-    let sign = "COMMON_ERROR";
     let excep: Exception;
-    // 有些错误类为复制name属性
+    let sign = "COMMON_ERROR";
+
+    
     if (err instanceof Error) {
         if (err instanceof Exception) {
             excep = err;
@@ -35,7 +36,8 @@ export async function catcher(err: Error , ctx: IContext) {
         sign = "UNKNOW_ERROR";
         excep = new Exception("UNKNOW_ERROR", "" + err);
     }
-    // 多个函数处理,可控制跳过后续处理
+
+    // Global error handling
     const handls = Captor.match(sign);
     for (const hand of handls) {
         skip = await hand(excep, ctx);
@@ -44,9 +46,7 @@ export async function catcher(err: Error , ctx: IContext) {
         }
     }
 
-    // 使用默认全局错误处理
-    // todo 更改下处理 ,错误应该只交给错误拦截器处理，放在final内执行即可
-    // 更改为返回数据即可
+    // todo: Move to runner's `finnal` function
     switch (ctx.protocol) {
         case "grpc":
             return gRPCCatcher(ctx, excep);

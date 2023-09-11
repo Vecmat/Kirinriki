@@ -20,7 +20,7 @@
         "buildold": "pnpm clean && npm run build:js && npm run build:dts && npm run build:doc && npm run build:cp && npx gulp copy",
         "build:cp": "node scripts/postBuild && copyfiles package.json LICENSE README.md dist/",
         "build:js": "del-cli --force dist && npx rollup -c",
-        "build:doc": "del-cli --force docs/api && npx api-documenter markdown --input temp --output docs/api",
+        "build:doc": "del-cli --force docs/api && npx api-documenter markdown --input src --output docs/api",
         "build:dts": "del-cli --force temp && npx tsc && npx api-extractor run --local --verbose",
         "eslint": "eslint --ext .ts,.js ./",
         "$watch": "concurrently \"tsc -w --project tsconfig.json\" \"tsc-alias -w --project tsconfig.json\"",

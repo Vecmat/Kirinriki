@@ -5,8 +5,6 @@
  */
 
 import { MetadataClass } from "./Metadata";
-import { IOCContainer } from "../container";
-import { BaseMixture } from "../base/BaseMixture";
 import { Exception, ARROBJ } from "@vecmat/vendor";
 import { IRpcServerCallback, IRpcServerUnaryCall, IWebSocket, KoaContext, IContext, WsRequest } from "./IContext";
 
@@ -107,8 +105,6 @@ function initBaseContext(ctx: KoaContext): IContext {
     const context = Object.create(ctx);
     // throw
     context.throw = function (sign: string, temp: string, info: object): never {
-        // 标准错误处理（GRPC 错误码和HTTP错误码通用处理）
-        // 只返回错误码？
         ctx.status = 500;
         throw new Exception(sign, temp, info);
     };
@@ -134,20 +130,6 @@ function initBaseContext(ctx: KoaContext): IContext {
         context.set(data.toJSON());
     };
 
-    // mixtures
-    context.Mixtures = new WeakMap();
-    context.getMixture = function <M extends BaseMixture>(key: string): M {
-        // todo 先从app容器中获取，再从ctx容器中获取
-        if (!context.Mixtures.has(key)) {
-            const cls = IOCContainer.getClass(key, "MIXTURE");
-            if (!cls) {
-                throw new Exception("SYSERR_MIXTURE_NOTFOUND", `MIXTURE '${key}' for ctx is not found. `);
-            }
-            const act = Reflect.construct(cls, context);
-            context.Mixtures.set(key, act);
-        }
-        return context.Mixtures.get(key);
-    };
-
+    
     return context;
 }

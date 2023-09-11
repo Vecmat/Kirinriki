@@ -2,10 +2,8 @@ module.exports = {
     // skip: {
     //     tag: true,
     // },
-    //server-version自动commit的模板
     releaseCommitMessageFormat:
         "🔧 build: v{{currentTag}}",
-    //需要server-version更新版本号的文件
     bumpFiles: [
         {
             filename: "package.json",

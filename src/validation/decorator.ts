@@ -83,9 +83,7 @@ export function Valid(rule: ValidRules | ValidRules[] | Function, options?: stri
     let rules: any = [];
     if (lodash.isString(rule)) rules = (<string>rule).split(",");
     else rules = rule;
-
     return (target: any, propertyKey: string, descriptor: any) => {
-        // 获取成员参数类型
         const paramTypes = Reflect.getMetadata("design:paramtypes", target, propertyKey);
         const type = paramTypes[descriptor]?.name ? paramTypes[descriptor].name : "object";
         if (lodash.isString(options)) options = { message: <string>options, value: null };
@@ -123,7 +121,6 @@ export function Validated(): MethodDecorator {
             propertyKey
         );
 
-        // 获取成员参数类型
         // const paramTypes = Reflect.getMetadata("design:paramtypes", target, propertyKey) || [];
 
         // const { value, configurable, enumerable } = descriptor;

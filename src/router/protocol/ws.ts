@@ -103,6 +103,7 @@ export class WebsocketRouter implements IRouter {
                 }
             }
             // Add websocket handler
+            // todo: refer socket-controllers
             this.app.use(this.ListRouter()).use(this.router.allowedMethods());
         } catch (err) {
             Logger.Error(err);

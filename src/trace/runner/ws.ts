@@ -5,17 +5,19 @@
  */
 import { inspect } from "util";
 import { catcher } from "../catcher";
-import { IContext } from "../../core";
+import { IContext, INext } from "../../core";
 import { Logger } from "../../base/Logger";
 import { Exception,  ARROBJ } from "@vecmat/vendor";
 
 /**
  * wsRunner
  *
- * @param {Kirinriki} app
- * @returns {*}
+ * @param {IContext} ctx 
+ * @param {Function} next 
+ * @param {*} ext 
+ * @returns 
  */
-export async function wsRunner(ctx: IContext, next: Function, ext?: any): Promise<any> {
+export async function wsRunner(ctx: IContext, next: INext, ext?: any): Promise<any> {
     const timeout = ext.timeout || 10000;
 
     // set ctx start time
@@ -61,7 +63,7 @@ export async function wsRunner(ctx: IContext, next: Function, ext?: any): Promis
                     response.timeout = setTimeout(reject, timeout, new Exception("APIERR_TIMEOUT", "Deadline exceeded"));
                     return;
                 }),
-                next()
+                await next()
             ]);
         }
 
@@ -71,9 +73,6 @@ export async function wsRunner(ctx: IContext, next: Function, ext?: any): Promis
         // if (ctx.status >= 400) {
         //     throw new Exception('KRNRK_SERVER_ERROR', "Server error");
         // }
-        // 发送数据应该交给
-        // ws 需要 nsp 等处理 可能仅仅做基础兼容
-        // 参考 socket-controllers 实现
         ctx.websocket.send(inspect(ctx.body || ""), null);
         return null;
     } catch (err: any) {

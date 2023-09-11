@@ -7,9 +7,8 @@
 import "reflect-metadata";
 import { Middleware } from "koa";
 import { IOCContainer } from "../container";
-import { Exception } from "@vecmat/vendor";
-import { Kirinriki, IContext, INext } from '../core';
-import { MIXTURE_SCOPT, CONTROLLER_ROUTER } from "../router";
+import { Kirinriki, IContext } from '../core';
+import { CONTROLLER_ROUTER } from "../router";
 
 
 /**
@@ -96,30 +95,4 @@ export function Savant(identifier?: string): ClassDecorator {
         IOCContainer.saveClass("SAVANT", target, identifier);
     };
 }
-
-
-/**
- * Interface for Mixture
- * 
- */
-export interface IMixture {
-    readonly app: Kirinriki;
-}
-
-/**
- * Indicates that an decorated class is a "acton".
- *
- * @export
- * @param {string} [identifier] instce scope
- * @param {string} [identifier] class name
- * @returns {ClassDecorator}
- */
-export function Mixture(scope?: string, identifier?: string): ClassDecorator {
-    return (target: any) => {
-        identifier = identifier || IOCContainer.getIdentifier(target);
-        IOCContainer.saveClass("MIXTURE", target, identifier);
-        IOCContainer.saveClassMetadata(MIXTURE_SCOPT, "scope", scope, target);
-    };
-}
-
 

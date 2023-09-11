@@ -30,6 +30,5 @@ export async function SetLogger(ins: Printer) {
  * @param {LoggerOption} config
  */
 export function updateLogger(config:LoggerOption) {
-    // 建议交给应用自行提供
     DefaultLogger.update(config);
 }

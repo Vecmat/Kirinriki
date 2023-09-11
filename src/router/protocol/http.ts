@@ -81,15 +81,14 @@ export class HttpRouter implements IRouter {
                     const path = router.path;
                     const requestMethod = <RequestMethod>router.requestMethod;
                     const params = ctlParams[method];
-                    // todo record into mapdata for show table
+                    // todo: record into mapdata for show table
                     Logger.Debug(`[HTTP/${requestMethod}]: "${path}" => ${n}.${method}`);
 
-                    // ！！
-                    // todo ws 协议暂不支持
-                    const beforeAspects: Middleware[] = IOCContainer.getPropertyData(SAVANT_KEY, ctlClass, method);
+                    // todo: Other protocols currently do not support router savant
+                    const routersavant: Middleware[] = IOCContainer.getPropertyData(SAVANT_KEY, ctlClass, method);
 
-                    if (beforeAspects && beforeAspects.length) {
-                        this.useSavant(path, ...beforeAspects);
+                    if (routersavant && routersavant.length) {
+                        this.useSavant(path, ...routersavant);
                     }
                     this.SetRouter(
                         path,

@@ -121,7 +121,6 @@ export function buildParams(app: Kirinriki, target: any, instance?: any): ParamM
     const metaDatas = RecursiveGetMetadata(TAGGED_PARAM, target);
     const validMetaDatas = RecursiveGetMetadata(PARAM_RULE_KEY, target);
     const validatedMetaDatas = RecursiveGetMetadata(PARAM_CHECK_KEY, target);
-    // 如果
     
     const argsMetaObj: ParamMetadataObject = {};
     for (const meta in metaDatas) {

@@ -12,19 +12,18 @@ import { CAPTURER_KEY } from "./Constants";
  * Kirinriki system error capture 
  */
 
-// 获取函数的类型接口
 export interface ICapturer {
     (err: Error, ctx?: IContext|Kirinriki ): Promise<boolean>
 }
 
-// 基类
+// base Capturer 
 export class BaseCapturer {
     
 }
 
 /**
  * Indicates that an decorated class is a "capturer".
- * todo : 移除掉本注解，不单独设置模型，统一到Plugin 中或者 归纳到 COMPONENT
+ * todo: repeat to MethodDecorator and bind to Plugin or other.
  * @export 
  * @param {string} [identifier] class name
  * @returns {ClassDecorator}
@@ -56,7 +55,7 @@ export function Catching(name: string): MethodDecorator {
 
 
 export class Captor {
-    // 静态存储？
+    // static map save
     static map: Map<string, ICapturer> = new Map();
     static regs: Map<string, RegExp> = new Map();
     constructor() { }

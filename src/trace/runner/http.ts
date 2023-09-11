@@ -4,19 +4,20 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import { catcher } from "../catcher";
-import { IContext } from "../../core";
+import { IContext, INext } from "../../core";
 import { Exception, ARROBJ } from "@vecmat/vendor";
 import { DefaultLogger as Logger } from "@vecmat/printer";
 import { Stream } from "stream";
 
 
 /**
- * httpRunner
- *
- * @param {Kirinriki} app
- * @returns {*}
+ * http Runner
+ * @param {IContext} ctx 
+ * @param {Function} next 
+ * @param {*} ext 
+ * @returns 
  */
-export async function httpRunner(ctx: IContext, next: Function, ext?: any): Promise<any> {
+export async function httpRunner(ctx: IContext, next: INext, ext?: any): Promise<any> {
     const timeout = ext.timeout || 10000;
     // set ctx start time
     ARROBJ.defineProp(ctx, "startTime", Date.now());
@@ -44,8 +45,7 @@ export async function httpRunner(ctx: IContext, next: Function, ext?: any): Prom
     // try /catch
     const response: any = ctx.res;
     try {
-        // todo 移到handler内处理,还需要处理渲染问题
-        // 交给应用处理？？
+        // 
         // if (app.server.status === 503) {
         //     ctx.status = 503;
         //     ctx.set('Connection', 'close');
@@ -61,15 +61,15 @@ export async function httpRunner(ctx: IContext, next: Function, ext?: any): Prom
                     response.timeout = setTimeout(reject, timeout, new Exception("APIERR_TIMEOUT", "Deadline exceeded"));
                     return;
                 }),
-                next()
+                await next()
             ]);
         }
 
-        // 改为默认
+        // 
         // if (ctx.body !== undefined && ctx.status === 404) {
         //     ctx.status = 200;
         // }
-        // 程序可分开控制状态码和内容才对
+        // 
         // if (ctx.status >= 400) {
         //     throw new Exception('KRNRK_SERVER_ERROR', "Server error");
         // }
@@ -81,7 +81,7 @@ export async function httpRunner(ctx: IContext, next: Function, ext?: any): Prom
         }
         const body = {
             sign: "SUCCESS",
-            message: "请求处理正常",
+            message: "success",
             data: ctx.body || {}
         };
         ctx.body = body;

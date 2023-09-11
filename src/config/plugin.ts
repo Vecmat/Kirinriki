@@ -1,4 +1,4 @@
-// 默认插件配置
+// default config
 
 export default {
     // List of loaded plugins, executed in the order of elements

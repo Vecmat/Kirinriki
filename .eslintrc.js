@@ -5,9 +5,8 @@ module.exports = {
     root: true,
     parser: "@typescript-eslint/parser",
     extends: [
-        // 使用@typescript-eslint/eslint-plugin的推荐规则
-        "plugin:@typescript-eslint/recommended",
         "plugin:jest/recommended",
+        "plugin:@typescript-eslint/recommended",
     ],
     plugins: ["jest", "@typescript-eslint"],
     parserOptions: {

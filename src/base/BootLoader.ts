@@ -5,23 +5,22 @@
 */
 import lodash from "lodash";
 import * as path from "path";
+import { asyncEvent } from "./eve";
 import { LoadDir } from "./Loader";
+import { IPlugin } from "./Plugin";
 import { Kirinriki } from '../core';
 import { Captor  } from "./Capturer";
 import { checkClass } from "./widget";
+import { ISavant } from './Component';
 import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "./config";
-import { MIXTURE_SCOPT } from "../router/define";
 import { BaseController } from "./BaseController";
-import { ISavant } from './Component';
-import { Logger, updateLogger, LoggerOption } from "./Logger";
 import { TraceSavant } from "../savant/TraceSavant";
-import { Exception, Check, ARROBJ } from "@vecmat/vendor";
 import { PayloadSavant } from "../savant/PayloadSavant";
+import { Exception, Check, ARROBJ } from "@vecmat/vendor";
+import { Logger, updateLogger, LoggerOption } from "./Logger";
 import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
 import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from './Constants';
-import { asyncEvent } from "./eve";
-import { IPlugin } from "./Plugin";
 
 
 
@@ -334,25 +333,7 @@ export class BootLoader {
         }
     }
 
-    /**
-     * Load mixture
-     *
-     * @static
-     * @param {*} app
-     * @memberof BootLoader
-     */
-    public static LoadMixtures(app: Kirinriki) {
-        const mixtureList = IOCContainer.listClass("MIXTURE");
-        mixtureList.forEach((item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("MIXTURE:", "");
-            if (item.id && Check.isClass(item.target)) {
-                Logger.Debug(`Load mixture: ${item.id}`);
-                // registering to IOC
-                const scope = IOCContainer.getClassMetadata(MIXTURE_SCOPT, "scope", item.target);
-                IOCContainer.reg(item.id, item.target, { scope: scope, type: "MIXTURE", args: [] });
-            }
-        });
-    }
+
 
     /**
      * Load components
@@ -429,9 +410,6 @@ export class BootLoader {
     public static async LoadPlugins(app: Kirinriki) {
         const componentList = IOCContainer.listClass("PLUGIN");
 
-        // todo: refer tiejs for IPlugin add event parse
-        // todo: 改造成可以监听多重事件，并处理，植入一些函数等
-
         let pluginsConf = app.config(undefined, "plugin");
         if (Check.isEmpty(pluginsConf)) {
             pluginsConf = { config: {}, list: [] };
@@ -465,7 +443,6 @@ export class BootLoader {
             // await handle.run(pluginsConf.config[key] ?? {}, app);
         }
 
-        // todo 绑定app事件监听，并逐个下发事件
-        // 顺序按照加载顺序？
+        // todo: Bind app event listeners and emit events one by one
     }
 }

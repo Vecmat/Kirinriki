@@ -123,7 +123,7 @@ export class Container implements IContainer {
 
             // inject properties values
             injectValues(target, target.prototype, this);
-            // inject autowired 
+            // inject autowired
             injectAutowired(target, target.prototype, this);
 
             const ref = this.getClass(identifier, options.type);
@@ -149,7 +149,7 @@ export class Container implements IContainer {
      * get instance from IOC container.
      *
      * @param {string} identifier
-     * @param {ComponentType} [type="MIXTURE"]
+     * @param {ComponentType} [type="COMPONENT"]
      * @param {any[]} [args=[]]
      * @returns {*}
      * @memberof Container
@@ -176,11 +176,11 @@ export class Container implements IContainer {
      * get class from IOC container by identifier.
      *
      * @param {string} identifier
-     * @param {ComponentType} [type="MIXTURE"]
+     * @param {ComponentType} [type="COMPONENT"]
      * @returns {Function}
      * @memberof Container
      */
-    public getClass(identifier: string, type: ComponentType = "MIXTURE"): Function {
+    public getClass(identifier: string, type: ComponentType = "COMPONENT"): Function {
         //   const [,t] = identifier.match(/(\S+):/);
         // type = type || <ComponentType> t;
         return this.classMap.get(`${type}:${identifier}`);
@@ -285,13 +285,11 @@ export class Container implements IContainer {
             const baseType = Object.getPrototypeOf(target);
             const basename = baseType.constructor.name;
             name = name || (target.constructor ? target.constructor.name ?? "" : "");
-            const reg = /(Mixture|Capturer|Controller|Savant|Aspect)/;
+            const reg = /(Capturer|Controller|Savant|Aspect)/;
             if (!reg.test(name) && reg.test(basename)) {
                 name = basename;
             }
-            if (~name.indexOf("Mixture")) {
-                return "MIXTURE";
-            } else if (~name.indexOf("Capturer")) {
+            if (~name.indexOf("Capturer")) {
                 return "CAPTURER";
             } else if (~name.indexOf("Controller")) {
                 return "CONTROLLER";
@@ -379,7 +377,7 @@ export class Container implements IContainer {
         }
     }
 
-    // 似乎不需要！
+    // todo: usefull?
     public appendClassMeta(type: string, decoratorNameKey: string | symbol, data: any, target: Function | Object, propertyName?: string) {
         if (propertyName) {
             const originMap = this.getMetadataMap(type, target, propertyName);

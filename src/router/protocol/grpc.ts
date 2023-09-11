@@ -143,7 +143,6 @@ export class GrpcRouter implements IRouter {
                 }
             }
 
-            // 循环匹配服务绑定路由
             for (const si of services) {
                 const serviceName = si.name;
                 // Verifying

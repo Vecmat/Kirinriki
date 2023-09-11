@@ -37,7 +37,7 @@ export function checkNodeVer() {
  */
 export const isUnintTest = (): boolean => {
     let isUTRuntime = false;
-    // UT运行环境判断，暂时先只判断jest
+    // Running environment judgment, temporarily only judge jest
     const argv = JSON.stringify(process.argv[1]);
     if (argv.indexOf("jest") > -1) {
         isUTRuntime = true;

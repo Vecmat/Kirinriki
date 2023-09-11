@@ -57,8 +57,6 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // version
         ARROBJ.defineProp(app, "version", KIRINRIKI_VERSION);
 
-        // todo
-
         // Initialize env
         BootLoader.initialize(app);
 
@@ -81,8 +79,7 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // Create Catcher
         app.captor = new Captor();
 
-        // Load Global Error Captor
-        // todo: Load global error catcher first
+        // Load global error catcher first
         BootLoader.loadCaptor(app);
 
         // Check all bean
@@ -113,17 +110,12 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         await asyncEvent(app, "APP_COMPONENT_LOADED");
         Logger.Log("Vecmat", "", "Loaded Components ...");
 
-        // Load Mixtures
-        BootLoader.LoadMixtures(app);
-        await asyncEvent(app, "APP_MIXTURE_LOADED");
-        Logger.Log("Vecmat", "", "Loaded Mixtures ...");
-
         // Load Controllers
         const controllers = BootLoader.LoadControllers(app);
 
         Logger.Log("Vecmat", "", "Loaded Controllers ...");
 
-        // todo: 将加载路由细节移动到 BootLoader内部
+        // todo: Move this to `BootLoader`
         app.server = newServe(app);
         app.router = newRouter(app);
 
@@ -151,7 +143,7 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
     } catch (err) {
         let skip = false;
         let sign = "BOOTERR_COMMON";
-        // 有些错误类为复制name属性
+        // todo : Need stack info
         if (err instanceof Error) {
             if (err instanceof Exception) {
                 sign = err.sign;
@@ -159,10 +151,9 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
                 sign = err.name == "Error" ? err.constructor.name : "BOOT_COMMON_ERROR";
             }
         } else {
-            // todo 需要调试 （非错误类型）
             err = new Exception("BOOT_UNKNOW_ERROR", "" + err);
         }
-        // 多个函数处理,可控制跳过后续处理
+        // Call catcher
         const handls = Captor.match(sign);
         for (const hand of handls) {
             skip = await hand(err, app);

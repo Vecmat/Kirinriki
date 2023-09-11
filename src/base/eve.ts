@@ -14,7 +14,7 @@ export const asyncEvent = async function (eve: EventEmitter, eventName: string ,
             func(...args);
         }
     }
-    // 移除监听？为何？
+    // why?
     // eve.removeAllListeners(eventName);
     return; 
 };

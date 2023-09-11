@@ -22,7 +22,6 @@ export function gRPCCatcher(ctx: IContext, err: Exception): Promise<any> {
     try {
         let errObj;
         let code = 2;
-        // code 指的是 grpc的错误码
         // http status convert to grpc status
         if (HttpStatusCodeMap.has(ctx.status)) code = StatusCodeConvert(ctx.status);
         const body = ctx.body || GrpcStatusCodeMap.get(code) || null;

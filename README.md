@@ -42,6 +42,7 @@ Japanese: `キリンリキ` `Kirinriki`
 ## Why Create?
 
 Koa is a streamlined and user-friendly framework,I used it for ten years. But JavaScript can no longer meet my work needs, and I need a better koa framework to match Typescript!
+Kirinriki retains important features of koa. Support global middleware and routing middleware, and support custom annotations for routing middleware control.Supports plugins and provides a rich system of event.
 
 ## Features
 
@@ -51,8 +52,9 @@ Support global throw and catching!
 ```typescript
 // ApiControler.ts
 @Catching("API_*")
-async catcherr(err: Exception, ctx: IContext) {
+async catchapierr(err: Exception, ctx: IContext) {
     console.log(err.sign);
+    // do more thing
     return false;
 }
 
