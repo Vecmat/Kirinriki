@@ -117,7 +117,6 @@ export function InjectAspect(type: EAspect, exec: TAspect): MethodDecorator {
         }
         if(type == "BEHIND"){
             IOCContainer.attachPropertyData(ASPECT_BEHIND, { type, exec }, target, methodName);
-
         }
     };
 }
