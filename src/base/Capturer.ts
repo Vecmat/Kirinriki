@@ -75,22 +75,27 @@ export class Captor {
     // 寻找错误错误处理器
     static match(name: string): (ICapturer[]) {
         const list: ICapturer[] = [];
-        if (name !== "*" && Captor.map.has(name)) {
+        // Put all matches at the start
+        if (Captor.map.has("*")) {
+            list.push(Captor.map.get("*"));
+        }
+        if ( Captor.map.has(name)) {
             list.push(Captor.map.get(name));
-        }else{
-            // $ keys 需要排序么
+        } else {
             for (const key of Captor.regs.keys()) {
+                // Prevent duplication
                 if (key === "*") return;
+                if (!~key.indexOf("*")  ) {
+                    return;
+                }
+                
                 const regex = Captor.regs.get(key);
                 if (regex.test(name)) {
                     list.push(Captor.map.get(key));
                 }
             }
         }
-        // 最后追加 * 匹配
-        if(Captor.map.has("*")){
-            list.push(Captor.map.get("*"));
-        }
+
         return list;
     }
 
