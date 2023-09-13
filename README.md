@@ -7,8 +7,9 @@
  |   <| | |  | | | | | |  | |   <| |
  |_|\_\_|_|  |_|_| |_|_|  |_|_|\_\_|
                                     
-   == https://github.com/vecmat ==  
-       🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑      </pre>
+ == https://github.com/vecmat == 
+ 🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘 🌑 
+ </pre>
   <p align="center">
     <a href="https://www.npmjs.com/package/kirinriki">
       <img src="https://badge.fury.io/js/kirinriki.svg">
