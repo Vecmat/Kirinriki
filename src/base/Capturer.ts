@@ -23,7 +23,7 @@ export class BaseCapturer {
 
 /**
  * Indicates that an decorated class is a "capturer".
- * todo: repeat to MethodDecorator and bind to Plugin or other.
+ * 
  * @export 
  * @param {string} [identifier] class name
  * @returns {ClassDecorator}

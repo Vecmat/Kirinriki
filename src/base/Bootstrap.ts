@@ -95,10 +95,10 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         await asyncEvent(app, "APP_CONFIG_LOADED");
         Logger.Log("Vecmat", "", "Loaded Config ...");
 
-        // Load Plugin
-        await BootLoader.LoadPlugins(app);
-        await asyncEvent(app, "APP_PLUGIN_LOADED");
-        Logger.Log("Vecmat", "", "Loaded Plugins ...");
+        // Load Addon
+        await BootLoader.LoadAddons(app);
+        await asyncEvent(app, "APP_ADDON_LOADED");
+        Logger.Log("Vecmat", "", "Loaded Addon ...");
 
         // Load Savant
         await BootLoader.LoadSavants(app);

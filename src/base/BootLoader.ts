@@ -7,7 +7,7 @@ import lodash from "lodash";
 import * as path from "path";
 import { asyncEvent } from "./eve";
 import { LoadDir } from "./Loader";
-import { IPlugin } from "./Plugin";
+import { IAddon } from "./Addon";
 import { Kirinriki } from '../core';
 import { Captor  } from "./Capturer";
 import { checkClass } from "./widget";
@@ -333,11 +333,9 @@ export class BootLoader {
         }
     }
 
-
-
     /**
      * Load components
-     * 
+     *
      * @static
      * @param {*} app
      * @memberof BootLoader
@@ -401,48 +399,38 @@ export class BootLoader {
     }
 
     /**
-     * Load plugins
+     * Load addons
      *
      * @static
      * @param {*} app
      * @memberof BootLoader
      */
-    public static async LoadPlugins(app: Kirinriki) {
-        const componentList = IOCContainer.listClass("PLUGIN");
+    public static async LoadAddons(app: Kirinriki) {
+        const componentList = IOCContainer.listClass("ADDON");
 
-        let pluginsConf = app.config(undefined, "plugin");
-        if (Check.isEmpty(pluginsConf)) {
-            pluginsConf = { config: {}, list: [] };
+        let addonConf = app.config(undefined, "addon");
+        if (Check.isEmpty(addonConf)) {
+            addonConf = { config: {}, list: [] };
         }
 
-        const pluginList = [];
+        const addonList = [];
         componentList.forEach(async (item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("PLUGIN:", "");
-            if (item.id && item.id.endsWith("Plugin") && Check.isClass(item.target)) {
+            item.id = (item.id ?? "").replace("ADDON:", "");
+            if (item.id && item.id.endsWith("Addon") && Check.isClass(item.target)) {
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
-                pluginList.push(item.id);
+                addonList.push(item.id);
             }
         });
 
-        const pluginConfList = pluginsConf.list;
+        const addonConfList = addonConf.list;
 
-        for (const key of pluginConfList) {
-            const handle: IPlugin = IOCContainer.get(key, "PLUGIN");
-            console.log(handle);
-            // if (!lodash.isFunction(handle.run)) {
-            //     Logger.Error(`plugin ${key} must be implements method 'run'.`);
-            //     continue;
-            // }
-            // if (pluginsConf.config[key] === false) {
-            //     Logger.Warn(`Plugin ${key} already loaded but not effective.`);
-            //     continue;
-            // }
-
-            // sync exec
-            // await handle.run(pluginsConf.config[key] ?? {}, app);
+        for (const key of addonConfList) {
+            const ins: IAddon = IOCContainer.get(key, "ADDON");
+            console.log(ins.version);
         }
 
-        // todo: Bind app event listeners and emit events one by one
+        // other event
+
     }
 }

@@ -1,5 +1,5 @@
 export * from "./Logger";
-export * from "./Plugin";
+export * from "./Addon";
 export * from "./Capturer";
 export * from "./Bootstrap";
 export * from "./Component";
