@@ -5,7 +5,7 @@ import { Kirinriki, IContext, INext } from "../core";
 
 
 /**
- * todo
+ * todo: Define necessary parameters
  * Interface for IAddon
  */
 export interface IAddon {
@@ -21,6 +21,7 @@ export interface IAddon {
  */
 export function Addon(identifier?: string): ClassDecorator {
     return (target: any) => {
+        
         identifier = identifier || IOCContainer.getIdentifier(target);
         if (!identifier.endsWith("Addon")) {
             throw new Exception("BOOTERR_LOADER_NAMELACK", "Addon class name must be 'Plugin' suffix.");
@@ -28,3 +29,4 @@ export function Addon(identifier?: string): ClassDecorator {
         IOCContainer.saveClass("ADDON", target, `${identifier}`);
     };
 }
+

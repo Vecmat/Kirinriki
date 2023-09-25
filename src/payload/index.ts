@@ -56,6 +56,21 @@ export function Payload(options: PayloadOptions, app: Kirinriki): Koa.Middleware
 
     return async (ctx: IContext, next: INext) => {
         /**
+         * request query & params parser
+         *
+         * @param {any} name
+         * @param {any} value
+         * @returns
+         */
+        ARROBJ.defineProp(ctx, "queryParser", (): any => {
+            let query = ctx.getMetaData("_query");
+            if (!Check.isEmpty(query)) return query;
+            query = { ...ctx.query, ...(ctx.params || {}) };
+            ctx.setMetaData("_query", query);
+            return query;
+        });
+
+        /**
          * request body parser
          *
          * @param {any} name
@@ -75,22 +90,6 @@ export function Payload(options: PayloadOptions, app: Kirinriki): Koa.Middleware
                 Logger.Error(err);
                 return {};
             }
-        });
-
-        /**
-         * queryString parser
-         *
-         * @param {any} name
-         * @param {any} value
-         * @returns
-         */
-        ARROBJ.defineProp(ctx, "queryParser", (): any => {
-            let query = ctx.getMetaData("_query");
-            if (!Check.isEmpty(query)) return query;
-
-            query = { ...ctx.query, ...(ctx.params || {}) };
-            ctx.setMetaData("_query", query);
-            return query;
         });
 
         return next();

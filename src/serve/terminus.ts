@@ -8,6 +8,7 @@ import lodash from "lodash";
 import EventEmitter from "events";
 import { IApplication } from "../core";
 import { Logger } from "../base/Logger";
+import { asyncEmit } from "src/vendor/eve";
 
 /** @type {*} */
 const terminusOptions = {
@@ -58,22 +59,6 @@ export function BindProcessEvent(event: EventEmitter, originEventName: string, t
     return event.removeAllListeners(originEventName);
 }
 
-/**
- * Execute event as async
- *
- * @param {Kirinriki} event
- * @param {string} eventName
- */
-const asyncEvent = async function (event: EventEmitter, eventName: string) {
-    const ls: any[] = event.listeners(eventName);
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const func of ls) {
-        if (lodash.isFunction(func)) {
-            func();
-        }
-    }
-    return event.removeAllListeners(eventName);
-};
 
 /**
  * cleanup function, returning a promise (used to be onSigterm)
@@ -83,7 +68,7 @@ const asyncEvent = async function (event: EventEmitter, eventName: string) {
 async function onSignal(event: string, server: IApplication, forceTimeout: number) {
     Logger.Warn(`Received kill signal (${event}), shutting down...`);
     server.status = 503;
-    await asyncEvent(process, "beforeExit");
+    await asyncEmit(process, "beforeExit");
     // Don't bother with graceful shutdown in development
     if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
         return process.exit(0);

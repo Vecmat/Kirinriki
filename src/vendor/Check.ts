@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import lodash from "lodash";
-import { Logger } from "./Logger";
+import { Logger } from "../base/Logger";
 import { version, engines } from "../../package.json";
 
 export const KIRINRIKI_VERSION = version;

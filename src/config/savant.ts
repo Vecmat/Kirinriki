@@ -7,11 +7,11 @@
 export default {
     // List of loaded savant(except for the savant loaded by default),
     // executed in the order of elements
-    list: [],
-    config: { 
+    queue: [],
+    config: {
         // savant configuration
         TraceSavant: {
-            HeaderName: "X-Request-Id",
+            HeaderName: "X-Request-Id"
         },
         PayloadSavant: {
             extTypes: {
@@ -19,12 +19,12 @@ export default {
                 form: ["application/x-www-form-urlencoded"],
                 text: ["text/plain"],
                 multipart: ["multipart/form-data"],
-                xml: ["text/xml"],
+                xml: ["text/xml"]
             },
             limit: "20mb",
             encoding: "utf-8",
             multiples: true,
-            keepExtensions: true,
-        },
-    },
+            keepExtensions: true
+        }
+    }
 };

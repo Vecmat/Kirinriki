@@ -5,22 +5,20 @@
 */
 import lodash from "lodash";
 import * as path from "path";
-import { asyncEvent } from "./eve";
-import { LoadDir } from "./Loader";
-import { IAddon } from "./Addon";
+import { LoadDir } from "../base/Loader";
+import { IAddon } from "../base/Addon";
 import { Kirinriki } from '../core';
-import { Captor  } from "./Capturer";
-import { checkClass } from "./widget";
-import { ISavant } from './Component';
+import { Captor  } from "../manager/Capturer";
+import { checkClass } from "../vendor/widget";
 import { AppReadyHookFunc } from "./Bootstrap";
-import { LoadConfigs as loadConf } from "./config";
-import { BaseController } from "./BaseController";
-import { TraceSavant } from "../savant/TraceSavant";
-import { PayloadSavant } from "../savant/PayloadSavant";
+import { LoadConfigs as loadConf } from "../base/config";
+import { BaseController } from "../base/Controller";
 import { Exception, Check, ARROBJ } from "@vecmat/vendor";
-import { Logger, updateLogger, LoggerOption } from "./Logger";
+import { Logger, updateLogger, LoggerOption } from "../base/Logger";
 import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
-import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from './Constants';
+import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from '../base/Constants';
+import { SavantManager } from "src/base";
+import { MonitorManager } from "src/manager/Monitor";
 
 
 
@@ -29,7 +27,7 @@ import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from
  *
  * @interface ComponentItem
  */
-interface ComponentItem {
+export interface ComponentItem {
     id: string
     target: any
 }
@@ -202,18 +200,15 @@ export class BootLoader {
     public static LoadConfigs(app: Kirinriki, target: any) {
         const frameConfig: any = {};
         let loadPath = BootLoader.GetConfigurationMetas(app, target);
-
-        // Logger.Debug(`Load configuration path: ${app.krnrkPath}/config`);
+        Logger.Debug(`Load configuration path: ${app.krnrkPath}/config`);
         LoadDir(["./config"], app.krnrkPath, function (name: string, path: string, exp: any) {
             frameConfig[name] = exp;
         });
-
         if (lodash.isArray(loadPath)) {
             loadPath = loadPath.length > 0 ? loadPath : ["./config"];
         }
         let appConfig = loadConf(loadPath, app.appPath);
         appConfig = ARROBJ.extendObj(frameConfig, appConfig, true);
-
         app.setMetaData("_configs", appConfig);
     }
 
@@ -226,6 +221,7 @@ export class BootLoader {
      */
     public static loadCaptor(app: Kirinriki) {
         LoadDir(["./Capturer"], app.krnrkPath);
+        Logger.Debug(`Load core Captor: ${app.krnrkPath}/Capturer`);
         const clsList = IOCContainer.listClass("CAPTURER");
         clsList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("CAPTURER:", "");
@@ -238,15 +234,12 @@ export class BootLoader {
             }
         });
 
-        // 获取函数并注入到Captor map
-        // $ 是否可以加载全部错误拦截？
-        // 获取所有class，然后解析所有的 CAPTURER_KEY 并注入
+        // load other capturer
+        Logger.Debug(`Load other Captor!`);
         app.once("APP_BOOT_FINISH", async () => {
             const allcls = IOCContainer.listClass();
             allcls.forEach((item: ComponentItem) => {
-                // 防止重复
                 if ((item.id ?? "").startsWith("CAPTURER")) return;
-                // 动态获取类型
                 const [, type, name] = item.id.match(/(\S+):(\S+)/);
                 const ins = IOCContainer.get(name, <ComponentType>type);
                 const keyMeta = IOCContainer.listPropertyData(CAPTURER_KEY, item.target);
@@ -260,97 +253,45 @@ export class BootLoader {
     }
 
     /**
-     * Load savants
-     * [async]
-     * @static
-     * @param {*} app
-     * @param {(string | string[])} [loadPath]
-     * @memberof BootLoader
-     */
-    public static async LoadSavants(app: Kirinriki, loadPath?: string[]) {
-        let savantConf = app.config(undefined, "savant");
-        if (lodash.isEmpty(savantConf)) {
-            savantConf = { config: {}, list: [] };
-        }
-
-        // Mount default savant
-        LoadDir(loadPath || ["./Savant"], app.krnrkPath);
-        // Mount application savant
-        // const savant: any = {};
-        const appSavant = IOCContainer.listClass("SAVANT") ?? [];
-        appSavant.push({ id: "TraceSavant", target: TraceSavant });
-        appSavant.push({ id: "PayloadSavant", target: PayloadSavant });
-
-        appSavant.forEach((item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("SAVANT:", "");
-            if (item.id && Check.isClass(item.target)) {
-                IOCContainer.reg(item.id, item.target, { scope: "Prototype", type: "SAVANT", args: [] });
-            }
-        });
-
-        const savantConfList = savantConf.list;
-
-        // TraceSavant must be at the top
-        const defaultList = ["TraceSavant", "PayloadSavant"];
-        const appSavantList = new Set(defaultList);
-        savantConfList.forEach((item: string) => {
-            if (!defaultList.includes(item)) {
-                appSavantList.add(item);
-            }
-        });
-
-        asyncEvent(app, "LOAD_APP_SAVANT_BEFORE", [appSavantList]);
-
-        // Automatically call savant
-        for (const key of appSavantList) {
-            const handle: ISavant = IOCContainer.get(key, "SAVANT");
-            if (!handle) {
-                Logger.Error(`Savant ${key} load error.`);
-                continue;
-            }
-            if (!lodash.isFunction(handle.run)) {
-                Logger.Error(`Savant ${key} must be implements method 'run'.`);
-                continue;
-            }
-            if (savantConf.config[key] === false) {
-                // Default savant cannot be disabled
-                if (defaultList.includes(key)) {
-                    Logger.Warn(`Savant ${key} cannot be disabled.`);
-                } else {
-                    Logger.Warn(`Savant ${key} already loaded but not effective.`);
-                    continue;
-                }
-            }
-            Logger.Debug(`Load savant: ${key}`);
-            const result = await handle.run(savantConf.config[key] || {}, app);
-            if (lodash.isFunction(result)) {
-                if (result.length < 3) {
-                    app.use(result);
-                } else {
-                    app.useExp(result);
-                }
-            }
-        }
-    }
-
-    /**
-     * Load components
+     * Load addons
      *
      * @static
      * @param {*} app
      * @memberof BootLoader
      */
-    public static LoadAspects(app: Kirinriki) {
-        const aspectList = IOCContainer.listClass("ASPECT");
-        aspectList.forEach((item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("COMPONENT:", "");
-            if (item.id && !item.id.endsWith("Plugin") && Check.isClass(item.target)) {
-                Logger.Debug(`Load component: ${item.id}`);
+    public static async LoadAddons(app: Kirinriki) {
+        const componentList = IOCContainer.listClass("ADDON");
+
+        let addonConf = app.config(undefined, "addon");
+        if (Check.isEmpty(addonConf)) {
+            addonConf = { config: {}, list: [] };
+        }
+
+        // 全部的插件
+        const addonList = [];
+        // 循环加载
+        componentList.forEach(async (item: ComponentItem) => {
+            item.id = (item.id ?? "").replace("ADDON:", "");
+            if (item.id && item.id.endsWith("Addon") && Check.isClass(item.target)) {
                 // registering to IOC
                 IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
+                addonList.push(item.id);
             }
         });
+
+        const addonConfList = addonConf.list;
+
+        for (const key of addonConfList) {
+            const ins: IAddon = IOCContainer.get(key, "ADDON");
+            console.log(ins.version);
+        }
+
+        // init MonitorManager
+        MonitorManager.init();
+        // init SavantManager
+        SavantManager.init();
     }
+
 
     /**
      * Load components
@@ -396,41 +337,5 @@ export class BootLoader {
             }
         });
         return controllers;
-    }
-
-    /**
-     * Load addons
-     *
-     * @static
-     * @param {*} app
-     * @memberof BootLoader
-     */
-    public static async LoadAddons(app: Kirinriki) {
-        const componentList = IOCContainer.listClass("ADDON");
-
-        let addonConf = app.config(undefined, "addon");
-        if (Check.isEmpty(addonConf)) {
-            addonConf = { config: {}, list: [] };
-        }
-
-        const addonList = [];
-        componentList.forEach(async (item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("ADDON:", "");
-            if (item.id && item.id.endsWith("Addon") && Check.isClass(item.target)) {
-                // registering to IOC
-                IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
-                addonList.push(item.id);
-            }
-        });
-
-        const addonConfList = addonConf.list;
-
-        for (const key of addonConfList) {
-            const ins: IAddon = IOCContainer.get(key, "ADDON");
-            console.log(ins.version);
-        }
-
-        // other event
-
     }
 }

@@ -2,7 +2,7 @@ import lodash from "lodash";
 import { ASPECT_BEFORE, ASPECT_BEHIND, ROUTER_KEY, SAVANT_KEY } from "./define";
 import { Exception } from "@vecmat/vendor";
 import { paramterTypes } from "../validation";
-import { IOCContainer, TAGGED_AOP, TAGGED_ASPECT, TAGGED_CLS, TAGGED_PARAM, TAGGED_SAVENT } from "../container";
+import { IOCContainer, TAGGED_PARAM } from "../container";
 import {  RequestMethod, RouterOption, TAspect, TParams, TSavant } from "./define";
 
 

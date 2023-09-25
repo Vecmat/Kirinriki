@@ -4,14 +4,13 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import KoaRouter from "@koa/router";
-import { ISavant } from "../../base";
 import { Check } from "@vecmat/vendor";
 import { Logger } from "../../base/Logger";
 import { IOCContainer } from "../../container";
 import { DefaultContext, DefaultState, Middleware } from "koa";
-import { RequestMethod, RouterOptions, SAVANT_KEY } from "../define";
 import { Kirinriki, IContext, INext, IRouter } from "../../core";
 import { buildHandler, buildParams, buildRouter } from "../builder";
+import { ASPECT_SAVANT, RequestMethod, RouterOptions } from "../define";
 
 // HttpImplementation
 export type HttpImplementation = (ctx: IContext, next: INext) => Promise<any>;
@@ -48,6 +47,11 @@ export class HttpRouter implements IRouter {
         this.router[method](path, func);
     }
 
+    /**
+     * todo :sync ws/gprc
+     * @param path 
+     * @param func 
+     */
     useSavant(path: string, ...func: Middleware[]) {
         this.router.use(path, ...func);
     }
@@ -85,7 +89,7 @@ export class HttpRouter implements IRouter {
                     Logger.Debug(`[HTTP/${requestMethod}]: "${path}" => ${n}.${method}`);
 
                     // todo: Other protocols currently do not support router savant
-                    const routersavant: Middleware[] = IOCContainer.getPropertyData(SAVANT_KEY, ctlClass, method);
+                    const routersavant: Middleware[] = IOCContainer.getPropertyData(ASPECT_SAVANT, ctlClass, method);
 
                     if (routersavant && routersavant.length) {
                         this.useSavant(path, ...routersavant);

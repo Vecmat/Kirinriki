@@ -7,17 +7,19 @@ import "reflect-metadata";
 import fs from "fs";
 import lodash from "lodash";
 import EventEmitter from "events";
-import { Logger } from "./Logger";
-import { asyncEvent } from "./eve";
+import { Logger } from "../base/Logger";
+import { asyncEmit } from "../vendor/eve";
 import { Kirinriki } from '../core';
-import { Captor } from "./Capturer";
+import { Captor } from "../manager/Capturer";
 import { BootLoader } from "./BootLoader";
 import { Exception, ARROBJ } from "@vecmat/vendor";
 import { NewRouter, RouterOptions } from "../router";
 import { IOCContainer, TAGGED_CLS } from "../container";
-import { checkNodeVer, isUnintTest, KIRINRIKI_VERSION } from "./Check";
-import { APP_READY_HOOK, COMPONENT_SCAN, CONFIGURATION_SCAN, LOGO, WELCOME } from "./Constants";
+import { checkNodeVer, isUnintTest, KIRINRIKI_VERSION } from "../vendor/Check";
+import { APP_READY_HOOK, COMPONENT_SCAN, CONFIGURATION_SCAN, LOGO, WELCOME } from "../base/Constants";
 import { BindProcessEvent, Serve, ListeningOptions } from "../serve";
+import { MonitorManager } from "src/manager/Monitor";
+import { SavantManager } from "src/manager/Savant";
 
 /**
  * execute bootstrap
@@ -77,37 +79,38 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         IOCContainer.setApp(app);
 
         // Create Catcher
-        app.captor = new Captor();
 
         // Load global error catcher first
+        // todo: remove CaptorManager
         BootLoader.loadCaptor(app);
 
-        // Check all bean
+        // Check all Components
         Logger.Log("Vecmat", "", "Scan Component ...");
         BootLoader.CheckAllComponents(app, target);
 
         // async event APP boot start
-        await asyncEvent(app, "APP_BOOT_START");
+        await asyncEmit(app, "APP_BOOT_START");
 
         // Load configuration
         // configuration metadata
         BootLoader.LoadConfigs(app, target);
-        await asyncEvent(app, "APP_CONFIG_LOADED");
+        await asyncEmit(app, "APP_CONFIG_LOADED");
         Logger.Log("Vecmat", "", "Loaded Config ...");
 
         // Load Addon
         await BootLoader.LoadAddons(app);
-        await asyncEvent(app, "APP_ADDON_LOADED");
+        await asyncEmit(app, "APP_ADDON_LOADED");
         Logger.Log("Vecmat", "", "Loaded Addon ...");
 
-        // Load Savant
-        await BootLoader.LoadSavants(app);
-        await asyncEvent(app, "APP_SAVANT_LOADED");
-        Logger.Log("Vecmat", "", "Loaded Savants ...");
+        //  Mount the monitor
+        MonitorManager.mount(app);
+
+        // Mount the savant
+        SavantManager.mount(app);
 
         // Load Components
         BootLoader.LoadComponents(app);
-        await asyncEvent(app, "APP_COMPONENT_LOADED");
+        await asyncEmit(app, "APP_COMPONENT_LOADED");
         Logger.Log("Vecmat", "", "Loaded Components ...");
 
         // Load Controllers
@@ -119,21 +122,19 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         app.server = newServe(app);
         app.router = newRouter(app);
 
-        //
-
         // Load Routers
         Logger.Log("Vecmat", "", "Loaded Routers ...");
         app.router.LoadRouter(controllers);
 
-        await asyncEvent(app, "APP_ROUTER_LOADED");
+        await asyncEmit(app, "APP_ROUTER_LOADED");
 
-        // ! check: 似乎重复了
+        // ! check: event repeat
         // Load App ready hooks
         BootLoader.LoadAppReadyHooks(app, target);
         Logger.Log("Vecmat", "", "Emit App Ready ...");
 
         // APP boot finish event
-        await asyncEvent(app, "APP_BOOT_FINISH");
+        await asyncEmit(app, "APP_BOOT_FINISH");
 
         if (!inUnintTest) {
             app.listen(app.server, listenCallback(app));
@@ -238,7 +239,7 @@ const listenCallback = (app: Kirinriki) => {
 
         // Emit app started event
         Logger.Log('Vecmat', '', 'Emit App Start Listen ...');
-        await asyncEvent(app, 'APP_START_LISTEN');
+        await asyncEmit(app, 'APP_START_LISTEN');
 
         Logger.Log('Vecmat', '', `Server Protocol: ${(options.protocol).toUpperCase()}`);
         Logger.Log('Vecmat', "", `Server running at ${options.protocol === "http2" ? "https" : options.protocol}://${options.hostname || '127.0.0.1'}:${options.port}/`);

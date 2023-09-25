@@ -12,6 +12,7 @@ import { ServerResponse } from "http";
 import koaCompose from "koa-compose";
 import onFinished from "on-finished";
 import { IContext } from "./IContext";
+import { SavantManager } from "../base";
 import { ARROBJ } from "@vecmat/vendor";
 import { Logger } from "../base/Logger";
 import { CreateContext } from "./Context";
@@ -39,10 +40,11 @@ export class Kirinriki extends Koa implements Application {
 
     public captor: Captor;
     public router: IRouter;
+    private savanter: SavantManager;
     public server: IApplication;
     private metadata: MetadataClass;
 
-    public vms: Record<string ,string>;
+    public vms: Record<string, string>;
 
     /**
      * Creates an instance of Kirinriki.
@@ -108,34 +110,18 @@ export class Kirinriki extends Koa implements Application {
     }
 
     /**
-     * Use the given koa savant `fn`.
+     * Use the given koa middleware `fn`.
      * support generator func
      * @param {Function} fn
      * @returns {any}
      * @memberof Kirinriki
      */
     public use(fn: Function): any {
-        if (!lodash.isFunction) {
+        if (!lodash.isFunction(fn)) {
             Logger.Error("The paramter is not a function.");
             return;
         }
         return super.use(<any>fn);
-    }
-
-    /**
-     * Use the given Express savant `fn`.
-     *
-     * @param {function} fn
-     * @returns {any}
-     * @memberof Kirinriki
-     */
-    public useExp(fn: Function): any {
-        if (!lodash.isFunction) {
-            Logger.Error("The paramter is not a function.");
-            return;
-        }
-        fn = parseExp(fn);
-        return this.use(fn);
     }
 
     /**
@@ -156,7 +142,7 @@ export class Kirinriki extends Koa implements Application {
             if (lodash.isString(name)) {
                 if (name.indexOf(".") === -1) {
                     return caches[type][name];
-                } 
+                }
                 const keys = name.split(".");
                 const value = caches[type][keys[0]] ?? {};
                 return value[keys[1]];
@@ -237,16 +223,16 @@ export class Kirinriki extends Koa implements Application {
      *
      * @private
      * @param {IContext} ctx
-     * @param {(ctx: IContext) => Promise<any>} fnSavant
+     * @param {(ctx: IContext) => Promise<any>} composes
      * @returns {*}
      * @memberof Kirinriki
      */
-    private async handleRequest(ctx: IContext, fnSavant: (ctx: IContext) => Promise<any>) {
+    private async handleRequest(ctx: IContext, composes: (ctx: IContext) => Promise<any>) {
         const res = ctx.res;
         res.statusCode = 404;
         const onerror = (err: Error) => ctx.onerror(err);
         onFinished(res, onerror);
-        return fnSavant(ctx);
+        return composes(ctx);
     }
 
     /**
@@ -255,9 +241,7 @@ export class Kirinriki extends Koa implements Application {
      * @memberof Kirinriki
      */
     private globalErrorCatch(): void {
-        
-        // todo: Bind Captor system 
-
+        // todo: Bind Captor system
         // koa error
         this.removeAllListeners("error");
         this.on("error", (err: Error) => {
@@ -287,29 +271,7 @@ export class Kirinriki extends Koa implements Application {
             return;
         });
     }
-}
 
-/**
- * Convert express savant for koa
- *
- * @param {function} fn
- * @returns
- * @memberof Kirinriki
- */
-function parseExp(fn: Function) {
-    return function (ctx: IContext, next: Function) {
-        if (fn.length < 3) {
-            fn(ctx.req, ctx.res);
-            return next();
-        }
-        return new Promise((resolve, reject) => {
-            fn(ctx.req, ctx.res, (err: Error) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(next());
-                }
-            });
-        });
-    };
+
+    
 }

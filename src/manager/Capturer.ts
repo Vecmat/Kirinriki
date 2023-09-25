@@ -7,7 +7,8 @@
 import { Exception } from "@vecmat/vendor";
 import { IOCContainer } from "../container";
 import { IContext, Kirinriki } from "../core";
-import { CAPTURER_KEY } from "./Constants";
+import { CAPTURER_KEY } from "../base/Constants";
+import lodash from "lodash";
 /**
  * Kirinriki system error capture 
  */
@@ -16,10 +17,6 @@ export interface ICapturer {
     (err: Error, ctx?: IContext|Kirinriki ): Promise<boolean>
 }
 
-// base Capturer 
-export class BaseCapturer {
-    
-}
 
 /**
  * Indicates that an decorated class is a "capturer".
@@ -53,17 +50,18 @@ export function Catching(name: string): MethodDecorator {
     };
 }
 
-
+// CaptorManager;
 export class Captor {
     // static map save
     static map: Map<string, ICapturer> = new Map();
     static regs: Map<string, RegExp> = new Map();
-    constructor() { }
+    constructor() {}
+    
     // 需要再IOCContainer.reg内处理
     static reg(name: string, fun: ICapturer) {
         // 学习 LoadRouter
         if (Captor.map.has(name)) {
-            throw new Exception("BOOTERR_CAPTOR_CLASH","Captor can't reg same error name");
+            throw new Exception("BOOTERR_CAPTOR_CLASH", "Captor can't reg same error name");
         }
         if (name.indexOf("*")) {
             const reg = new RegExp(name.replaceAll("*", ".*"));
@@ -73,22 +71,22 @@ export class Captor {
     }
 
     // 寻找错误错误处理器
-    static match(name: string): (ICapturer[]) {
+    static match(name: string): ICapturer[] {
         const list: ICapturer[] = [];
         // Put all matches at the start
         if (Captor.map.has("*")) {
             list.push(Captor.map.get("*"));
         }
-        if ( Captor.map.has(name)) {
+        if (Captor.map.has(name)) {
             list.push(Captor.map.get(name));
         } else {
             for (const key of Captor.regs.keys()) {
                 // Prevent duplication
                 if (key === "*") return;
-                if (!~key.indexOf("*")  ) {
+                if (!~key.indexOf("*")) {
                     return;
                 }
-                
+
                 const regex = Captor.regs.get(key);
                 if (regex.test(name)) {
                     list.push(Captor.map.get(key));
@@ -99,4 +97,11 @@ export class Captor {
         return list;
     }
 
+    // parse
+
+    // Mount the Captor
+    static async mount(app: Kirinriki) {
+        // 读取并注册到map里即可
+        
+    }
 }

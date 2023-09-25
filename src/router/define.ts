@@ -8,6 +8,7 @@ import { IOCContainer, TAGGED_PARAM } from "../container";
 export const SAVANT_KEY = Symbol("SAVANT_KEY");
 export const ROUTER_KEY = Symbol("ROUTER_KEY");
 
+export const ASPECT_SAVANT = Symbol("ASPECT_SAVANT");
 export const ASPECT_BEFORE = Symbol("ASPECT_BEFORE");
 export const ASPECT_BEHIND = Symbol("ASPECT_BEHIND");
 

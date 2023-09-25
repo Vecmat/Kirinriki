@@ -5,13 +5,13 @@
  */
 
 import lodash from "lodash";
-import { getParamter } from "./widget";
+import { getParamter } from "./util";
 import { Logger } from "../base/Logger";
 import { Exception } from "@vecmat/vendor";
 import { Kirinriki, IContext } from "../core";
-import { ASPECT_BEFORE, ASPECT_BEHIND, CONTROLLER_ROUTER, ParamMetadata, ParamMetadataObject, ROUTER_KEY, RouterMetadataObject, SAVANT_KEY } from "./define";
+import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY } from "../validation";
 import { getOriginMetadata, IOCContainer, RecursiveGetMetadata, TAGGED_PARAM } from "../container";
-import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY, ValidOtpions, ValidRules } from "../validation";
+import { ASPECT_BEFORE, ASPECT_BEHIND, CONTROLLER_ROUTER, ParamMetadata, ParamMetadataObject, ROUTER_KEY, RouterMetadataObject } from "./define";
 
 
 
@@ -29,14 +29,13 @@ import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY, ValidOtpions, ValidRul
  */
 export async function buildHandler(app: Kirinriki, ctx: IContext, ctlClass: any, method: string, ctlParams: any) {
     const ctl = IOCContainer.getInsByClass(ctlClass);
-
-    if (!ctl) {
-        throw new Exception("SYSTEM_CTL_ABSENT", "Controller not found.");
-    }
     if (!ctx) {
         throw new Exception("SYSTEM_CTX_ABSENT", "Context not found.");
     }
-
+    if (!ctl) {
+        throw new Exception("SYSTEM_CTL_ABSENT", "Controller not found.");
+    }
+   
     // call ctl.__before()
     if (ctl.__before && lodash.isFunction(ctl.__before)) {
         await ctl.__before(ctx);

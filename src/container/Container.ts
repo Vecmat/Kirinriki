@@ -285,18 +285,16 @@ export class Container implements IContainer {
             const baseType = Object.getPrototypeOf(target);
             const basename = baseType.constructor.name;
             name = name || (target.constructor ? target.constructor.name ?? "" : "");
-            const reg = /(Capturer|Controller|Savant|Aspect)/;
+            const reg = /(Addon|Capturer|Controller)/;
             if (!reg.test(name) && reg.test(basename)) {
                 name = basename;
             }
-            if (~name.indexOf("Capturer")) {
+            if (name.indexOf("Addon") > -1) {
+                return "ADDON";
+            } else if (name.indexOf("Capturer") > -1) {
                 return "CAPTURER";
-            } else if (~name.indexOf("Controller")) {
+            } else if (name.indexOf("Controller") > -1) {
                 return "CONTROLLER";
-            } else if (~name.indexOf("Savant")) {
-                return "SAVANT";
-            } else if (~name.indexOf("Aspect")) {
-                return "ASPECT";
             } else {
                 return "COMPONENT";
             }

@@ -4,8 +4,6 @@
  * @ abstract: 小组件
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import lodash from "lodash";
-import { ApiOutput } from "./Component";
 import { Exception, Check } from "@vecmat/vendor";
 
 const ARGUMENT_NAMES = /([^\s,]+)/g;

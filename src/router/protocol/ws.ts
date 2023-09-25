@@ -63,14 +63,14 @@ export class WebsocketRouter implements IRouter {
     /**
      * ListRouter
      *
-     * @returns {*} {KoaRouter.Savant<any, unknown>}
+     * @returns {*} {KoaRouter.Middleware<any, unknown>}
      */
     ListRouter(): KoaRouter.Middleware<DefaultState, DefaultContext> {
         return this.router.routes();
     }
 
     /**
-     * 
+     *
      *
      * @param {any[]} list
      */
