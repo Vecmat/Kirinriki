@@ -54,7 +54,7 @@ const defaultOptions: PayloadOptions = {
 export function Payload(options: PayloadOptions, app: Kirinriki): Koa.Middleware {
     options = { ...defaultOptions, ...options };
 
-    return async (ctx: IContext, next: INext) => {
+    return async function PayloadSavant(ctx: IContext, next: INext) {
         /**
          * request query & params parser
          *

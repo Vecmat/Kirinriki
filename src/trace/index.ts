@@ -54,7 +54,7 @@ export function Trace(options: TraceOptions, app: Kirinriki): Koa.Middleware {
     const timeout = (app.config("http_timeout") || 10) * 1000;
     const encoding = app.config("encoding") || "utf-8";
     const openTrace = app.config("open_trace") || false;
-    return async (ctx: IContext, next: INext) => {
+    return async function TraceSavant(ctx: IContext, next: INext) {
         // server termined
         const termined = false;
         const respWapper = async (currTraceId: string) => {
