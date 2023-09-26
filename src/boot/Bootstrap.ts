@@ -10,7 +10,7 @@ import EventEmitter from "events";
 import { Logger } from "../base/Logger";
 import { asyncEmit } from "../vendor/eve";
 import { Kirinriki } from '../core';
-import { Captor } from "../manager/Capturer";
+import { Captor } from "../base/Capturer";
 import { BootLoader } from "./BootLoader";
 import { Exception, ARROBJ } from "@vecmat/vendor";
 import { NewRouter, RouterOptions } from "../router";
@@ -18,8 +18,8 @@ import { IOCContainer, TAGGED_CLS } from "../container";
 import { checkNodeVer, isUnintTest, KIRINRIKI_VERSION } from "../vendor/Check";
 import { APP_READY_HOOK, COMPONENT_SCAN, CONFIGURATION_SCAN, LOGO, WELCOME } from "../base/Constants";
 import { BindProcessEvent, Serve, ListeningOptions } from "../serve";
-import { MonitorManager } from "src/manager/Monitor";
-import { SavantManager } from "src/manager/Savant";
+import { MonitorManager } from "../base/Monitor";
+import { SavantManager } from "../base/Savant";
 
 /**
  * execute bootstrap
@@ -102,11 +102,16 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         await asyncEmit(app, "APP_ADDON_LOADED");
         Logger.Log("Vecmat", "", "Loaded Addon ...");
 
+        // init MonitorManager
+        await MonitorManager.init(app);
+        // init SavantManager
+       await SavantManager.init(app);
+
         //  Mount the monitor
-        MonitorManager.mount(app);
+       await MonitorManager.mount(app);
 
         // Mount the savant
-        SavantManager.mount(app);
+       await SavantManager.mount(app);
 
         // Load Components
         BootLoader.LoadComponents(app);

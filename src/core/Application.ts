@@ -212,9 +212,9 @@ export class Kirinriki extends Koa implements Application {
             this.middleware.push(reqHandler);
         }
         const fn = koaCompose(this.middleware);
-        return (req: unknown, res: unknown) => {
+        return async(req: unknown, res: unknown) => {
             const context = this.createContext(req, res, protocol);
-            return this.handleRequest(context, fn);
+            return await this.handleRequest(context, fn);
         };
     }
 
@@ -233,6 +233,7 @@ export class Kirinriki extends Koa implements Application {
         const onerror = (err: Error) => ctx.onerror(err);
         onFinished(res, onerror);
         return composes(ctx);
+       
     }
 
     /**

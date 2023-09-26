@@ -26,8 +26,9 @@ export class HttpServer implements IApplication {
         this.app = app;
         this.protocol = options.protocol;
         this.options = options;
-        this.server = createServer((req, res) => {
-            app.callback()(req, res);
+        this.server = createServer(async(req, res) => {
+            const handler = app.callback();
+            await handler(req, res);
         });
         CreateTerminus(this);
     }

@@ -96,8 +96,9 @@ export class HttpRouter implements IRouter {
                     }
                     this.SetRouter(
                         path,
-                        (ctx: IContext): Promise<any> => {
-                            return buildHandler(this.app, ctx, ctlClass, method, params);
+                        async (ctx: IContext): Promise<any> => {
+                            await buildHandler(this.app, ctx, ctlClass, method, params);
+
                         },
                         requestMethod
                     );

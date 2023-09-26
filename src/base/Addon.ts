@@ -24,7 +24,7 @@ export function Addon(identifier?: string): ClassDecorator {
         
         identifier = identifier || IOCContainer.getIdentifier(target);
         if (!identifier.endsWith("Addon")) {
-            throw new Exception("BOOTERR_LOADER_NAMELACK", "Addon class name must be 'Plugin' suffix.");
+            throw new Exception("BOOTERR_LOADER_NAMELACK", "Addon class name must be 'Addon' suffix.");
         }
         IOCContainer.saveClass("ADDON", target, `${identifier}`);
     };

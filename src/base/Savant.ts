@@ -13,7 +13,7 @@ import { Trace } from "../trace";
 import { asyncEmit } from "../vendor/eve";
 import { Kirinriki } from "../core";
 import { Payload } from "../payload";
-import { Exception } from "@vecmat/vendor";
+import { Check, Exception } from "@vecmat/vendor";
 import { ComponentItem } from "../boot/BootLoader";
 import { SAVANT_KEY } from "../router/define";
 import { ComponentType, IOCContainer } from "../container";
@@ -26,9 +26,9 @@ import { ComponentType, IOCContainer } from "../container";
  * @returns {MethodDecorator}
  */
 export  function Savant(name: string, confg?: object): MethodDecorator {
-    return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
+    return (target: any, method: string, descriptor: PropertyDescriptor) => {
         // 存到专用数组里？
-        IOCContainer.attachPropertyData(SAVANT_KEY, { name, ...confg }, target, methodName);
+        IOCContainer.savePropertyData(SAVANT_KEY, name, target, method);
     };
 }
 
@@ -48,10 +48,11 @@ export class SavantManager {
     }
 
     // init savant function
-    static async init() {
+    static async init(app:Kirinriki) {
         // Built in savant
         this.reg("Trace", Trace);
         this.reg("Playload", Payload);
+      
         // Custom savant
         const allcls = IOCContainer.listClass();
         allcls.forEach((item: ComponentItem) => {

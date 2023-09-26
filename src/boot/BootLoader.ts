@@ -8,7 +8,7 @@ import * as path from "path";
 import { LoadDir } from "../base/Loader";
 import { IAddon } from "../base/Addon";
 import { Kirinriki } from '../core';
-import { Captor  } from "../manager/Capturer";
+import { Captor  } from "../base/Capturer";
 import { checkClass } from "../vendor/widget";
 import { AppReadyHookFunc } from "./Bootstrap";
 import { LoadConfigs as loadConf } from "../base/config";
@@ -17,10 +17,6 @@ import { Exception, Check, ARROBJ } from "@vecmat/vendor";
 import { Logger, updateLogger, LoggerOption } from "../base/Logger";
 import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
 import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from '../base/Constants';
-import { SavantManager } from "src/base";
-import { MonitorManager } from "src/manager/Monitor";
-
-
 
 /**
  *
@@ -264,7 +260,7 @@ export class BootLoader {
 
         let addonConf = app.config(undefined, "addon");
         if (Check.isEmpty(addonConf)) {
-            addonConf = { config: {}, list: [] };
+            addonConf = { config: {}, queue: [] };
         }
 
         // 全部的插件
@@ -274,22 +270,19 @@ export class BootLoader {
             item.id = (item.id ?? "").replace("ADDON:", "");
             if (item.id && item.id.endsWith("Addon") && Check.isClass(item.target)) {
                 // registering to IOC
-                IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "COMPONENT", args: [] });
+                IOCContainer.reg(item.id, item.target, { scope: "Singleton", type: "ADDON", args: [] });
                 addonList.push(item.id);
             }
         });
 
-        const addonConfList = addonConf.list;
+        const addonConfQueue = addonConf.queue;
 
-        for (const key of addonConfList) {
+        for (const key of addonConfQueue) {
             const ins: IAddon = IOCContainer.get(key, "ADDON");
             console.log(ins.version);
         }
 
-        // init MonitorManager
-        MonitorManager.init();
-        // init SavantManager
-        SavantManager.init();
+
     }
 
 

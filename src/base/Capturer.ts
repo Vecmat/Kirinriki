@@ -7,7 +7,7 @@
 import { Exception } from "@vecmat/vendor";
 import { IOCContainer } from "../container";
 import { IContext, Kirinriki } from "../core";
-import { CAPTURER_KEY } from "../base/Constants";
+import { CAPTURER_KEY } from "./Constants";
 import lodash from "lodash";
 /**
  * Kirinriki system error capture 

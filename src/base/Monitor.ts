@@ -12,6 +12,7 @@ import { Kirinriki } from "../core";
 import { asyncEmit } from "../vendor/eve";
 import { ComponentItem } from "../boot/BootLoader";
 import { ComponentType, IOCContainer } from "../container";
+import { Check } from "@vecmat/vendor";
 
 /**
  * Indicates that an decorated method is a "Monitor".
@@ -31,7 +32,7 @@ export function Monitor(name: string, confg?: object): MethodDecorator {
  * 
  */
 export class MonitorManager {
-    public static EmitMap: Map<string, Function[]>;
+    public static EmitMap: Map<string, Function[]> = new Map();
 
     static reg(name: string, fun: Function) {
         // 学习 LoadRouter
@@ -44,15 +45,19 @@ export class MonitorManager {
     }
 
     // Parse monitor
-    static async init() {
+    static async init(app:Kirinriki) {
         const allcls = IOCContainer.listClass();
+    
+
+
         allcls.forEach((item: ComponentItem) => {
             const [, type, name] = item.id.match(/(\S+):(\S+)/);
             const ins = IOCContainer.get(name, <ComponentType>type);
             const keyMeta = IOCContainer.listPropertyData("EVENT_KEY", item.target);
             for (const fun in keyMeta) {
+                const name = keyMeta[fun]["name"];
                 if (lodash.isFunction(ins[fun])) {
-                    this.reg(keyMeta[fun], ins[fun]);
+                    this.reg( name,ins[fun] );
                 }
             }
         });
@@ -60,9 +65,9 @@ export class MonitorManager {
 
     // Mount the monitor
     static async mount(app: Kirinriki) {
-        const keys = Object.keys(this.EmitMap);
+        const keys = Object.keys(MonitorManager.EmitMap);
         for (const key of keys) {
-            const funs = this.EmitMap.get(key);
+            const funs = MonitorManager.EmitMap.get(key);
             for await (const exec of funs) {
                 if (lodash.isFunction(exec)) {
                     app.on(key, exec);

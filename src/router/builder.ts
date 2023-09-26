@@ -43,7 +43,7 @@ export async function buildHandler(app: Kirinriki, ctx: IContext, ctlClass: any,
 
     // Aspect（before）
     const beforeAspects = IOCContainer.getPropertyData(ASPECT_BEFORE, ctlClass, method) || [];
-    for await (const { name, exec } of beforeAspects) {
+    for (const { name, exec } of beforeAspects) {
         await exec(ctx);
     }
 
@@ -62,7 +62,7 @@ export async function buildHandler(app: Kirinriki, ctx: IContext, ctlClass: any,
 
     // Aspect（behind）
     const behindAspects = IOCContainer.getPropertyData(ASPECT_BEHIND, ctlClass, method) || [];
-    for await (const { name, exec } of behindAspects) {
+    for (const { name, exec } of behindAspects) {
         await exec(ctx);
     }
 
