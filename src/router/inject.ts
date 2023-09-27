@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { ASPECT_BEFORE, ASPECT_BEHIND, ROUTER_KEY, SAVANT_KEY } from "./define";
+import { ASPECT_BEFORE, ASPECT_BEHIND, ROUTER_KEY, ASPECT_SAVANT } from "./define";
 import { Exception } from "@vecmat/vendor";
 import { paramterTypes } from "../validation";
 import { IOCContainer, TAGGED_PARAM } from "../container";
@@ -98,7 +98,7 @@ export const InjectParams = (name: string, fn: TParams): ParameterDecorator => {
  */
 export function InjectSavant(name: string, exec: TSavant): MethodDecorator {
     return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
-        IOCContainer.attachPropertyData(SAVANT_KEY, exec, target, methodName);
+        IOCContainer.attachPropertyData(ASPECT_SAVANT, exec, target, methodName);
     };
 }
 
