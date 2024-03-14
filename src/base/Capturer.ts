@@ -10,7 +10,7 @@ import { IContext, Kirinriki } from "../core";
 import { CAPTURER_KEY } from "./Constants";
 import lodash from "lodash";
 /**
- * Kirinriki system error capture 
+ * Kirinriki system error capture
  */
 
 export interface ICapturer {
@@ -20,8 +20,8 @@ export interface ICapturer {
 
 /**
  * Indicates that an decorated class is a "capturer".
- * 
- * @export 
+ *
+ * @export
  * @param {string} [identifier] class name
  * @returns {ClassDecorator}
  */
@@ -38,7 +38,7 @@ export function Capturer(identifier?: string): ClassDecorator {
  * @example @Catching("*")
  * @example @Catching("Sequlize*")
  * @param name  ErrorType for matching (support '*' match any char )
- * @returns 
+ * @returns
  */
 export function Catching(name: string): MethodDecorator {
     return (target, method: string, descriptor: PropertyDescriptor) => {
@@ -56,7 +56,7 @@ export class Captor {
     static map: Map<string, ICapturer> = new Map();
     static regs: Map<string, RegExp> = new Map();
     constructor() {}
-    
+
     // 需要再IOCContainer.reg内处理
     static reg(name: string, fun: ICapturer) {
         // 学习 LoadRouter
@@ -82,9 +82,9 @@ export class Captor {
         } else {
             for (const key of Captor.regs.keys()) {
                 // Prevent duplication
-                if (key === "*") return;
+                if (key === "*")  break;
                 if (!~key.indexOf("*")) {
-                    return;
+                     break;
                 }
 
                 const regex = Captor.regs.get(key);
@@ -102,6 +102,6 @@ export class Captor {
     // Mount the Captor
     static async mount(app: Kirinriki) {
         // 读取并注册到map里即可
-        
+
     }
 }

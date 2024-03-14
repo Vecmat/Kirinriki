@@ -8,9 +8,9 @@
 import { Kirinriki } from "../core";
 export { LoggerOption } from "@vecmat/printer";
 import { DefaultLogger, LoggerOption } from "@vecmat/printer";
-import type { Logger as Printer } from "@vecmat/printer";
+import { VMLogger } from "@vecmat/printer";
 
-// Export Logger
+// Export
 export let Logger = DefaultLogger;
 
 /**
@@ -19,7 +19,7 @@ export let Logger = DefaultLogger;
  * @export
  * @param {Printer} ins
  */
-export async function SetLogger(ins: Printer) {
+export async function SetLogger(ins: VMLogger) {
     Logger = ins;
 }
 

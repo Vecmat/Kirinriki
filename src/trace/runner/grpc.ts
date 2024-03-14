@@ -13,10 +13,10 @@ import { DefaultLogger as Logger } from "@vecmat/printer";
 /**
  * grpcRunner
  *
- * @param {IContext} ctx 
- * @param {Function} next 
- * @param {*} ext 
- * @returns 
+ * @param {IContext} ctx
+ * @param {Function} next
+ * @param {*} ext
+ * @returns
  */
 export async function grpcRunner(ctx: IContext, next: INext, ext?: any): Promise<any> {
     const timeout = ext.timeout || 10000;
@@ -28,7 +28,7 @@ export async function grpcRunner(ctx: IContext, next: INext, ext?: any): Promise
     ctx.rpc.call.sendMetadata(ctx.rpc.call.metadata);
 
     // event callback
-    const listener = () => {
+    const finish = () => {
         const now = Date.now();
         const originalPath = ctx.getMetaData("originalPath");
         const startTime = ctx.getMetaData("startTime");
@@ -39,8 +39,10 @@ export async function grpcRunner(ctx: IContext, next: INext, ext?: any): Promise
         Logger[status > 0 ? "Error" : "Info"](msg);
         // ctx = null;
     };
-    ctx.res.once("finish", listener);
-    ctx.rpc.call.once("error", listener);
+    ctx.res.once("finish", finish);
+    // !!! TS报错，暂未处理
+    // 需要重构gRPC ，支持websocket
+    // ctx.rpc.call.on("error", finish);
 
     // try /catch
     const response: any = {};

@@ -18,6 +18,26 @@ import { ComponentItem } from "../boot/BootLoader";
 import { SAVANT_KEY } from "../router/define";
 import { ComponentType, IOCContainer } from "../container";
 
+// @before("Auth")
+// 类前置中间件
+export function Before(name: string): ClassDecorator {
+    return (target: any) => {
+        // 中间件名称
+
+    };
+}
+
+
+// 函数调用中间件
+export function Use(name: string): MethodDecorator {
+    return (target: any, method: string, descriptor: PropertyDescriptor) => {
+        // 中间件名称
+        console.log("函数调用中间件 totototo");
+        // IOCContainer.savePropertyData(SAVANT_KEY, name, target, method);
+    };
+}
+
+
 /**
  * Indicates that an decorated method is a "savant".
  *
@@ -42,7 +62,7 @@ export class SavantManager {
     static reg(name: string, fun: Function) {
         // 学习 LoadRouter
         if (SavantManager.map.has(name)) {
-            throw new Exception("BOOTERR_SAVNT_CLASH", "Savant can't reg same savant name");
+            throw new Exception("BOOTERR_SAVNT_CLASH", `Savant can't reg same savant name: "${name}"`);
         }
         SavantManager.map.set(name, fun);
     }
@@ -52,7 +72,7 @@ export class SavantManager {
         // Built in savant
         this.reg("Trace", Trace);
         this.reg("Playload", Payload);
-      
+
         // Custom savant
         const allcls = IOCContainer.listClass();
         allcls.forEach((item: ComponentItem) => {
@@ -86,7 +106,7 @@ export class SavantManager {
         });
         SavantManager.queues = Array.from(queueSet);
 
-        
+
         await asyncEmit(app, "LOAD_APP_SAVANT_BEFORE", [SavantManager.queues]);
 
         // $ Need check ？

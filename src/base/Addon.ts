@@ -21,10 +21,10 @@ export interface IAddon {
  */
 export function Addon(identifier?: string): ClassDecorator {
     return (target: any) => {
-        
+
         identifier = identifier || IOCContainer.getIdentifier(target);
         if (!identifier.endsWith("Addon")) {
-            throw new Exception("BOOTERR_LOADER_NAMELACK", "Addon class name must be 'Addon' suffix.");
+            throw new Exception("BOOTERR_LOADER_NAMELACK", `Addon class ${identifier} name must be 'Addon' suffix.`);
         }
         IOCContainer.saveClass("ADDON", target, `${identifier}`);
     };

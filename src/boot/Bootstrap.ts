@@ -9,7 +9,7 @@ import lodash from "lodash";
 import EventEmitter from "events";
 import { Logger } from "../base/Logger";
 import { asyncEmit } from "../vendor/eve";
-import { Kirinriki } from '../core';
+import { Kirinriki } from "../core";
 import { Captor } from "../base/Capturer";
 import { BootLoader } from "./BootLoader";
 import { Exception, ARROBJ } from "@vecmat/vendor";
@@ -26,7 +26,7 @@ import { SavantManager } from "../base/Savant";
  *
  * @param {*} target
  * @param {Function} bootFunc
- * @param {boolean} [isInitiative=false] Whether to actively execute app instantiation, 
+ * @param {boolean} [isInitiative=false] Whether to actively execute app instantiation,
  * mainly for unittest scenarios, you need to actively obtain app instances
  * @returns {Promise<void>}
  */
@@ -51,7 +51,6 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         app.silent = true;
         Logger.enable(false);
     }
-
 
     try {
         !app.silent && Logger.Log("🌈🌈🌈🌈🌈", LOGO, WELCOME);
@@ -105,13 +104,13 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // init MonitorManager
         await MonitorManager.init(app);
         // init SavantManager
-       await SavantManager.init(app);
+        await SavantManager.init(app);
 
         //  Mount the monitor
-       await MonitorManager.mount(app);
+        await MonitorManager.mount(app);
 
         // Mount the savant
-       await SavantManager.mount(app);
+        await SavantManager.mount(app);
 
         // Load Components
         BootLoader.LoadComponents(app);
@@ -172,42 +171,40 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
     }
 };
 
-
-
 /**
  * create router
  *
  * @export
  * @param {Kirinriki} app
- * @returns {*}  
+ * @returns {*}
  */
 const newRouter = function (app: Kirinriki) {
     const protocol = app.config("protocol") || "http";
-    const options: RouterOptions = app.config(undefined, 'router') ?? {};
+    const options: RouterOptions = app.config(undefined, "router") ?? {};
     const router = NewRouter(app, options, protocol);
     return router;
 };
-
 
 /**
  * create serve
  *
  * @param {Kirinriki} app
- * @returns {*}  
+ * @returns {*}
  */
 const newServe = function (app: Kirinriki) {
     const protocol = app.config("protocol") || "http";
-    const port = process.env.PORT || process.env.APP_PORT ||
-        app.config('app_port') || 3000;
-    const hostname = process.env.IP || app.config('app_host') || '127.0.0.1';
+    const port = process.env.PORT || process.env.APP_PORT || app.config("app_port") || 3000;
+    const hostname = process.env.IP || app.config("app_host") || "127.0.0.1";
 
     const options: ListeningOptions = {
-        hostname, port, protocol,
+        hostname,
+        port,
+        protocol,
         ext: {
             key: "",
             cert: "",
-            protoFile: "",
-        },
+            protoFile: ""
+        }
     };
     const pm = new Set(["https", "http2", "wss"]);
     if (pm.has(options.protocol)) {
@@ -232,31 +229,35 @@ const newServe = function (app: Kirinriki) {
  * Listening callback function
  *
  * @param {Kirinriki} app
- * @returns {*} 
+ * @returns {*}
  */
 const listenCallback = (app: Kirinriki) => {
     return async function () {
         const options = app.server.options;
 
         // binding event "appStop"
-        Logger.Log('Vecmat', '', 'Bind App Stop event ...');
-        BindProcessEvent(app, 'appStop');
+        Logger.Log("Vecmat", "", "Bind App Stop event ...");
+        BindProcessEvent(app, "appStop");
 
         // Emit app started event
-        Logger.Log('Vecmat', '', 'Emit App Start Listen ...');
-        await asyncEmit(app, 'APP_START_LISTEN');
+        Logger.Log("Vecmat", "", "Emit App Start Listen ...");
+        await asyncEmit(app, "APP_START_LISTEN");
 
-        Logger.Log('Vecmat', '', `Server Protocol: ${(options.protocol).toUpperCase()}`);
-        Logger.Log('Vecmat', "", `Server running at ${options.protocol === "http2" ? "https" : options.protocol}://${options.hostname || '127.0.0.1'}:${options.port}/`);
+        Logger.Log("Vecmat", "", `Server Protocol: ${options.protocol.toUpperCase()}`);
+        Logger.Log(
+            "Vecmat",
+            "",
+            `Server running at ${options.protocol === "http2" ? "https" : options.protocol}://${options.hostname || "127.0.0.1"}:${
+                options.port
+            }/`
+        );
 
         // tslint:disable-next-line: no-unused-expression
         app.appDebug && Logger.Warn(`🚧 RUNNING IN DEBUG MODE! 🚧 `);
-        // update Logger 
+        // update Logger
         BootLoader.SetLogger(app);
     };
 };
-
-
 
 /**
  * Bootstrap application
@@ -268,16 +269,15 @@ const listenCallback = (app: Kirinriki) => {
 export function Bootstrap(bootFunc?: Function): ClassDecorator {
     return function (target: any) {
         if (!(target.prototype instanceof Kirinriki)) {
-            throw new Exception("BOOTERR_BOOTSTRAP",`class does not inherit from Kirinriki`);
+            throw new Exception("BOOTERR_BOOTSTRAP", `class does not inherit from Kirinriki`);
         }
         executeBootstrap(target, bootFunc);
     };
 }
 
-
 /**
  * Actively perform dependency injection
- * Parse the decorator, return the instantiated app. 
+ * Parse the decorator, return the instantiated app.
  * @export  ExecBootStrap
  * @param {Function} [bootFunc] callback function
  * @returns
@@ -285,7 +285,7 @@ export function Bootstrap(bootFunc?: Function): ClassDecorator {
 export function ExecBootStrap(bootFunc?: Function) {
     return async (target: any) => {
         if (!(target.prototype instanceof Kirinriki)) {
-            throw new Exception("BOOTERR_EXECBOOTSTRAP",`class ${target.name} does not inherit from TKirinriki`);
+            throw new Exception("BOOTERR_EXECBOOTSTRAP", `class ${target.name} does not inherit from TKirinriki`);
         }
         return await executeBootstrap(target, bootFunc, true);
     };
@@ -301,9 +301,9 @@ export function ExecBootStrap(bootFunc?: Function) {
 export function ComponentScan(scanPath?: string | string[]): ClassDecorator {
     return (target: any) => {
         if (!(target.prototype instanceof Kirinriki)) {
-            throw new Exception("BOOTERR_COMPONENT_SCAN",`class does not inherit from Kirinriki`);
+            throw new Exception("BOOTERR_COMPONENT_SCAN", `class does not inherit from Kirinriki`);
         }
-        scanPath = scanPath ?? '';
+        scanPath = scanPath ?? "";
         IOCContainer.saveClassMetadata(TAGGED_CLS, COMPONENT_SCAN, scanPath, target);
     };
 }
@@ -318,15 +318,15 @@ export function ComponentScan(scanPath?: string | string[]): ClassDecorator {
 export function ConfigurationScan(scanPath?: string | string[]): ClassDecorator {
     return (target: any) => {
         if (!(target.prototype instanceof Kirinriki)) {
-            throw new Exception("BOOTERR_CONFIG_SCAN",`class does not inherit from Kirinriki`);
+            throw new Exception("BOOTERR_CONFIG_SCAN", `class does not inherit from Kirinriki`);
         }
-        scanPath = scanPath ?? '';
+        scanPath = scanPath ?? "";
         IOCContainer.saveClassMetadata(TAGGED_CLS, CONFIGURATION_SCAN, scanPath, target);
     };
 }
 
 // type AppReadyHookFunc
-export type AppReadyHookFunc = (app: Kirinriki) => Promise<any>
+export type AppReadyHookFunc = (app: Kirinriki) => Promise<any>;
 
 /**
  * bind AppReadyHookFunc
@@ -335,13 +335,13 @@ export type AppReadyHookFunc = (app: Kirinriki) => Promise<any>
  *  return (target: any) => {
  *   BindAppReadyHook((app: Kirinriki) => {
  *      return Promise.resolve();
- *   }, target)   
+ *   }, target)
  *  }
  * }
  *
  * @export
  * @param {AppReadyHookFunc} func
- * @param {*} target 
+ * @param {*} target
  */
 export function BindAppReadyHook(func: AppReadyHookFunc, target: any) {
     IOCContainer.attachClassMetadata(TAGGED_CLS, APP_READY_HOOK, func, target);
