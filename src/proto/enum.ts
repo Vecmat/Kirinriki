@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import { IEnum } from "protobufjs";
-import { OptionType } from "./interface";
+import { OptionType } from "./interface.js";
 
 /**
  *
@@ -20,7 +20,7 @@ export function printEnum(name: string, enumContent: IEnum, options: OptionType)
     const item = Object.keys(content)
         .map(key => ({
             name: key,
-            id: content[key]
+            id: content[key]||0
         }))
         .sort((a, b) => a.id - b.id);
     const arr = item.map(s => `  ${s.name} = "${s.id}",`);

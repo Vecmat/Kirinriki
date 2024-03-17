@@ -3,16 +3,16 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import KoaRouter from "@koa/router";
 import { Check } from "@vecmat/vendor";
-import { RouterOptions } from "../define";
-import { RequestMethod } from "../define";
-import { Logger } from "../../base/Logger";
-import { IOCContainer } from "../../container";
+import { RequestMethod } from "../define.js";
+import { Logger } from "../../base/Logger.js";
 import { DefaultContext, DefaultState } from "koa";
-import { buildHandler, buildParams, buildRouter } from "../builder";
-import { Kirinriki, IContext, INext, IRouter } from "../../core";
-
+import { IRouter } from "../../core/IApplication.js";
+import { Kirinriki } from "../../core/Application.js";
+import KoaRouter, { RouterOptions } from "@koa/router";
+import { IOCContainer } from "../../container/index.js";
+import { IContext, INext } from "../../core/IContext.js";
+import { buildRouter, buildParams, buildHandler } from "../builder.js";
 
 /**
  * WebsocketRouter Options
@@ -21,18 +21,18 @@ import { Kirinriki, IContext, INext, IRouter } from "../../core";
  * @interface WebsocketRouterOptions
  */
 export interface WebsocketRouterOptions extends RouterOptions {
-    prefix: string;
+    // prefix?: string;
 }
 // WsImplementation
 export type WsImplementation = (ctx: IContext, next: INext) => Promise<any>;
 
 export class WebsocketRouter implements IRouter {
     app: Kirinriki;
-    readonly protocol: string;
-    options: WebsocketRouterOptions;
+    readonly protocol!: string;
+    options!: RouterOptions;
     router: KoaRouter;
 
-    constructor(app: Kirinriki, options?: RouterOptions) {
+    constructor(app: Kirinriki, options: RouterOptions = {}) {
         this.app = app;
         this.options = Object.assign(
             {
@@ -85,6 +85,9 @@ export class WebsocketRouter implements IRouter {
                 // tslint:disable-next-line: forin
                 for (const it in ctlRouters) {
                     const router = ctlRouters[it];
+                    if (!router) {
+                        break;
+                    }
                     const path = router.path;
                     const method = router.method;
                     const requestMethod = <RequestMethod>router.requestMethod;

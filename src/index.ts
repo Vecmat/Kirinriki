@@ -4,13 +4,13 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-export * from "./base";
-export * from "./core";
-export * from "./serve";
-export * from "./trace";
-export * from "./router";
-export * from "./container";
-export * from "./validation";
+export * from "./base/index.js";
+export * from "./core/index.js";
+export * from "./serve/index.js";
+export * from "./trace/index.js";
+export * from "./router/index.js";
+export * from "./container/index.js";
+export * from "./validation/index.js";
 
 
 

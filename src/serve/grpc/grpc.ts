@@ -3,11 +3,13 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Logger } from "../../base/Logger";
-import { CreateTerminus } from "../terminus";
-import { Kirinriki, IApplication } from "../../core";
+import { Logger } from "../../base/Logger.js";
+import { ListeningOptions } from "../serve.js";
+import { CreateTerminus } from "../terminus.js";
+import { Kirinriki } from "../../core/Application.js";
+import { IApplication } from "../../core/IApplication.js";
 import { ChannelOptions, Server, ServerCredentials, ServiceDefinition, UntypedHandleCall } from "@grpc/grpc-js";
-import { ListeningOptions } from "../index";
+
 /**
  * ServiceImplementation
  *
@@ -42,8 +44,8 @@ export class GrpcServer implements IApplication {
     options: GrpcServerOptions;
     readonly server: Server;
     readonly protocol: string;
-    status: number;
-    listenCallback?: () => void;
+    status: number | undefined;
+    listenCallback!: () => void;
 
     constructor(app: Kirinriki, options: ListeningOptions) {
         this.app = app;
@@ -72,7 +74,9 @@ export class GrpcServer implements IApplication {
         // );
         this.server.bindAsync(`${this.options.hostname}:${this.options.port}`, creds, () => {
             this.server.start();
-            listenCallback();
+            if (listenCallback) {
+                listenCallback();
+            }
         });
 
         return this.server;

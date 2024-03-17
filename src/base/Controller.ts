@@ -6,10 +6,10 @@
 
 
 import "reflect-metadata";
-import { IOCContainer } from "../container";
-import { Kirinriki, IContext } from '../core';
-import { CONTROLLER_ROUTER } from "../router";
-
+import { IContext } from "../core/IContext.js";
+import { Kirinriki } from "../core/Application.js";
+import { CONTROLLER_ROUTER } from "../router/define.js";
+import { IOCContainer } from "../container/Container.js";
 
 /**
  * Interface for Controller
@@ -46,7 +46,7 @@ export function Controller(path = ""): ClassDecorator {
  * @implements {IController}
  */
 export  class BaseController implements IController {
-    readonly app: Kirinriki;
+    readonly app!: Kirinriki;
 
     /**
      * instance of BaseController.

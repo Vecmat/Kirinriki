@@ -4,22 +4,28 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import "reflect-metadata";
-import fs from "fs";
+import { readFileSync } from "fs";
 import lodash from "lodash";
 import EventEmitter from "events";
-import { Logger } from "../base/Logger";
-import { asyncEmit } from "../vendor/eve";
-import { Kirinriki } from "../core";
-import { Captor } from "../base/Capturer";
-import { BootLoader } from "./BootLoader";
+import { Logger } from "../base/Logger.js";
+import path, {dirname} from 'path'
+import {fileURLToPath} from 'url'
+
+
+import { asyncEmit } from "../vendor/eve.js";
+import { Captor } from "../base/Capturer.js";
+import { BootLoader } from "./BootLoader.js";
+import { SavantManager } from "../base/Savant.js";
 import { Exception, ARROBJ } from "@vecmat/vendor";
-import { NewRouter, RouterOptions } from "../router";
-import { IOCContainer, TAGGED_CLS } from "../container";
-import { checkNodeVer, isUnintTest, KIRINRIKI_VERSION } from "../vendor/Check";
-import { APP_READY_HOOK, COMPONENT_SCAN, CONFIGURATION_SCAN, LOGO, WELCOME } from "../base/Constants";
-import { BindProcessEvent, Serve, ListeningOptions } from "../serve";
-import { MonitorManager } from "../base/Monitor";
-import { SavantManager } from "../base/Savant";
+import { Kirinriki } from "../core/Application.js";
+import { MonitorManager } from "../base/Monitor.js";
+import { TAGGED_CLS } from "../container/IContainer.js";
+import { BindProcessEvent } from "../serve/terminus.js";
+import { IOCContainer } from "../container/Container.js";
+import { ListeningOptions, Serve } from "../serve/serve.js";
+import { NewRouter, RouterOptions } from "../router/index.js";
+import { isUnintTest} from "../vendor/Check.js";
+import { LOGO, WELCOME, COMPONENT_SCAN, CONFIGURATION_SCAN, APP_READY_HOOK } from "../base/Constants.js";
 
 /**
  * execute bootstrap
@@ -30,13 +36,17 @@ import { SavantManager } from "../base/Savant";
  * mainly for unittest scenarios, you need to actively obtain app instances
  * @returns {Promise<void>}
  */
-const executeBootstrap = async function (target: any, bootFunc: Function, isInitiative = false): Promise<Kirinriki> {
+const executeBootstrap = async function <TFunction extends Function>(
+    target: TFunction,
+    bootFunc?: Function,
+    isInitiative = false
+): Promise<Kirinriki> {
     // checked runtime
-    checkNodeVer();
+    // checkNodeVer();
     // unittest running environment
     const inUnintTest = isUnintTest();
     if (!isInitiative && inUnintTest) {
-        return;
+        throw new Exception("SYS_inUnintTest");
     }
 
     const app: Kirinriki = Reflect.construct(target, []);
@@ -55,8 +65,17 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
     try {
         !app.silent && Logger.Log("🌈🌈🌈🌈🌈", LOGO, WELCOME);
 
+
+        // // 文件的路径
+        // const __filename = fileURLToPath(import.meta.url)
+        // // 先获取文件所在的目录
+        // const __dirname = dirname(__filename)
+
+        let file =  path.resolve(__dirname, "../../package.json");
+        let pkg = await readFileSync(file, "utf8");
+        let pkgjson = JSON.parse(pkg);
         // version
-        ARROBJ.defineProp(app, "version", KIRINRIKI_VERSION);
+        ARROBJ.defineProp(app, "version", pkgjson.version);
 
         // Initialize env
         BootLoader.initialize(app);
@@ -78,21 +97,22 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         IOCContainer.setApp(app);
 
         // Create Catcher
-
+      debugger;
         // Load global error catcher first
         // todo: remove CaptorManager
-        BootLoader.loadCaptor(app);
+        await  BootLoader.loadCaptor(app);
 
         // Check all Components
         Logger.Log("Vecmat", "", "Scan Component ...");
-        BootLoader.CheckAllComponents(app, target);
+        await BootLoader.CheckAllComponents(app, target);
 
         // async event APP boot start
         await asyncEmit(app, "APP_BOOT_START");
 
         // Load configuration
         // configuration metadata
-        BootLoader.LoadConfigs(app, target);
+        debugger
+        await  BootLoader.LoadConfigs(app, target);
         await asyncEmit(app, "APP_CONFIG_LOADED");
         Logger.Log("Vecmat", "", "Loaded Config ...");
 
@@ -161,7 +181,7 @@ const executeBootstrap = async function (target: any, bootFunc: Function, isInit
         // Call catcher
         const handls = Captor.match(sign);
         for (const hand of handls) {
-            skip = await hand(err, app);
+            skip = await hand(err as Exception, app);
             if (skip) {
                 break;
             }
@@ -210,8 +230,8 @@ const newServe = function (app: Kirinriki) {
     if (pm.has(options.protocol)) {
         const keyFile = app.config("key_file") ?? "";
         const crtFile = app.config("crt_file") ?? "";
-        options.ext.key = fs.readFileSync(keyFile).toString();
-        options.ext.cert = fs.readFileSync(crtFile).toString();
+        options.ext.key = readFileSync(keyFile).toString();
+        options.ext.cert = readFileSync(crtFile).toString();
     }
     if (options.protocol === "https" || options.protocol === "http2") {
         options.port = options.port == 80 ? 443 : options.port;
@@ -267,7 +287,7 @@ const listenCallback = (app: Kirinriki) => {
  * @returns {ClassDecorator}
  */
 export function Bootstrap(bootFunc?: Function): ClassDecorator {
-    return function (target: any) {
+    return function <TFunction extends Function>(target: TFunction) {
         if (!(target.prototype instanceof Kirinriki)) {
             throw new Exception("BOOTERR_BOOTSTRAP", `class does not inherit from Kirinriki`);
         }
@@ -283,7 +303,7 @@ export function Bootstrap(bootFunc?: Function): ClassDecorator {
  * @returns
  */
 export function ExecBootStrap(bootFunc?: Function) {
-    return async (target: any) => {
+    return async <TFunction extends Function>(target: TFunction) => {
         if (!(target.prototype instanceof Kirinriki)) {
             throw new Exception("BOOTERR_EXECBOOTSTRAP", `class ${target.name} does not inherit from TKirinriki`);
         }

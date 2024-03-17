@@ -8,15 +8,16 @@
  */
 
 import lodash from "lodash";
-import { Logger } from "../base/Logger";
-import { Trace } from "../trace";
-import { asyncEmit } from "../vendor/eve";
-import { Kirinriki } from "../core";
-import { Payload } from "../payload";
-import { Check, Exception } from "@vecmat/vendor";
-import { ComponentItem } from "../boot/BootLoader";
-import { SAVANT_KEY } from "../router/define";
-import { ComponentType, IOCContainer } from "../container";
+import { Logger } from "./Logger.js";
+import { Exception } from "@vecmat/vendor";
+import { Trace } from "../trace/index.js";
+import { asyncEmit } from "../vendor/eve.js";
+import { Payload } from "../payload/index.js";
+import { SAVANT_KEY } from "../router/define.js";
+import { Kirinriki } from "../core/Application.js";
+import { ComponentItem } from "../boot/BootLoader.js";
+import { IOCContainer } from "../container/Container.js";
+import { ComponentType } from "../container/IContainer.js";
 
 // @before("Auth")
 // 类前置中间件
@@ -30,7 +31,7 @@ export function Before(name: string): ClassDecorator {
 
 // 函数调用中间件
 export function Use(name: string): MethodDecorator {
-    return (target: any, method: string, descriptor: PropertyDescriptor) => {
+    return (target: Object, method: string | symbol, descriptor: PropertyDescriptor) => {
         // 中间件名称
         console.log("函数调用中间件 totototo");
         // IOCContainer.savePropertyData(SAVANT_KEY, name, target, method);
@@ -46,7 +47,7 @@ export function Use(name: string): MethodDecorator {
  * @returns {MethodDecorator}
  */
 export  function Savant(name: string, confg?: object): MethodDecorator {
-    return (target: any, method: string, descriptor: PropertyDescriptor) => {
+    return (target: Object, method: string | symbol, descriptor: PropertyDescriptor) => {
         // 存到专用数组里？
         IOCContainer.savePropertyData(SAVANT_KEY, name, target, method);
     };
@@ -76,7 +77,11 @@ export class SavantManager {
         // Custom savant
         const allcls = IOCContainer.listClass();
         allcls.forEach((item: ComponentItem) => {
-            const [, type, name] = item.id.match(/(\S+):(\S+)/);
+            const [, type, name] = item.id.match(/(\S+):(\S+)/) || [];
+            if (!name || !type) {
+                console.error(`[Kirinriki] CAPTURER :"${item.id}"‘s name format error!`);
+                return;
+            }
             const ins = IOCContainer.get(name, <ComponentType>type);
             const keyMeta = IOCContainer.listPropertyData(SAVANT_KEY, item.target);
             for (const fun in keyMeta) {

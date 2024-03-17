@@ -5,15 +5,16 @@
  */
 
 import lodash from "lodash";
-import { getParamter } from "./util";
-import { Logger } from "../base/Logger";
+import { getParamter } from "./util.js";
 import { Exception } from "@vecmat/vendor";
-import { Kirinriki, IContext } from "../core";
-import { PARAM_CHECK_KEY, PARAM_RULE_KEY, PARAM_TYPE_KEY } from "../validation";
-import { getOriginMetadata, IOCContainer, RecursiveGetMetadata, TAGGED_PARAM } from "../container";
-import { ASPECT_BEFORE, ASPECT_BEHIND, CONTROLLER_ROUTER, ParamMetadata, ParamMetadataObject, ROUTER_KEY, RouterMetadataObject } from "./define";
-
-
+import { Logger } from "../base/Logger.js";
+import { IContext } from "../core/IContext.js";
+import { Kirinriki } from "../core/Application.js";
+import { IOCContainer } from "../container/index.js";
+import { TAGGED_PARAM } from "../container/IContainer.js";
+import { RecursiveGetMetadata, getOriginMetadata } from "../container/Util.js";
+import { PARAM_RULE_KEY, PARAM_CHECK_KEY, PARAM_TYPE_KEY } from "../validation/rule.js";
+import { ASPECT_BEFORE, ASPECT_BEHIND, RouterMetadataObject, CONTROLLER_ROUTER, ROUTER_KEY, ParamMetadataObject, ParamMetadata } from "./define.js";
 
 
 
@@ -35,7 +36,7 @@ export async function buildHandler(app: Kirinriki, ctx: IContext, ctlClass: any,
     if (!ctl) {
         throw new Exception("SYSTEM_CTL_ABSENT", "Controller not found.");
     }
-   
+
     // call ctl.__before()
     if (ctl.__before && lodash.isFunction(ctl.__before)) {
         await ctl.__before(ctx);
@@ -120,7 +121,7 @@ export function buildParams(app: Kirinriki, target: any, instance?: any): ParamM
     const metaDatas = RecursiveGetMetadata(TAGGED_PARAM, target);
     const validMetaDatas = RecursiveGetMetadata(PARAM_RULE_KEY, target);
     const validatedMetaDatas = RecursiveGetMetadata(PARAM_CHECK_KEY, target);
-    
+
     const argsMetaObj: ParamMetadataObject = {};
     for (const meta in metaDatas) {
         // 实例方法带规则形参必须小于等于原型形参(如果不存在验证规则，则小于)

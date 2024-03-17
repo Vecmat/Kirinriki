@@ -3,6 +3,7 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
+
 export type Scope = "Singleton" | "Prototype" | "Connect";
 export type ComponentType = "ADDON" | "CAPTURER" | "CONTROLLER" | "COMPONENT";
 
@@ -33,8 +34,8 @@ export interface Application {
 
     use: (fn: Function) => any;
     config: (name: string, type?: string) => any;
-    on(event: string, callback: () => void): any;
-    once(event: string, callback: () => void): any;
+    on?(event: string, callback: () => void): any;
+    once?(event: string, callback: () => void): any;
     /**
      * app metadata
      *
@@ -81,7 +82,7 @@ export interface IContainer {
     reg<T>(identifier: string, target: T, options?: ObjectDefinitionOptions): T;
     get(identifier: string, type?: ComponentType, args?: any[]): any;
     getClass(identifier: string, type?: ComponentType): Function;
-    getInsByClass<T>(target: T, args?: any[]): T;
+    getInsByClass<T>(target: T, args?: any[]): T | undefined;
     saveClass(type: ComponentType, module: Function, identifier: string): void;
     listClass(type: ComponentType): any[];
     getIdentifier(target: Function): string;

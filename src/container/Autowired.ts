@@ -5,10 +5,10 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
-import { RecursiveGetMetadata } from "./Util";
-import { Exception, STR } from "@vecmat/vendor";
-import { Container, IOCContainer } from "./Container";
-import { ComponentType, TAGGED_PROP } from "./IContainer";
+import { STR, Exception } from "@vecmat/vendor";
+import { RecursiveGetMetadata } from "./Util.js";
+import { IOCContainer, Container } from "./Container.js";
+import { ComponentType, TAGGED_PROP } from "./IContainer.js";
 
 
 /**
@@ -22,17 +22,17 @@ import { ComponentType, TAGGED_PROP } from "./IContainer";
  * @returns {PropertyDecorator}
  */
 export function Autowired(identifier?: string, type?: ComponentType, constructArgs?: any[], isDelay = false): PropertyDecorator {
-    return (target: any, propertyKey: string) => {
+    return (target: Object, propertyKey: string | symbol) => {
         const designType = Reflect.getMetadata("design:type", target, propertyKey);
         if (!identifier) {
             if (!designType || designType.name === "Object") {
-                identifier = STR.camelCase(propertyKey, true);
+                identifier = STR.camelCase(propertyKey as string, true);
             } else {
                 identifier = designType.name;
             }
         }
         if (!identifier) {
-            throw new Exception("BOOTERR_DEPRO_MISSATTR","identifier cannot be empty when circular dependency exists");
+            throw new Exception("BOOTERR_DEPRO_MISSATTR", "identifier cannot be empty when circular dependency exists");
         }
         if (type === undefined) {
             if (identifier.indexOf("Addon") > -1) {
@@ -47,19 +47,24 @@ export function Autowired(identifier?: string, type?: ComponentType, constructAr
         }
         //Cannot rely on injection controller
         if (type === "CONTROLLER") {
-            throw new Exception("BOOTERR_DEPRO_UNSUITED",`Controller cannot be injection!`);
+            throw new Exception("BOOTERR_DEPRO_UNSUITED", `Controller cannot be injection!`);
         }
 
         if (!designType || designType.name === "Object") {
             isDelay = true;
         }
 
-        IOCContainer.savePropertyData(TAGGED_PROP, {
-            type,
-            identifier,
-            delay: isDelay,
-            args: constructArgs ?? []
-        }, target, propertyKey);
+        IOCContainer.savePropertyData(
+            TAGGED_PROP,
+            {
+                type,
+                identifier,
+                delay: isDelay,
+                args: constructArgs ?? []
+            },
+            target,
+            propertyKey
+        );
     };
 }
 

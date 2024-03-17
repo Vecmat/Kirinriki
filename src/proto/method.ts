@@ -3,8 +3,8 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
+import { OptionType } from "./interface.js";
 import { IService, IMethod } from "protobufjs";
-import { OptionType } from "./interface";
 
 const EMPTY = "google.protobuf.Empty";
 

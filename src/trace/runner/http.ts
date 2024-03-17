@@ -3,19 +3,20 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { catcher } from "../catcher";
-import { IContext, INext } from "../../core";
-import { Exception, ARROBJ } from "@vecmat/vendor";
-import { DefaultLogger as Logger } from "@vecmat/printer";
+
 import { Stream } from "stream";
+import { catcher } from "../catcher.js";
+import { Exception, ARROBJ } from "@vecmat/vendor";
+import { IContext, INext } from "../../core/IContext.js";
+import { DefaultLogger as Logger } from "@vecmat/printer";
 
 
 /**
  * http Runner
- * @param {IContext} ctx 
- * @param {Function} next 
- * @param {*} ext 
- * @returns 
+ * @param {IContext} ctx
+ * @param {Function} next
+ * @param {*} ext
+ * @returns
  */
 export async function httpRunner(ctx: IContext, next: INext, ext?: any): Promise<any> {
     const timeout = ext.timeout || 10000;
@@ -45,7 +46,7 @@ export async function httpRunner(ctx: IContext, next: INext, ext?: any): Promise
     // try /catch
     const response: any = ctx.res;
     try {
-        // 
+        //
         // if (app.server.status === 503) {
         //     ctx.status = 503;
         //     ctx.set('Connection', 'close');
@@ -65,11 +66,11 @@ export async function httpRunner(ctx: IContext, next: INext, ext?: any): Promise
             ]);
         }
 
-        // 
+        //
         // if (ctx.body !== undefined && ctx.status === 404) {
         //     ctx.status = 200;
         // }
-        // 
+        //
         // if (ctx.status >= 400) {
         //     throw new Exception('KRNRK_SERVER_ERROR', "Server error");
         // }

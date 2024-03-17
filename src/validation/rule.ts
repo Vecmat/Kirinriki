@@ -21,8 +21,8 @@ import {
 } from "class-validator";
 import lodash from "lodash";
 import { Exception, Check } from "@vecmat/vendor";
-import { IsEmailOptions, IsURLOptions, HashAlgorithm, ValidOtpions } from "./decorator";
-import { cnName, idNumber, mobile, plainToClass, plateNumber, zipCode } from "./util";
+import { IsEmailOptions, IsURLOptions, HashAlgorithm, ValidOtpions } from "./decorator.js";
+import { plainToClass, cnName, idNumber, zipCode, mobile, plateNumber } from "./util.js";
 
 
 // constant
@@ -94,8 +94,11 @@ export class ValidateClass {
         if (convert) errors = await validate(obj);
         else errors = await validate(obj, { skipMissingProperties: true });
 
-        if (errors.length > 0) throw new Exception("APIERR_VALIDED", "params validated error", Object.values(errors[0].constraints)[0]);
+        if (errors.length > 0) {
+          // todo: 测试返回列表
+          throw new Exception("APIERR_VALIDED", "params validated error", errors);
 
+        }
         return obj;
     }
 }
@@ -360,9 +363,12 @@ const FunctionValidator: {
     }
 };
 
-Object.keys(ValidFuncs).forEach((key: ValidRules) => {
-    FunctionValidator[key] = (value: unknown, options?: string | ValidOtpions) => {
-        if (lodash.isString(options)) options = { message: options, value: null } as ValidOtpions;
+
+Object.keys(ValidFuncs).forEach((key:string ) => {
+    FunctionValidator[key as ValidRules] = (value: unknown, options?: string | ValidOtpions) => {
+        if (lodash.isString(options)) {
+            options = { message: options, value: null } as ValidOtpions;
+        }
 
         if (!(<any>ValidFuncs)[key](value, (<ValidOtpions>options).value))
             throw new Exception("SYSERR_RULE_UNREALIZED", (<ValidOtpions>options).message || "ValidatorError: invalid arguments.");

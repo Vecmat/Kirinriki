@@ -3,11 +3,11 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
+import { printEnum } from "./enum.js";
+import { printField } from "./field.js";
+import { printMethod } from "./method.js";
+import { OptionType } from "./interface.js";
 import protobufjs, { IService, IType, IEnum, Root } from "protobufjs";
-import { printEnum } from "./enum";
-import { printField } from "./field";
-import { OptionType } from "./interface";
-import { printMethod } from "./method";
 
 /**
  * defaultOptions
@@ -38,15 +38,16 @@ export function parseProto(source: string): protobufjs.INamespace {
  * @param {OptionType} [options]
  * @returns {object}
  */
-export function parseMethods(json: protobufjs.INamespace, options?: OptionType): object {
-    if (!options) options = defaultOptions;
-
+export function parseMethods(json: protobufjs.INamespace, options=defaultOptions): object {
     const nested = json.nested;
     const res: any = {};
     if (nested) {
         for (const name in nested) {
             if (Object.prototype.hasOwnProperty.call(nested, name)) {
                 const value = nested[name];
+                if (!value) {
+                    break;
+                }
                 Object.keys(value).map(category => {
                     if (category === "methods") res[name] = printMethod(name, value as IService, options);
 
@@ -66,8 +67,7 @@ export function parseMethods(json: protobufjs.INamespace, options?: OptionType):
  * @param {OptionType} [options]
  * @returns {object}
  */
-export function parseFields(json: protobufjs.INamespace, options?: OptionType): object {
-    if (!options) options = defaultOptions;
+export function parseFields(json: protobufjs.INamespace, options=defaultOptions): object {
 
     const nested = json.nested;
     const res: any = {};
@@ -75,6 +75,9 @@ export function parseFields(json: protobufjs.INamespace, options?: OptionType): 
         for (const name in nested) {
             if (Object.prototype.hasOwnProperty.call(nested, name)) {
                 const value = nested[name];
+                if(!value){
+                  break;
+                }
                 Object.keys(value).map(category => {
                     if (category === "fields") res[name] = printField(name, value as IType, options);
 
@@ -94,15 +97,16 @@ export function parseFields(json: protobufjs.INamespace, options?: OptionType): 
  * @param {OptionType} [options]
  * @returns {object}
  */
-export function parseValues(json: protobufjs.INamespace, options?: OptionType): object {
-    if (!options) options = defaultOptions;
-
+export function parseValues(json: protobufjs.INamespace, options= defaultOptions): object {
     const nested = json.nested;
     const res: any = {};
     if (nested) {
         for (const name in nested) {
             if (Object.prototype.hasOwnProperty.call(nested, name)) {
                 const value = nested[name];
+                if (!value) {
+                    break;
+                }
                 Object.keys(value).map(category => {
                     if (category === "values") res[name] = printEnum(name, value as IEnum, options);
 

@@ -3,17 +3,18 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import fs from "fs";
+import { unlinkSync, accessSync } from "node:fs";
 import util from "util";
 import qs from "querystring";
 import inflate from "inflation";
 import getRawBody from "raw-body";
 import onFinished from "on-finished";
-import { PayloadOptions } from "./index";
+import { PayloadOptions } from "./index.js";
 import { parseStringPromise } from "xml2js";
 import { IncomingForm, BufferEncoding } from "formidable";
-const fsUnlink = util.promisify(fs.unlink);
-const fsAccess = util.promisify(fs.access);
+
+const fsUnlink = unlinkSync; //util.promisify(fs.unlink);
+const fsAccess = accessSync;
 /**
  *
  *
@@ -78,10 +79,13 @@ function parseMultipart(ctx: any, opts: PayloadOptions) {
     onFinished(ctx.res, () => {
         if (!uploadFiles) return;
 
-        Object.keys(uploadFiles).forEach((key: string) => {
-            fsAccess(uploadFiles[key].path)
-                .then(() => fsUnlink(uploadFiles[key].path))
-                .catch(() => {});
+        Object.keys(uploadFiles).forEach(async (key: string) => {
+            try {
+                await accessSync(uploadFiles[key].path);
+                await unlinkSync(uploadFiles[key].path);
+            } catch (err) {
+                console.error(err);
+            }
         });
     });
     return new Promise((resolve, reject) => {

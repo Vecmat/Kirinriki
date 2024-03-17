@@ -5,10 +5,10 @@
  */
 import Koa from "koa";
 import { WebSocket } from "ws";
-import { Context } from "../container";
+import { Context } from "../container/index.js";
 import { ServerDuplexStream, ServerReadableStream, ServerUnaryCall, ServerWritableStream } from "@grpc/grpc-js";
-import { sendUnaryData, ServerUnaryCallImpl } from "@grpc/grpc-js/build/src/server-call";
-import { MetadataClass } from "./Metadata";
+import { sendUnaryData, ServerUnaryCallImpl } from "@grpc/grpc-js/build/src/server-call.js";
+import { MetadataClass } from "./Metadata.js";
 import { IncomingMessage } from "http";
 
 // KoaContext
@@ -24,7 +24,7 @@ export type INext = Koa.Next;
  * @extends {IncomingMessage}
  */
 export class WsRequest extends IncomingMessage {
-    data: Buffer | ArrayBuffer | Buffer[];
+    data?: Buffer | ArrayBuffer | Buffer[];
 }
 
 // export
@@ -103,7 +103,7 @@ export interface IContext extends AppContext {
      *     }}
      * @memberof IContext
      */
-    rpc?: {
+    rpc: {
         call: IRpcServerCall<any, any>;
         callback?: IRpcServerCallback<any>;
     };
@@ -131,8 +131,8 @@ export interface IContext extends AppContext {
      * @type {(message: string, code?: number, status?: HttpStatusCode)}
      * @memberof Context
      */
-    throw(status: number, message?: string): never;
-    throw(message: string, code?: number, status?: any): never;
+    // throw(status: number, message?: string): never;
+    // throw(message: string, code?: number, status?: any): never;
     /**
      * context metadata
      *
@@ -141,5 +141,5 @@ export interface IContext extends AppContext {
     getMetaData: (key: string) => unknown;
     setMetaData: (key: string, value: any) => any;
 
-    
+
 }

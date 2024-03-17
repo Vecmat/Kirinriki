@@ -4,10 +4,10 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import lodash from "lodash";
-import { TAGGED_ARGS } from "./IContainer";
-import { RecursiveGetMetadata } from "./Util";
+import { TAGGED_ARGS } from "./IContainer.js";
+import { RecursiveGetMetadata } from "./Util.js";
 import { Exception, Check } from "@vecmat/vendor";
-import { Container, IOCContainer } from "./Container";
+import { Container, IOCContainer } from "./Container.js";
 
 /**
  * Inject class instance property
@@ -40,7 +40,7 @@ export function injectValues(target: any, instance: any, container?: Container) 
  * @returns {*}  {PropertyDecorator}
  */
 export function Values(val: any | Function, defaultValue?: unknown): PropertyDecorator {
-    return (target: any, propertyKey: string) => {
+    return (target: Object, propertyKey: string | symbol) => {
         const paramTypes = Reflect.getMetadata("design:type", target, propertyKey);
         const types = paramTypes.name ? paramTypes.name : "object";
         IOCContainer.savePropertyData(

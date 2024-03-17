@@ -8,11 +8,11 @@
  */
 
 import lodash from "lodash";
-import { Kirinriki } from "../core";
-import { asyncEmit } from "../vendor/eve";
-import { ComponentItem } from "../boot/BootLoader";
-import { ComponentType, IOCContainer } from "../container";
 import { Check } from "@vecmat/vendor";
+import { Kirinriki } from "../core/Application.js";
+import { ComponentItem } from "../boot/BootLoader.js";
+import { IOCContainer } from "../container/Container.js";
+import { ComponentType } from "../container/IContainer.js";
 
 /**
  * Indicates that an decorated method is a "Monitor".
@@ -22,14 +22,14 @@ import { Check } from "@vecmat/vendor";
  * @returns {MethodDecorator}
  */
 export function Monitor(name: string, confg?: object): MethodDecorator {
-    return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
-        IOCContainer.attachPropertyData("EVENT_KEY", { name, ...confg }, target, methodName);
+    return (target: Object, method: string | symbol, descriptor: PropertyDescriptor) => {
+        IOCContainer.attachPropertyData("EVENT_KEY", { name, ...confg }, target, method);
     };
 }
 
 
 /**
- * 
+ *
  */
 export class MonitorManager {
     public static EmitMap: Map<string, Function[]> = new Map();
@@ -41,17 +41,20 @@ export class MonitorManager {
         }
         // 需要考虑去重
         const map = MonitorManager.EmitMap.get(name);
-        map.push(fun);
+        if(map){
+          map.push(fun);
+        }
     }
 
     // Parse monitor
     static async init(app:Kirinriki) {
         const allcls = IOCContainer.listClass();
-    
-
-
         allcls.forEach((item: ComponentItem) => {
-            const [, type, name] = item.id.match(/(\S+):(\S+)/);
+            const [, type, name] = item.id.match(/(\S+):(\S+)/)||[];
+             if (!name || !type) {
+                 console.error(`[Kirinriki] Component :"${item.id}"‘s name format error!`);
+                 return;
+             }
             const ins = IOCContainer.get(name, <ComponentType>type);
             const keyMeta = IOCContainer.listPropertyData("EVENT_KEY", item.target);
             for (const fun in keyMeta) {
@@ -67,7 +70,7 @@ export class MonitorManager {
     static async mount(app: Kirinriki) {
         const keys = Object.keys(MonitorManager.EmitMap);
         for (const key of keys) {
-            const funs = MonitorManager.EmitMap.get(key);
+            const funs = MonitorManager.EmitMap.get(key) ||[];
             for await (const exec of funs) {
                 if (lodash.isFunction(exec)) {
                     app.on(key, exec);

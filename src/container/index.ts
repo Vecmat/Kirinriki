@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-export * from "./Container";
-export * from "./IContainer";
-export * from "./Util";
-export { Autowired } from "./Autowired";
+export * from "./Container.js";
+export * from "./IContainer.js";
+export * from "./Util.js";
+export { Autowired } from "./Autowired.js";

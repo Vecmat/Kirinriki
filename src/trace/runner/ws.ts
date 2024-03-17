@@ -4,18 +4,18 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import { inspect } from "util";
-import { catcher } from "../catcher";
-import { IContext, INext } from "../../core";
-import { Logger } from "../../base/Logger";
+import { catcher } from "../catcher.js";
+import { Logger } from "../../base/Logger.js";
 import { Exception,  ARROBJ } from "@vecmat/vendor";
+import { IContext, INext } from "../../core/IContext.js";
 
 /**
  * wsRunner
  *
- * @param {IContext} ctx 
- * @param {Function} next 
- * @param {*} ext 
- * @returns 
+ * @param {IContext} ctx
+ * @param {Function} next
+ * @param {*} ext
+ * @returns
  */
 export async function wsRunner(ctx: IContext, next: INext, ext?: any): Promise<any> {
     const timeout = ext.timeout || 10000;
@@ -73,7 +73,9 @@ export async function wsRunner(ctx: IContext, next: INext, ext?: any): Promise<a
         // if (ctx.status >= 400) {
         //     throw new Exception('KRNRK_SERVER_ERROR', "Server error");
         // }
-        ctx.websocket.send(inspect(ctx.body || ""), null);
+        if (ctx.websocket){
+          ctx.websocket.send(inspect(ctx.body || ""));
+        }
         return null;
     } catch (err: any) {
         return await catcher(err, ctx);

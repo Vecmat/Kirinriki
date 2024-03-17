@@ -4,13 +4,16 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import { Check } from "@vecmat/vendor";
-import { RouterOptions } from "../define";
-import { Logger } from "../../base/Logger";
-import { IOCContainer } from "../../container";
-import { ListServices, LoadProto } from "../../proto";
-import { buildHandler, buildParams, buildRouter } from "../builder";
+import { RouterOptions } from "../index.js";
+import { Logger } from "../../base/Logger.js";
+import { IRouter } from "../../core/IApplication.js";
+import { Kirinriki } from "../../core/Application.js";
+import { IOCContainer } from "../../container/index.js";
+import { LoadProto, ListServices } from "../../proto/proto.js";
+import { buildRouter, buildParams, buildHandler } from "../builder.js";
+import { IRpcServerUnaryCall, IRpcServerCallback, IContext, INext } from "../../core/IContext.js";
 import { ServiceDefinition, UntypedHandleCall, UntypedServiceImplementation } from "@grpc/grpc-js";
-import { Kirinriki, IRouter, IRpcServerUnaryCall, IRpcServerCallback } from "../../core";
+
 
 /**
  * GrpcRouter Options
@@ -63,12 +66,11 @@ interface CtlProperty {
 }
 
 export class GrpcRouter implements IRouter {
-    app: Kirinriki;
-    readonly protocol: string;
+    app!: Kirinriki;
+    readonly protocol!: string;
     options: GrpcRouterOptions;
     router: Map<string, ServiceImplementation>;
-
-    constructor(app: Kirinriki, options?: RouterOptions) {
+    constructor(app: Kirinriki, options: RouterOptions) {
         this.app = app;
         options.ext = options.ext || {};
         this.options = {
@@ -96,7 +98,10 @@ export class GrpcRouter implements IRouter {
             implementation: implementation
         };
         this.router.set(name, value);
-        this.app?.server?.RegisterService(value);
+        if (this.app.server.RegisterService) {
+          this.app.server.RegisterService(value);
+        }
+
     }
 
     /**
@@ -130,6 +135,9 @@ export class GrpcRouter implements IRouter {
 
                 for (const it in ctlRouters) {
                     const router = ctlRouters[it];
+                    if (!router) {
+                        break;
+                    }
                     const method = router.method;
                     const path = router.path;
                     const params = ctlParams[method];
@@ -155,9 +163,13 @@ export class GrpcRouter implements IRouter {
                     const path = handler.path;
                     if (ctls[path]) {
                         const ctlItem = ctls[path];
+                        if (!ctlItem) {
+                            break;
+                        }
                         Logger.Debug(`[GPRC]: "${path}" => ${ctlItem.name}.${ctlItem.method}`);
+                        // Middleware<DefaultState, DefaultContext, any>
                         impl[handler.name] = (call: IRpcServerUnaryCall<any, any>, callback: IRpcServerCallback<any>) => {
-                            return this.app.callback("grpc", ctx => {
+                            return this.app.callback("grpc", (ctx: IContext ) => {
                                 return buildHandler(this.app, ctx, ctlItem.ctl, ctlItem.method, ctlItem.params);
                             })(call, callback);
                         };

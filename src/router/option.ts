@@ -1,9 +1,9 @@
-import { RouterOptions } from "./define";
-import { Kirinriki, IRouter } from "../core";
-import { HttpRouter } from "./protocol/http";
-import { GrpcRouter } from "./protocol/grpc";
-import { WebsocketRouter } from "./protocol/ws";
-import { ARROBJ, Exception } from "@vecmat/vendor";
+
+import { RouterOptions } from "./define.js";
+import { ARROBJ } from "@vecmat/vendor";
+import { Kirinriki } from "../core/Application.js";
+import { IRouter } from "../core/IApplication.js";
+import { GrpcRouter, WebsocketRouter, HttpRouter } from "./index.js";
 
 
 

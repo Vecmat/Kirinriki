@@ -6,11 +6,11 @@
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
 import lodash from "lodash";
-import { injectValues } from "./Values";
-import { Kirinriki } from "../core";
-import { Check } from "@vecmat/vendor";
-import { injectAutowired } from './Autowired';
-import { IContainer, ObjectDefinitionOptions, Application, ComponentType, TAGGED_CLS } from "./IContainer";
+import { injectValues } from "./Values.js";
+import { Check, IObjExt } from "@vecmat/vendor";
+import { injectAutowired } from "./Autowired.js";
+import { Kirinriki } from "../core/Application.js";
+import { IContainer, ObjectDefinitionOptions, ComponentType, TAGGED_CLS } from "./IContainer.js";
 
 /**
  * IOC Container
@@ -20,7 +20,7 @@ import { IContainer, ObjectDefinitionOptions, Application, ComponentType, TAGGED
  * @implements {IContainer}
  */
 export class Container implements IContainer {
-    private app: Kirinriki;
+    private app!: Kirinriki;
     private classMap: Map<any, any>;
     private instanceMap: WeakMap<any, any>;
     private metadataMap: WeakMap<any, any>;
@@ -78,9 +78,9 @@ export class Container implements IContainer {
      * @returns {T}
      * @memberof Container
      */
-    public reg<T>(target: T, options?: ObjectDefinitionOptions): T;
-    public reg<T>(identifier: string, target: T, options?: ObjectDefinitionOptions): T;
-    public reg<T>(identifier: any, target?: any, options?: ObjectDefinitionOptions): T {
+    public reg<T>(target: T, options?: ObjectDefinitionOptions): T | undefined;
+    public reg<T>(identifier: string, target: T, options?: ObjectDefinitionOptions): T | undefined;
+    public reg<T>(identifier: any, target?: any, options?: ObjectDefinitionOptions): T | undefined {
         if (Check.isClass(identifier) || lodash.isFunction(identifier)) {
             options = target;
             target = identifier as any;
@@ -195,9 +195,9 @@ export class Container implements IContainer {
      * @returns {T}
      * @memberof Container
      */
-    public getInsByClass<T>(target: T, args: any[] = []): T {
-        if (!Check.isClass(target)) {
-            return null;
+    public getInsByClass<T>(target: T, args: any[] = []): T | undefined {
+        if (!Check.isClass(target as IObjExt)) {
+            return ;
         }
         // get instance from the Container
         const instance: any = this.instanceMap.get(target);

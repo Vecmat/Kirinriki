@@ -5,9 +5,9 @@
  */
 
 // export for manual verification
-export * from "./rule";
-export * from "./decorator";
+export * from "./rule.js";
+export * from "./decorator.js";
 export {
     checkParamsType, convertParamsType,
     convertDtoParamsType, plainToClass
-} from "./util";
+} from "./util.js";

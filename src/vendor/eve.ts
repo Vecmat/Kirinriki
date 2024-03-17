@@ -1,7 +1,6 @@
 
 import lodash from "lodash";
 import EventEmitter from "events";
-import { IOCContainer } from "../container";
 
 /**
  * Execute event as async
@@ -18,7 +17,7 @@ export const asyncEmit = async function (eve: EventEmitter, eventName: string ,a
     }
     // why?
     // eve.removeAllListeners(eventName);
-    return; 
+    return;
 };
 
 

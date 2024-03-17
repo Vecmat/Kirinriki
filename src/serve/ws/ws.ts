@@ -3,13 +3,14 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Logger } from "../../base/Logger";
 import { ARROBJ } from "@vecmat/vendor";
-import { ListeningOptions } from "../index";
-import { CreateTerminus } from "../terminus";
+import { Logger } from "../../base/Logger.js";
+import { ListeningOptions } from "../serve.js";
+import { CreateTerminus } from "../terminus.js";
 import { ServerOptions, WebSocketServer } from "ws";
-import { Kirinriki, IApplication } from "../../core";
-import { Server as HttpServer, IncomingMessage, ServerResponse, createServer } from "http";
+import { Kirinriki } from "../../core/Application.js";
+import { IApplication } from "../../core/IApplication.js";
+import { Server as HttpServer, createServer } from "http";
 import { Server as HttpsServer, createServer as httpsCreateServer, ServerOptions as httpsServerOptions } from "https";
 export interface WebSocketServerOptions extends ListeningOptions {
     wsOptions?: ServerOptions;
@@ -25,7 +26,7 @@ export class WsServer implements IApplication {
     options: WebSocketServerOptions;
     readonly server: WebSocketServer;
     readonly protocol: string;
-    status: number;
+    status: number | undefined;
     socket: any;
     listenCallback?: () => void;
     readonly httpServer: HttpServer | HttpsServer;
@@ -59,7 +60,7 @@ export class WsServer implements IApplication {
     // Start(listenCallback?: () => void): HttpServer<typeof IncomingMessage, typeof ServerResponse> {
     Start(listenCallback?: () => void): HttpServer {
         listenCallback = listenCallback ? listenCallback : this.listenCallback;
-        
+
         return this.httpServer
             .listen(
                 {

@@ -6,10 +6,10 @@
 // tslint:disable-next-line: no-import-side-effect
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
-import { InjectRouter } from "./inject";
-import { IOCContainer } from '../container';
-import { RequestMethod } from "./define";
 import { Exception } from "@vecmat/vendor";
+import { RequestMethod } from "./define.js";
+import { InjectRouter } from "./inject.js";
+import { IOCContainer } from "../container/index.js";
 
 
 /**
@@ -157,7 +157,7 @@ export const All = (
 export const Description = (
     name:string
 ): MethodDecorator => {
-    return (target, key: string, descriptor: PropertyDescriptor) => {
+    return (target: Object, method: string | symbol, descriptor: PropertyDescriptor) => {
         const targetType = IOCContainer.getType(target);
         if (targetType !== "CONTROLLER") {
             throw new Exception("BOOTERR_DEPRO_UNSUITED", "Description decorator is only used in controllers class.");

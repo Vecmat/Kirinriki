@@ -5,32 +5,32 @@
  */
 
 
-import Koa from "koa";
+import Koa, { DefaultContext, DefaultState, Middleware } from "koa";
 import lodash from "lodash";
-import { Captor } from "../base";
-import { ServerResponse } from "http";
-import koaCompose from "koa-compose";
 import onFinished from "on-finished";
-import { IContext } from "./IContext";
-import { SavantManager } from "../base";
+import koaCompose from "koa-compose";
+import { ServerResponse } from "http";
 import { ARROBJ } from "@vecmat/vendor";
-import { Logger } from "../base/Logger";
-import { CreateContext } from "./Context";
-import { MetadataClass } from "./Metadata";
-import { Application } from "../container";
-import { InitOptions, IRouter, IApplication } from "./IApplication";
+import { IContext } from "./IContext.js";
+import { Logger } from "../base/Logger.js";
+import { Captor } from "../base/Capturer.js";
+import { CreateContext } from "./Context.js";
+import { MetadataClass } from "./Metadata.js";
+import { SavantManager } from "../base/Savant.js";
+import { Application } from "../container/IContainer.js";
+import { InitOptions, IRouter, IApplication } from "./IApplication.js";
 
 
 /**
- * Application 
+ * Application
  * @export
  * @class Kirinriki
  * @extends {Koa}
  * @implements {BaseApp}
  */
 export class Kirinriki extends Koa implements Application {
-    //   public env: string;
-    public version: string;
+    public env: string;
+    public version!: string;
     public options: InitOptions;
 
     public appPath: string;
@@ -38,13 +38,14 @@ export class Kirinriki extends Koa implements Application {
     public krnrkPath: string;
     public appDebug: boolean;
 
-    public captor: Captor;
-    public router: IRouter;
-    private savanter: SavantManager;
-    public server: IApplication;
+    public captor!: Captor;
+    public router!: IRouter;
+    private savanter!: SavantManager;
+    public server!: IApplication;
     private metadata: MetadataClass;
 
-    public vms: Record<string, string>;
+    public vms!: Record<string, string>;
+
 
     /**
      * Creates an instance of Kirinriki.
@@ -61,12 +62,12 @@ export class Kirinriki extends Koa implements Application {
     ) {
         super();
         this.options = options ?? {};
-        this.env = process.env.KIRINRIKI_ENV || process.env.NODE_ENV;
+        this.env = process.env.KIRINRIKI_ENV || process.env.NODE_ENV || "";
         const { appDebug, appPath, rootPath, krnrkPath } = this.options;
-        this.appDebug = appDebug;
-        this.appPath = appPath;
-        this.rootPath = rootPath;
-        this.krnrkPath = krnrkPath;
+        this.appDebug = appDebug || true;
+        this.appPath = appPath || "";
+        this.rootPath = rootPath || "";
+        this.krnrkPath = krnrkPath || "";
         this.metadata = new MetadataClass();
         // constructor
         this.init();
@@ -131,7 +132,7 @@ export class Kirinriki extends Koa implements Application {
      * @param {string} [type="config"]
      * @memberof Kirinriki
      */
-    public config(name: string, type = "config") {
+    public config(name: string | symbol | undefined, type = "config") {
         try {
             const caches = this.getMetaData("_configs") ?? {};
             // tslint:disable-next-line: no-unused-expression
@@ -144,8 +145,10 @@ export class Kirinriki extends Koa implements Application {
                     return caches[type][name];
                 }
                 const keys = name.split(".");
-                const value = caches[type][keys[0]] ?? {};
-                return value[keys[1]];
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const value = caches[type][keys[0]!] ?? {};
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                return value[keys[1]!];
             }
             return caches[type][name];
         } catch (err) {
@@ -207,12 +210,12 @@ export class Kirinriki extends Koa implements Application {
      * @returns {*}
      * @memberof Kirinriki
      */
-    callback(protocol = "http", reqHandler?: (ctx: IContext) => Promise<any>) {
+    callback(protocol = "http", reqHandler?: any) {
         if (reqHandler) {
             this.middleware.push(reqHandler);
         }
         const fn = koaCompose(this.middleware);
-        return async(req: unknown, res: unknown) => {
+        return async (req: unknown, res: unknown) => {
             const context = this.createContext(req, res, protocol);
             return await this.handleRequest(context, fn);
         };
@@ -230,10 +233,14 @@ export class Kirinriki extends Koa implements Application {
     private async handleRequest(ctx: IContext, composes: (ctx: IContext) => Promise<any>) {
         const res = ctx.res;
         res.statusCode = 404;
-        const onerror = (err: Error) => ctx.onerror(err);
-        onFinished(res, onerror);
+        // todo 移除该方法
+        onFinished(res, function (err: Error | null, msg: any) {
+            if (err) {
+                ctx.onerror(err);
+            }
+            return;
+        });
         return composes(ctx);
-       
     }
 
     /**
@@ -272,7 +279,4 @@ export class Kirinriki extends Koa implements Application {
             return;
         });
     }
-
-
-    
 }

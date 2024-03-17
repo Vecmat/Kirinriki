@@ -1,7 +1,6 @@
 import "reflect-metadata";
-import { IOCContainer } from "../container";
 import { Exception } from "@vecmat/vendor";
-import { Kirinriki, IContext, INext } from "../core";
+import { IOCContainer } from "../container/Container.js";
 
 
 /**

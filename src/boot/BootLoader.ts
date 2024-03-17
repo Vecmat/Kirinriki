@@ -5,18 +5,20 @@
 */
 import lodash from "lodash";
 import * as path from "path";
-import { LoadDir } from "../base/Loader";
-import { IAddon } from "../base/Addon";
-import { Kirinriki } from '../core';
-import { Captor  } from "../base/Capturer";
-import { checkClass } from "../vendor/widget";
-import { AppReadyHookFunc } from "./Bootstrap";
-import { LoadConfigs as loadConf } from "../base/config";
-import { BaseController } from "../base/Controller";
-import { Exception, Check, ARROBJ } from "@vecmat/vendor";
-import { Logger, updateLogger, LoggerOption } from "../base/Logger";
-import { ComponentType, IOCContainer, TAGGED_CLS } from "../container";
-import { APP_READY_HOOK, CAPTURER_KEY, COMPONENT_SCAN, CONFIGURATION_SCAN } from '../base/Constants';
+import { IAddon } from "../base/Addon.js";
+import { LoadDir } from "../base/Loader.js";
+import { Captor } from "../base/Capturer.js";
+import { LoggerOption } from "@vecmat/printer";
+import { checkClass } from "../vendor/widget.js";
+import { AppReadyHookFunc } from "./Bootstrap.js";
+import { Kirinriki } from "../core/Application.js";
+import { BaseController } from "../base/Controller.js";
+import { updateLogger, Logger } from "../base/Logger.js";
+import { IOCContainer } from "../container/Container.js";
+import { ARROBJ, Check, Exception } from "@vecmat/vendor";
+import { LoadConfigs as loadConf } from "../base/config.js";
+import { TAGGED_CLS, ComponentType } from "../container/IContainer.js";
+import { COMPONENT_SCAN, CONFIGURATION_SCAN, APP_READY_HOOK, CAPTURER_KEY } from "../base/Constants.js";
 
 /**
  *
@@ -29,7 +31,7 @@ export interface ComponentItem {
 }
 
 /**
- * 
+ *
  */
 export class BootLoader {
     /**
@@ -42,7 +44,7 @@ export class BootLoader {
     public static initialize(app: Kirinriki) {
         const env = (process.execArgv ?? []).join(",");
         // app.env
-        app.env = process.env.KRNRK_ENV || process.env.NODE_ENV;
+        app.env = process.env.KRNRK_ENV || process.env.NODE_ENV ||"";
         if (env.indexOf("--production") > -1 || (app.env ?? "").indexOf("pro") > -1) {
             app.appDebug = false;
         }
@@ -106,19 +108,19 @@ export class BootLoader {
      * @param {*} target
      * @memberof BootLoader
      */
-    public static CheckAllComponents(app: Kirinriki, target: any) {
+    public static async CheckAllComponents(app: Kirinriki, target: any) {
         // component metadata
         const componentMetas = BootLoader.GetComponentMetas(app, target);
         // configuration metadata
         const configurationMetas = BootLoader.GetConfigurationMetas(app, target);
         const exSet = new Set();
-        LoadDir(
+       await LoadDir(
             componentMetas,
             "",
             (fileName: string, xpath: string, xTarget: any) => {
                 checkClass(fileName, xpath, xTarget, exSet);
             },
-            ["**/**.js", "**/**.ts", "!**/**.d.ts"],
+            ["**/**.js", "**/**.cjs", "**/**.mjs", "**/**.ts", "!**/**.d.ts"],
             [...configurationMetas, `${target.name || ".no"}.ts`]
         );
         exSet.clear();
@@ -157,11 +159,12 @@ export class BootLoader {
         const configs = app.getMetaData("_configs") ?? {};
         //Logger
         if (configs.logger) {
-            const opt = <LoggerOption>configs.logger;
+            const opt = configs.logger as LoggerOption;
             // pro env setting
             if (app.env === "production") {
-                opt.File.level = "info";
-                opt.output.delete("Console");
+                // opt.File.level = "info";
+
+                opt.output?.delete("Console");
             }
             updateLogger(opt);
         }
@@ -193,17 +196,17 @@ export class BootLoader {
      * @param {string[]} [loadPath]
      * @memberof BootLoader
      */
-    public static LoadConfigs(app: Kirinriki, target: any) {
+    public static async LoadConfigs(app: Kirinriki, target: any) {
         const frameConfig: any = {};
         let loadPath = BootLoader.GetConfigurationMetas(app, target);
         Logger.Debug(`Load configuration path: ${app.krnrkPath}/config`);
-        LoadDir(["./config"], app.krnrkPath, function (name: string, path: string, exp: any) {
+        await LoadDir(["./config"], app.krnrkPath, function (name: string, path: string, exp: any) {
             frameConfig[name] = exp;
         });
         if (lodash.isArray(loadPath)) {
             loadPath = loadPath.length > 0 ? loadPath : ["./config"];
         }
-        let appConfig = loadConf(loadPath, app.appPath);
+        let appConfig =await loadConf(loadPath, app.appPath);
         appConfig = ARROBJ.extendObj(frameConfig, appConfig, true);
         app.setMetaData("_configs", appConfig);
     }
@@ -215,8 +218,8 @@ export class BootLoader {
      * @param {*} app
      * @memberof BootLoader
      */
-    public static loadCaptor(app: Kirinriki) {
-        LoadDir(["./Capturer"], app.krnrkPath);
+    public static async loadCaptor(app: Kirinriki) {
+         await LoadDir(["./Capturer"], app.krnrkPath);
         Logger.Debug(`Load core Captor: ${app.krnrkPath}/Capturer`);
         const clsList = IOCContainer.listClass("CAPTURER");
         clsList.forEach((item: ComponentItem) => {
@@ -236,7 +239,11 @@ export class BootLoader {
             const allcls = IOCContainer.listClass();
             allcls.forEach((item: ComponentItem) => {
                 if ((item.id ?? "").startsWith("CAPTURER")) return;
-                const [, type, name] = item.id.match(/(\S+):(\S+)/);
+                 const [, type, name] = item.id.match(/(\S+):(\S+)/) || [];
+                 if (!name || !type) {
+                     console.error(`[Kirinriki] CAPTURER :"${item.id}"‘s name format error!`);
+                     return;
+                 }
                 const ins = IOCContainer.get(name, <ComponentType>type);
                 const keyMeta = IOCContainer.listPropertyData(CAPTURER_KEY, item.target);
                 for (const fun in keyMeta) {

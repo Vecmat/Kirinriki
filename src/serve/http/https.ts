@@ -3,12 +3,14 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { createServer, Server, ServerOptions } from "https";
-import { Kirinriki, IApplication } from "../../core";
-import { CreateTerminus } from "../terminus";
-import { Logger } from "../../base/Logger";
-import { ListeningOptions } from "../index";
+
+import { Logger } from "../../base/Logger.js";
+import { ListeningOptions } from "../serve.js";
+import { CreateTerminus } from "../terminus.js";
+import { Kirinriki } from "../../core/Application.js";
 import { IncomingMessage, ServerResponse } from "http";
+import { IApplication } from "../../core/IApplication.js";
+import { createServer, Server, ServerOptions } from "https";
 
 /**
  *
@@ -21,7 +23,7 @@ export class HttpsServer implements IApplication {
     options: ListeningOptions;
     readonly server: Server;
     readonly protocol: string;
-    status: number;
+    status: number | undefined;
     listenCallback?: () => void;
 
     /**

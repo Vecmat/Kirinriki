@@ -4,10 +4,11 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-import { Logger } from "../../base/Logger";
-import { ListeningOptions } from "../index";
-import { CreateTerminus } from "../terminus";
-import { Kirinriki, IApplication } from "../../core";
+import { Logger } from "../../base/Logger.js";
+import { ListeningOptions } from "../serve.js";
+import { CreateTerminus } from "../terminus.js";
+import { Kirinriki } from "../../core/Application.js";
+import { IApplication } from "../../core/IApplication.js";
 import { createSecureServer, Http2SecureServer, SecureServerOptions } from "http2";
 /**
  *
@@ -20,7 +21,7 @@ export class Http2Server implements IApplication {
     options: ListeningOptions;
     readonly protocol: string;
     readonly server: Http2SecureServer;
-    status: number;
+    status: number | undefined;
     listenCallback?: () => void;
 
     constructor(app: Kirinriki, options: ListeningOptions) {

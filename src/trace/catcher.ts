@@ -4,12 +4,13 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-import { Captor } from "../base";
-import { IContext } from "../core";
-import { WSCatcher } from "./catcher/ws";
 import { Exception } from "@vecmat/vendor";
-import { HTTPCatcher } from "./catcher/http";
-import { gRPCCatcher } from "./catcher/grpc";
+import { WSCatcher } from "./catcher/ws.js";
+import { Captor } from "../base/Capturer.js";
+import { IContext } from "../core/IContext.js";
+import { gRPCCatcher } from "./catcher/grpc.js";
+import { HTTPCatcher } from "./catcher/http.js";
+
 
 /**
  * Global Error handler
@@ -23,7 +24,7 @@ export async function catcher(err: Error , ctx: IContext) {
     let excep: Exception;
     let sign = "COMMON_ERROR";
 
-    
+
     if (err instanceof Error) {
         if (err instanceof Exception) {
             excep = err;

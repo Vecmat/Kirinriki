@@ -19,7 +19,7 @@ const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 export function requireDefault(p: string) {
     /* eslint-disable global-require */
     const ex = require(p);
-    return (ex && (typeof ex === "object") && "default" in ex) ? ex.default : ex;
+    return (ex && (typeof ex === "object") && "default" in ex) ? ex : ex;
 }
 
 /**
@@ -35,8 +35,9 @@ export function ControllerMatch(name: string, controllerSuffix = "") {
     if (!controllerReg)
         controllerReg = new RegExp(`([a-zA-Z0-9_]+)${controllerSuffix}`);
 
-    const result = name.split(".")[0].match(controllerReg);
-    return result;
+    const result = name.split(".")[0]||"";
+    const match =result.match(controllerReg);
+    return match;
 }
 
 /**
@@ -70,8 +71,9 @@ export function checkClass(fileName: string, xpath: string, target: any, exSet?:
     let calssname = "";
     if (target.__esModule && target.name === undefined) {
         const keys = Object.keys(target);
-        if (Check.isClass(target[keys[0]])) {
-            calssname = keys[0];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (Check.isClass(target[keys[0]!])) {
+            calssname = keys[0]||"";
         }
     }
     calssname = calssname || target.name || fileName;

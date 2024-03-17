@@ -5,10 +5,9 @@
  */
 
 
-import { Kirinriki } from "../core";
-export { LoggerOption } from "@vecmat/printer";
-import { DefaultLogger, LoggerOption } from "@vecmat/printer";
 import { VMLogger } from "@vecmat/printer";
+import { DefaultLogger } from "@vecmat/printer";
+import type { LoggerOption } from "@vecmat/printer";
 
 // Export
 export let Logger = DefaultLogger;

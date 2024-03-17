@@ -4,31 +4,8 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import lodash from "lodash";
-import { Logger } from "../base/Logger";
-import { version, engines } from "../../package.json";
+import { Logger } from "../base/index.js";
 
-export const KIRINRIKI_VERSION = version;
-export const ENGINES_VERSION = engines.node.slice(1) || "12.0.0";
-
-/**
- * check node version 
- * 
- * @return {void} []
- */
-export function checkNodeVer() {
-    let nodeEngines = ENGINES_VERSION;
-    nodeEngines = nodeEngines.slice(0, nodeEngines.lastIndexOf("."));
-    let nodeVersion = process.version;
-    if (nodeVersion[0] === "v") {
-        nodeVersion = nodeVersion.slice(1);
-    }
-    nodeVersion = nodeVersion.slice(0, nodeVersion.lastIndexOf("."));
-
-    if (lodash.toNumber(nodeEngines) > lodash.toNumber(nodeVersion)) {
-        Logger.Error(`Kirinriki need node version > ${nodeEngines}, current version is ${nodeVersion}, please upgrade it.`);
-        process.exit(-1);
-    }
-}
 
 /**
  * unittest running environment detection

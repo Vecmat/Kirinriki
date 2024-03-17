@@ -1,9 +1,6 @@
-import { Kirinriki, IApplication } from "../core";
-import { GrpcServer } from "./grpc/grpc";
-import { HttpServer } from "./http/http";
-import { Http2Server } from "./http/http2";
-import { HttpsServer } from "./http/https";
-import { WsServer } from "./ws/ws";
+import { Kirinriki } from "../core/Application.js";
+import { IApplication } from "../core/IApplication.js";
+import { WsServer, GrpcServer, HttpsServer, Http2Server, HttpServer } from "./index.js";
 
 // KirinrikiProtocol
 export type KirinrikiProtocol = 'http' | "https" | 'http2' | 'grpc' | 'ws' | 'wss'

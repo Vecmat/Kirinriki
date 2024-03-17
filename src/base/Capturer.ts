@@ -5,10 +5,11 @@
  */
 
 import { Exception } from "@vecmat/vendor";
-import { IOCContainer } from "../container";
-import { IContext, Kirinriki } from "../core";
-import { CAPTURER_KEY } from "./Constants";
-import lodash from "lodash";
+import { default as  lodash} from "lodash";
+import { CAPTURER_KEY } from "./Constants.js";
+import { IContext } from "../core/IContext.js";
+import { Kirinriki } from "../core/Application.js";
+import { IOCContainer } from "../container/Container.js";
 /**
  * Kirinriki system error capture
  */
@@ -38,17 +39,18 @@ export function Capturer(identifier?: string): ClassDecorator {
  * @example @Catching("*")
  * @example @Catching("Sequlize*")
  * @param name  ErrorType for matching (support '*' match any char )
- * @returns
+ * @returns {*}  {MethodDecorator}
  */
 export function Catching(name: string): MethodDecorator {
-    return (target, method: string, descriptor: PropertyDescriptor) => {
+    return (target: Object, methodName: string | symbol, descriptor: PropertyDescriptor) => {
         const targetType = IOCContainer.getType(target);
         // if (targetType !== "CONTROLLER" && targetType !== "CAPTURER") {
         //     throw new Exception("BOOTERR_DEPRO_UNSUITED", "Request decorator is only used in controllers class.");
         // }
-        IOCContainer.savePropertyData(CAPTURER_KEY, name, target, method);
+        IOCContainer.savePropertyData(CAPTURER_KEY, name, target, methodName);
     };
 }
+
 
 // CaptorManager;
 export class Captor {
@@ -72,13 +74,16 @@ export class Captor {
 
     // 寻找错误错误处理器
     static match(name: string): ICapturer[] {
+        let item: ICapturer|undefined;
         const list: ICapturer[] = [];
         // Put all matches at the start
-        if (Captor.map.has("*")) {
-            list.push(Captor.map.get("*"));
+        item = Captor.map.get("*");
+        if (item) {
+            list.push(item);
         }
-        if (Captor.map.has(name)) {
-            list.push(Captor.map.get(name));
+        item =Captor.map.get(name);
+        if (item) {
+            list.push(item);
         } else {
             for (const key of Captor.regs.keys()) {
                 // Prevent duplication
@@ -86,10 +91,12 @@ export class Captor {
                 if (!~key.indexOf("*")) {
                      break;
                 }
-
                 const regex = Captor.regs.get(key);
-                if (regex.test(name)) {
-                    list.push(Captor.map.get(key));
+                if (regex && regex.test(name)) {
+                    item = Captor.map.get(key);
+                    if (item) {
+                        list.push(item);
+                    }
                 }
             }
         }

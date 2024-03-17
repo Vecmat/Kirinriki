@@ -3,10 +3,10 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { Exception } from "@vecmat/vendor";
-import { Logger } from "../../base/Logger";
-import { HttpStatusCode, HttpStatusCodeMap } from "../code";
 import { Stream } from "node:stream";
+import { Exception } from "@vecmat/vendor";
+import { Logger } from "../../base/Logger.js";
+import { HttpStatusCodeMap } from "../code.js";
 
 /**
  * HTTP error handler

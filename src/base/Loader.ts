@@ -37,37 +37,37 @@ function buildLoadDir(baseDir: string, dir: string) :string{
  * @param {string} p
  * @returns
  */
-function requireDefault(p: string) {
+async function requireDefault(p: string) {
     /* eslint-disable global-require */
-    const ex = require(p);
+    const ex = await import(p);
     return ex && typeof ex === "object" && "default" in ex ? ex.default : ex;
 }
 
 /**
  * LoadDir
  *
- * @export 
+ * @export
  * @param {string[]} loadDir
  * @param {string} [baseDir]
  * @param {callbackFunc} [fn]
  * @param {string[]} pattern
  * @param {string[]} ignore
  */
-export function LoadDir(
+export async function LoadDir(
     loadDir: string[],
     baseDir?: string,
     fn?: callbackFunc,
-    pattern: string[] = ["**/**.js", "**/**.ts", "!**/**.d.ts"],
+    pattern: string[] = ["**/**.js", "**/**.cjs", "**/**.mjs", "**/**.ts", "!**/**.d.ts"],
     ignore: string[] = ["**/node_modules/**", "**/logs/**", "**/static/**"]
-): ResInterface[] {
+): Promise<ResInterface[]> {
     baseDir = baseDir || process.cwd();
-    const loadDirs = [].concat(loadDir ?? []);
+    const loadDirs = loadDir || [];
     const res: ResInterface[] = [];
 
     for (let dir of loadDirs) {
         dir = buildLoadDir(baseDir, dir);
-     
-        const fileResults = globby.sync(pattern, <globby.GlobbyOptions> {
+
+        const fileResults = globby.sync(pattern, <globby.GlobbyOptions>{
             cwd: dir,
             ignore: ignore
         });
@@ -80,7 +80,7 @@ export function LoadDir(
             // const fileName = name.slice(0, -3);
 
             // require
-            const target = requireDefault(file);
+            const target = await requireDefault(file);
 
             // callback
             if (fn) fn(fileName, file, target);

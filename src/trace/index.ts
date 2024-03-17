@@ -5,12 +5,13 @@
  */
 import * as Koa from "koa";
 import { v4 as uuidv4 } from "uuid";
-import { Kirinriki, IContext, INext } from "../core";
-import { asyncLocalStorage, createAsyncResource, wrapEmitter } from "./wrap";
-import { httpRunner } from "./runner/http";
-import { grpcRunner } from "./runner/grpc";
-import { wsRunner } from "./runner/ws";
-import { respond } from "./respond";
+import { respond } from "./respond.js";
+import { wsRunner } from "./runner/ws.js";
+import { grpcRunner } from "./runner/grpc.js";
+import { httpRunner } from "./runner/http.js";
+import { Kirinriki } from "../core/Application.js";
+import { IContext, INext } from "../core/IContext.js";
+import { asyncLocalStorage, createAsyncResource, wrapEmitter } from "./wrap.js";
 
 /**
  * GetTraceId
@@ -48,7 +49,7 @@ const defaultOptions = {
  * @param {Kirinriki} app
  * @returns {*}  {Koa.Middleware}
  */
-export function Trace(options: TraceOptions, app: Kirinriki): Koa.Middleware {
+export function Trace(options: TraceOptions, app: Kirinriki) {
     options = { ...defaultOptions, ...options };
     const headerName = options.HeaderName.toLowerCase();
     const timeout = (app.config("http_timeout") || 10) * 1000;

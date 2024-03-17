@@ -6,18 +6,14 @@
 
 import lodash from "lodash";
 import { Exception } from "@vecmat/vendor";
-import { ParamMetadata, ParamOptions } from "./define";
-import { IOCContainer } from "../container";
-import { Kirinriki, IContext } from "../core";
+import { IContext } from "../core/IContext.js";
+import { Kirinriki } from "../core/Application.js";
+import { IOCContainer } from "../container/index.js";
+import { ParamMetadata, ParamOptions } from "./define.js";
+import { ValidOtpions } from "../validation/decorator.js";
+import { plainToClass, convertParamsType } from "../validation/util.js";
+import { ClassValidator, ValidRules, FunctionValidator } from "../validation/rule.js";
 
-import {
-    ValidRules,
-    ValidOtpions,
-    plainToClass,
-    ClassValidator,
-    convertParamsType,
-    FunctionValidator
-} from "../validation";
 
 /**
  * Parameter binding assignment.
@@ -83,8 +79,8 @@ async function checkParams(app: Kirinriki, value: any, opt: ParamOptions) {
             }
         }
         return value;
-    } catch (err) {
-        throw new Exception("APIMID_PARAMS_INVALID", err.message || `ValidatorError: invalid arguments.`);
+    } catch (err :unknown) {
+        throw new Exception("APIMID_PARAMS_INVALID", (err as Error).message || `ValidatorError: invalid arguments.`);
     }
 }
 

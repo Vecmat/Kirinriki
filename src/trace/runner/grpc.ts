@@ -4,10 +4,10 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import lodash from "lodash";
-import { catcher } from "../catcher";
-import { IContext, INext } from "../../core";
+import { catcher } from "../catcher.js";
 import { Exception } from "@vecmat/vendor";
-import { StatusCodeConvert } from "../code";
+import { StatusCodeConvert } from "../code.js";
+import { IContext, INext } from "../../core/IContext.js";
 import { DefaultLogger as Logger } from "@vecmat/printer";
 
 /**
@@ -62,8 +62,9 @@ export async function grpcRunner(ctx: IContext, next: INext, ext?: any): Promise
         if (ctx.body !== undefined && ctx.status === 404) {
             ctx.status = 200;
         }
-
-        ctx.rpc.callback(null, ctx.body);
+        if (ctx.rpc.callback) {
+          ctx.rpc.callback(null, ctx.body);
+        }
         return null;
     } catch (err: any) {
         return await catcher(err, ctx);

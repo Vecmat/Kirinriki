@@ -3,14 +3,18 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import KoaRouter from "@koa/router";
+
+
 import { Check } from "@vecmat/vendor";
-import { Logger } from "../../base/Logger";
-import { IOCContainer } from "../../container";
+import { Logger } from "../../base/Logger.js";
+import { IRouter } from "../../core/IApplication.js";
+import { Kirinriki } from "../../core/Application.js";
+import KoaRouter, { RouterOptions } from "@koa/router";
+import { IOCContainer } from "../../container/index.js";
+import { IContext, INext } from "../../core/IContext.js";
+import { RequestMethod, ASPECT_SAVANT } from "../define.js";
 import { DefaultContext, DefaultState, Middleware } from "koa";
-import { Kirinriki, IContext, INext, IRouter } from "../../core";
-import { buildHandler, buildParams, buildRouter } from "../builder";
-import { ASPECT_SAVANT, RequestMethod, RouterOptions } from "../define";
+import { buildRouter, buildParams, buildHandler } from "../builder.js";
 
 // HttpImplementation
 export type HttpImplementation = (ctx: IContext, next: INext) => Promise<any>;
@@ -20,7 +24,7 @@ export type HttpImplementation = (ctx: IContext, next: INext) => Promise<any>;
  */
 export class HttpRouter implements IRouter {
     app: Kirinriki;
-    readonly protocol: string;
+    readonly protocol!: string;
     options: RouterOptions;
     router: KoaRouter;
 
@@ -49,8 +53,8 @@ export class HttpRouter implements IRouter {
 
     /**
      * todo :sync ws/gprc
-     * @param path 
-     * @param func 
+     * @param path
+     * @param func
      */
     useSavant(path: string, ...func: Middleware[]) {
         this.router.use(path, ...func);
@@ -81,6 +85,9 @@ export class HttpRouter implements IRouter {
                 // tslint:disable-next-line: forin
                 for (const it in ctlRouters) {
                     const router = ctlRouters[it];
+                    if(!router){
+                      break;
+                    }
                     const method = router.method;
                     const path = router.path;
                     const requestMethod = <RequestMethod>router.requestMethod;

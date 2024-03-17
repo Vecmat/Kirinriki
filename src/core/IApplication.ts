@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-import { Kirinriki } from "./Application";
+import { Kirinriki } from "./Application.js";
 
 /**
  * InitOptions
@@ -29,7 +29,7 @@ type unknownServer = unknown;
 export interface IApplication {
     app: Kirinriki;
     options: any;
-    status: number;
+    status?: number;
     server: unknownServer;
 
     readonly Start: (listenCallback: () => void) => unknownServer;

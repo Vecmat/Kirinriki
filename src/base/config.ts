@@ -1,9 +1,10 @@
 
 import rc from "rc";
 import lodash from "lodash";
-import { LoadDir } from "./Loader";
-import { IObject, Check } from "@vecmat/vendor";
-import { IOCContainer, TAGGED_ARGS } from "../container";
+import { LoadDir } from "./Loader.js";
+import { Check, IObject } from "@vecmat/vendor";
+import { IOCContainer } from "../container/Container.js";
+import { TAGGED_ARGS } from "../container/IContainer.js";
 
 /**
  * LoadConfigs
@@ -15,10 +16,10 @@ import { IOCContainer, TAGGED_ARGS } from "../container";
  * @param {string[]} [ignore]
  * @returns {*}
  */
-export function LoadConfigs(loadPath: string[], baseDir?: string, pattern?: string[], ignore?: string[]) {
+export async function LoadConfigs(loadPath: string[], baseDir?: string, pattern?: string[], ignore?: string[]) {
     const conf: any = {};
     const env = process.env.KIRINRIKI_ENV || process.env.NODE_ENV || "";
-    LoadDir(
+    await LoadDir(
         loadPath,
         baseDir,
         (name: string, path: string, exp: any) => {
@@ -53,7 +54,7 @@ export function LoadConfigs(loadPath: string[], baseDir?: string, pattern?: stri
 function parseEnv(conf: IObject) {
     if (!lodash.isObject(conf)) return conf;
     for (const key in conf) {
-        if (Object.prototype.hasOwnProperty.call(conf, key)) {
+        if (conf.hasOwnProperty(key)) {
             const element = conf[key];
             if (lodash.isObject(element)) {
                 conf[key] = parseEnv(element);
@@ -79,21 +80,25 @@ function parseEnv(conf: IObject) {
  * @param {string} [type] configuration type
  * @returns {PropertyDecorator}
  */
-export function Config(key?: string, type?: string): PropertyDecorator {
-    return (target: any, propertyKey: string) => {
+export function Config(key?: string | symbol, type?: string): PropertyDecorator {
+    return (target: Object, propertyKey: string | symbol) => {
         const app = IOCContainer.getApp();
-        if (!app || !app.config)
-            return;
+        if (!app || !app.config) return;
 
         // identifier = identifier || STR.camelCase(propertyKey, { pascalCase: true });
         key = key || propertyKey;
         type = type || "config";
-        IOCContainer.savePropertyData(TAGGED_ARGS, {
-            name: propertyKey,
-            method() {
-                return app.config(key, type);
+        IOCContainer.savePropertyData(
+            TAGGED_ARGS,
+            {
+                name: propertyKey,
+                method() {
+                    return app.config(key, type);
+                }
             },
-        }, target, propertyKey);
+            target,
+            propertyKey
+        );
     };
 }
 /**

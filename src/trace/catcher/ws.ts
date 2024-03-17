@@ -4,8 +4,9 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import { Exception } from "@vecmat/vendor";
-import { Logger } from "../../base/Logger";
-import { HttpStatusCode, HttpStatusCodeMap } from "../code";
+import { Logger } from "../../base/Logger.js";
+import { HttpStatusCodeMap } from "../code.js";
+
 
 /**
  * Websocket error handler
@@ -25,6 +26,6 @@ export function WSCatcher(ctx: any, err: Exception): void {
         return ctx.websocket.send(body);
     } catch (error) {
         Logger.Error(error);
-        return null;
+        return;
     }
 }

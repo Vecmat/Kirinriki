@@ -7,8 +7,8 @@
 import "reflect-metadata";
 import lodash from "lodash";
 import { Check } from "@vecmat/vendor";
-import { PARAM_TYPE_KEY } from "./rule";
-import { getOriginMetadata } from "../container";
+import { PARAM_TYPE_KEY } from "./rule.js";
+import { getOriginMetadata } from "../container/Util.js";
 
 /**
  * Set property as included in the process of transformation.
@@ -85,7 +85,7 @@ function listPropertyData(decoratorNameKey: string | symbol, target: any, proper
  * @param metadataKey metadata key
  * @param target the target of metadataKey
  */
-export function recursiveGetMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): any[] {
+export function recursiveGetMetadata(metadataKey: any, target: any, propertyKey: string | symbol): any[] {
     // get metadata value of a metadata key on the prototype
     // let metadata = Reflect.getOwnMetadata(metadataKey, target, propertyKey);
     const metadata = listPropertyData(metadataKey, target, propertyKey) || {};

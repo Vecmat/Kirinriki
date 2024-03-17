@@ -5,8 +5,8 @@
  */
 import lodash from "lodash";
 import { Disk } from "@vecmat/vendor";
-import { GrpcObject, loadPackageDefinition, ServiceDefinition } from "@grpc/grpc-js";
 import { loadSync, Options, ProtobufTypeDefinition } from "@grpc/proto-loader";
+import { GrpcObject, loadPackageDefinition, ServiceDefinition } from "@grpc/grpc-js";
 
 /**
  *

@@ -4,9 +4,9 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-import { MetadataClass } from "./Metadata";
+import { MetadataClass } from "./Metadata.js";
 import { Exception, ARROBJ } from "@vecmat/vendor";
-import { IRpcServerCallback, IRpcServerUnaryCall, IWebSocket, KoaContext, IContext, WsRequest } from "./IContext";
+import { IRpcServerCallback, IRpcServerUnaryCall, IWebSocket, KoaContext, IContext, WsRequest } from "./IContext.js";
 
 /**
  *  Create IContext
@@ -130,6 +130,6 @@ function initBaseContext(ctx: KoaContext): IContext {
         context.set(data.toJSON());
     };
 
-    
+
     return context;
 }

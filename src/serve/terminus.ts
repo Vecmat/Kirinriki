@@ -6,9 +6,9 @@
 
 import lodash from "lodash";
 import EventEmitter from "events";
-import { IApplication } from "../core";
-import { Logger } from "../base/Logger";
-import { asyncEmit } from "../vendor/eve";
+import { Logger } from "../base/Logger.js";
+import { asyncEmit } from "../vendor/eve.js";
+import { IApplication } from "../core/IApplication.js";
 
 /** @type {*} */
 const terminusOptions = {

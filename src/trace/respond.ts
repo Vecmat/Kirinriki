@@ -3,8 +3,9 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import { IContext } from "../core";
+
 import { Stream } from "stream";
+import { IContext } from "../core/IContext.js";
 
 // StatusEmpty
 const StatusEmpty = [204, 205, 304];

@@ -5,7 +5,7 @@
  */
 import lodash from "lodash";
 import { Check } from "@vecmat/vendor";
-import { Container } from "./Container";
+import { Container } from "./Container.js";
 
 // get property of an object
 const functionPrototype = Object.getPrototypeOf(Function);

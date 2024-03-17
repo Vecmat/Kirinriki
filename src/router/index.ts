@@ -5,13 +5,13 @@
  */
 
 
-export * from "./define";
-export * from "./inject";
-export * from "./option";
-export * from "./params";
-export * from "./methods";
-export * from "./protocol/ws";
-export * from "./protocol/http";
-export * from "./protocol/grpc";
+export * from "./define.js";
+export * from "./inject.js";
+export * from "./option.js";
+export * from "./params.js";
+export * from "./methods.js";
+export * from "./protocol/ws.js";
+export * from "./protocol/http.js";
+export * from "./protocol/grpc.js";
 
 

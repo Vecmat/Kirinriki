@@ -4,11 +4,11 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 import Koa from "koa";
-import { Parse } from "./parse";
-import { Logger } from "../base/Logger";
-import { Check, ARROBJ } from "@vecmat/vendor";
-import { Kirinriki, IContext, INext } from "../core";
-
+import { Parse } from "./parse.js";
+import { Logger } from "../base/Logger.js";
+import { ARROBJ, Check } from "@vecmat/vendor";
+import { Kirinriki } from "../core/Application.js";
+import { IContext, INext } from "../core/IContext.js";
 /**
  *
  *
@@ -51,7 +51,7 @@ const defaultOptions: PayloadOptions = {
  * @param {PayloadOptions} options
  * @param {*} app Kirinriki or Koa instance
  */
-export function Payload(options: PayloadOptions, app: Kirinriki): Koa.Middleware {
+export function Payload(options: PayloadOptions, app: Kirinriki) {
     options = { ...defaultOptions, ...options };
 
     return async function PayloadSavant(ctx: IContext, next: INext) {

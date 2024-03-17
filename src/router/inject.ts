@@ -1,10 +1,9 @@
 import lodash from "lodash";
-import { ASPECT_BEFORE, ASPECT_BEHIND, ROUTER_KEY, ASPECT_SAVANT } from "./define";
 import { Exception } from "@vecmat/vendor";
-import { paramterTypes } from "../validation";
-import { IOCContainer, TAGGED_PARAM } from "../container";
-import {  RequestMethod, RouterOption, TAspect, TParams, TSavant } from "./define";
-
+import { TAGGED_PARAM } from "../container/IContainer.js";
+import { IOCContainer } from "../container/index.js";
+import { paramterTypes } from "../validation/rule.js";
+import { RequestMethod, ROUTER_KEY, RouterOption, TParams, TSavant, ASPECT_SAVANT, TAspect, ASPECT_BEFORE, ASPECT_BEHIND } from "./define.js";
 
 
 /**
@@ -25,18 +24,23 @@ export const InjectRouter = (
     } = {}
 ): MethodDecorator => {
     const routerName = routerOptions.routerName ?? "";
-    return (target:any, key: string, descriptor: PropertyDescriptor) => {
+    return (target: Object, method: string | symbol, descriptor: PropertyDescriptor) => {
         const targetType = IOCContainer.getType(target);
         if (targetType !== "CONTROLLER") {
-            throw  new Exception("BOOTERR_DEPRO_UNSUITED","Request decorator is only used in controllers class.");
+            throw new Exception("BOOTERR_DEPRO_UNSUITED", "Request decorator is only used in controllers class.");
         }
         // tslint:disable-next-line: no-object-literal-type-assertion
-        IOCContainer.attachPropertyData(ROUTER_KEY, {
-            path,
-            requestMethod: reqMethod,
-            routerName,
-            method: key
-        } as RouterOption, target, key);
+        IOCContainer.attachPropertyData(
+            ROUTER_KEY,
+            {
+                path,
+                requestMethod: reqMethod,
+                routerName,
+                method: method
+            } as RouterOption,
+            target,
+            method
+        );
 
         return descriptor;
     };
@@ -52,7 +56,7 @@ export const InjectRouter = (
  * @returns {*}  {ParameterDecorator}
  */
 export const InjectParams = (name: string, fn: TParams): ParameterDecorator => {
-    return (target: Object, propertyKey: string, descriptor: number) => {
+    return (target: Object, propertyKey: string | symbol | undefined ="", descriptor: number) => {
         const targetType = IOCContainer.getType(target);
         if (targetType !== "CONTROLLER") {
             throw new Exception("BOOTERR_DEMET_UNSUITED", `${name} decorator is only used in controllers class.`);
@@ -61,7 +65,7 @@ export const InjectParams = (name: string, fn: TParams): ParameterDecorator => {
         const paramTypes = Reflect.getMetadata("design:paramtypes", target, propertyKey);
         // const returnType = Reflect.getMetadata("design:returntype", target, propertyKey);
         // const keys = Reflect.getMetadataKeys(target, propertyKey);
-  
+
         let type = paramTypes[descriptor]?.name ? paramTypes[descriptor].name : "object";
         let isDto = false;
         //DTO class
@@ -91,32 +95,32 @@ export const InjectParams = (name: string, fn: TParams): ParameterDecorator => {
 
 
 /**
- * Inject Savant 
+ * Inject Savant
  * @param {string} name
  * @param {Function} exec
- * @returns 
+ * @returns
  */
 export function InjectSavant(name: string, exec: TSavant): MethodDecorator {
-    return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
-        IOCContainer.attachPropertyData(ASPECT_SAVANT, exec, target, methodName);
+    return (target: Object, method: string | symbol, descriptor: PropertyDescriptor) => {
+        IOCContainer.attachPropertyData(ASPECT_SAVANT, exec, target, method);
     };
 }
 
 export type EAspect = "BEFORE" | "BEHIND";
 
 /**
- * Inject Aspect 
+ * Inject Aspect
  * @param {EAspect} type
  * @param {Function} exec
- * @returns 
+ * @returns
  */
 export function InjectAspect(type: EAspect, exec: TAspect): MethodDecorator {
-    return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
-        if(type =="BEFORE"){
-            IOCContainer.attachPropertyData(ASPECT_BEFORE, { type, exec }, target, methodName);
+    return (target: Object, method: string | symbol, descriptor: PropertyDescriptor) => {
+        if (type == "BEFORE") {
+            IOCContainer.attachPropertyData(ASPECT_BEFORE, { type, exec }, target, method);
         }
-        if(type == "BEHIND"){
-            IOCContainer.attachPropertyData(ASPECT_BEHIND, { type, exec }, target, methodName);
+        if (type == "BEHIND") {
+            IOCContainer.attachPropertyData(ASPECT_BEHIND, { type, exec }, target, method);
         }
     };
 }

@@ -3,8 +3,8 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
+import { OptionType } from "./interface.js";
 import { IType, IField, IMapField } from "protobufjs";
-import { OptionType } from "./interface";
 
 const TYPES: {
     [key: string]: string;
@@ -55,7 +55,9 @@ function readField(
 ) {
     const params = Object.keys(content).map(paramName => {
         const paramValue = content[paramName];
-
+        if (!paramValue) {
+            throw new Error("Kirinriki:GRPC readField of null content");
+        }
         return {
             type: TYPES[paramValue.type] || paramValue.type,
             keyType: getKeyType(paramValue),

@@ -5,10 +5,7 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 import "reflect-metadata";
-import { IOCContainer } from "../container";
-import { Kirinriki, IContext } from '../core';
-import { CONTROLLER_ROUTER } from "../router";
-
+import { IOCContainer } from "../container/Container.js";
 
 
 /**
