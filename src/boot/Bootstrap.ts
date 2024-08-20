@@ -3,7 +3,7 @@
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
-import "reflect-metadata";
+
 import { readFileSync } from "fs";
 import lodash from "lodash";
 import EventEmitter from "events";
@@ -70,6 +70,9 @@ const executeBootstrap = async function <TFunction extends Function>(
         // const __filename = fileURLToPath(import.meta.url)
         // // 先获取文件所在的目录
         // const __dirname = dirname(__filename)
+        const __filename = fileURLToPath(import.meta.url);
+
+        const __dirname = path.dirname(__filename);
 
         let file =  path.resolve(__dirname, "../../package.json");
         let pkg = await readFileSync(file, "utf8");
@@ -97,7 +100,7 @@ const executeBootstrap = async function <TFunction extends Function>(
         IOCContainer.setApp(app);
 
         // Create Catcher
-      debugger;
+
         // Load global error catcher first
         // todo: remove CaptorManager
         await  BootLoader.loadCaptor(app);
@@ -111,7 +114,7 @@ const executeBootstrap = async function <TFunction extends Function>(
 
         // Load configuration
         // configuration metadata
-        debugger
+
         await  BootLoader.LoadConfigs(app, target);
         await asyncEmit(app, "APP_CONFIG_LOADED");
         Logger.Log("Vecmat", "", "Loaded Config ...");

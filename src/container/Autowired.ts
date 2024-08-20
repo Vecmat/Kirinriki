@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 // tslint:disable-next-line: no-import-side-effect
-import "reflect-metadata";
+
 import { STR, Exception } from "@vecmat/vendor";
 import { RecursiveGetMetadata } from "./Util.js";
 import { IOCContainer, Container } from "./Container.js";
@@ -35,15 +35,17 @@ export function Autowired(identifier?: string, type?: ComponentType, constructAr
             throw new Exception("BOOTERR_DEPRO_MISSATTR", "identifier cannot be empty when circular dependency exists");
         }
         if (type === undefined) {
-            if (identifier.indexOf("Addon") > -1) {
-                type = "ADDON";
-            } else if (identifier.indexOf("Capturer") > -1) {
-                type = "CAPTURER";
-            } else if (identifier.indexOf("Controller") > -1) {
-                type = "CONTROLLER";
-            } else {
-                type = "COMPONENT";
-            }
+           if (identifier.indexOf("Action") > -1) {
+               type = "ACTION";
+           } else if (identifier.indexOf("Addon") > -1) {
+               type = "ADDON";
+           } else if (identifier.indexOf("Capturer") > -1) {
+               type = "CAPTURER";
+           } else if (identifier.indexOf("Controller") > -1) {
+               type = "CONTROLLER";
+           } else {
+               type = "COMPONENT";
+           }
         }
         //Cannot rely on injection controller
         if (type === "CONTROLLER") {

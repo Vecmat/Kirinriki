@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 // tslint:disable-next-line: no-import-side-effect
-import "reflect-metadata";
+
 import lodash from "lodash";
 import { Check } from "@vecmat/vendor";
 import { PARAM_TYPE_KEY } from "./rule.js";

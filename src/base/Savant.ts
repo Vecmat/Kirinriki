@@ -75,7 +75,7 @@ export class SavantManager {
         this.reg("Playload", Payload);
 
         // Custom savant
-        const allcls = IOCContainer.listClass();
+        const allcls = IOCContainer.listClass("ADDON");
         allcls.forEach((item: ComponentItem) => {
             const [, type, name] = item.id.match(/(\S+):(\S+)/) || [];
             if (!name || !type) {

@@ -3,7 +3,7 @@
     "version": "0.1.1",
     "description": "Koa2 + Typescript = kirinriki. Use Typescript's decorator implement auto injection.",
     "type": "module",
-    "main": "./libs/index.cjs",
+    "main": "./libs/index.mjs",
     "module": "./libs/index.js",
     "types": "./libs/index.d.ts",
     "scripts": {
@@ -19,6 +19,7 @@
         "build:doc": "del-cli --force docs/api && npx api-documenter markdown --input src --output docs/api",
         "build:dts": "del-cli --force temp && npx tsc && npx api-extractor run --local --verbose",
         "eslint": "eslint --ext .ts,.js ./",
+        "watch": "concurrently \"tsc -w --project tsconfig.json\" \"tsc-alias -w --project tsconfig.json\"",
         "#prepublishOnly": "npm test && npm run build",
         "#prerelease": "npm test && npm run build",
         "#release": "standard-version",
@@ -50,8 +51,8 @@
     "dependencies": {
         "@types/koa-compose": "~3.2.5",
         "@types/formidable": "^2.0.4",
-        "@vecmat/vendor": "workspace:~0.0.11",
-        "@vecmat/printer": "workspace:~0.0.11",
+        "@vecmat/vendor": "workspace:~0.1.1",
+        "@vecmat/printer": "workspace:~0.1.1",
         "@grpc/grpc-js": "1.5.9",
         "@grpc/proto-loader": "~0.7.4",
         "@koa/router": "^12.0.0",
@@ -129,5 +130,6 @@
         "jest": "^29.5.0",
         "jest-location-mock": "^2.0.0",
         "jest-matcher-specific-error": "^1.0.0"
-    }
+    },
+    "packageManager": "pnpm@9.3.0+sha512.ee7b93e0c2bd11409c6424f92b866f31d3ea1bef5fbe47d3c7500cdc3c9668833d2e55681ad66df5b640c61fa9dc25d546efa54d76d7f8bf54b13614ac293631"
 }

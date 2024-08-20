@@ -51,10 +51,10 @@ export class MonitorManager {
         const allcls = IOCContainer.listClass();
         allcls.forEach((item: ComponentItem) => {
             const [, type, name] = item.id.match(/(\S+):(\S+)/)||[];
-             if (!name || !type) {
-                 console.error(`[Kirinriki] Component :"${item.id}"‘s name format error!`);
-                 return;
-             }
+            if (!name || !type) {
+                console.error(`[Kirinriki] Component :"${item.id}"‘s name format error!`);
+                return;
+            }
             const ins = IOCContainer.get(name, <ComponentType>type);
             const keyMeta = IOCContainer.listPropertyData("EVENT_KEY", item.target);
             for (const fun in keyMeta) {

@@ -1,4 +1,4 @@
-import "reflect-metadata";
+
 import { Exception } from "@vecmat/vendor";
 import { IOCContainer } from "../container/Container.js";
 

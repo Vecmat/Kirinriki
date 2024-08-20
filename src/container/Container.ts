@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 // tslint:disable-next-line: no-import-side-effect
-import "reflect-metadata";
+
 import lodash from "lodash";
 import { injectValues } from "./Values.js";
 import { Check, IObjExt } from "@vecmat/vendor";

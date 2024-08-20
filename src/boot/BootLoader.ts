@@ -4,7 +4,6 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
 */
 import lodash from "lodash";
-import * as path from "path";
 import { IAddon } from "../base/Addon.js";
 import { LoadDir } from "../base/Loader.js";
 import { Captor } from "../base/Capturer.js";
@@ -19,7 +18,9 @@ import { ARROBJ, Check, Exception } from "@vecmat/vendor";
 import { LoadConfigs as loadConf } from "../base/config.js";
 import { TAGGED_CLS, ComponentType } from "../container/IContainer.js";
 import { COMPONENT_SCAN, CONFIGURATION_SCAN, APP_READY_HOOK, CAPTURER_KEY } from "../base/Constants.js";
-
+import { ACTION_SCOPT } from "../router/define.js"
+import path from "path";
+import { fileURLToPath } from "url";
 /**
  *
  *
@@ -44,7 +45,7 @@ export class BootLoader {
     public static initialize(app: Kirinriki) {
         const env = (process.execArgv ?? []).join(",");
         // app.env
-        app.env = process.env.KRNRK_ENV || process.env.NODE_ENV ||"";
+        app.env = process.env.KRNRK_ENV || process.env.NODE_ENV || "";
         if (env.indexOf("--production") > -1 || (app.env ?? "").indexOf("pro") > -1) {
             app.appDebug = false;
         }
@@ -62,6 +63,9 @@ export class BootLoader {
         }
 
         // define path
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+
         const rootPath = app.rootPath || process.cwd();
         const appPath = app.appPath || path.resolve(rootPath, env.indexOf("ts-node") > -1 ? "src" : "dist");
         const krnrkPath = path.resolve(__dirname, "..");
@@ -114,7 +118,7 @@ export class BootLoader {
         // configuration metadata
         const configurationMetas = BootLoader.GetConfigurationMetas(app, target);
         const exSet = new Set();
-       await LoadDir(
+        await LoadDir(
             componentMetas,
             "",
             (fileName: string, xpath: string, xTarget: any) => {
@@ -206,7 +210,7 @@ export class BootLoader {
         if (lodash.isArray(loadPath)) {
             loadPath = loadPath.length > 0 ? loadPath : ["./config"];
         }
-        let appConfig =await loadConf(loadPath, app.appPath);
+        let appConfig = await loadConf(loadPath, app.appPath);
         appConfig = ARROBJ.extendObj(frameConfig, appConfig, true);
         app.setMetaData("_configs", appConfig);
     }
@@ -219,8 +223,8 @@ export class BootLoader {
      * @memberof BootLoader
      */
     public static async loadCaptor(app: Kirinriki) {
-         await LoadDir(["./Capturer"], app.krnrkPath);
-        Logger.Debug(`Load core Captor: ${app.krnrkPath}/Capturer`);
+        await LoadDir(["./Capturer"], app.appPath);
+        Logger.Debug(`Load core Captor: ${app.appPath}/Capturer`);
         const clsList = IOCContainer.listClass("CAPTURER");
         clsList.forEach((item: ComponentItem) => {
             item.id = (item.id ?? "").replace("CAPTURER:", "");
@@ -239,11 +243,11 @@ export class BootLoader {
             const allcls = IOCContainer.listClass();
             allcls.forEach((item: ComponentItem) => {
                 if ((item.id ?? "").startsWith("CAPTURER")) return;
-                 const [, type, name] = item.id.match(/(\S+):(\S+)/) || [];
-                 if (!name || !type) {
-                     console.error(`[Kirinriki] CAPTURER :"${item.id}"‘s name format error!`);
-                     return;
-                 }
+                const [, type, name] = item.id.match(/(\S+):(\S+)/) || [];
+                if (!name || !type) {
+                    console.error(`[Kirinriki] CAPTURER :"${item.id}"‘s name format error!`);
+                    return;
+                }
                 const ins = IOCContainer.get(name, <ComponentType>type);
                 const keyMeta = IOCContainer.listPropertyData(CAPTURER_KEY, item.target);
                 for (const fun in keyMeta) {
@@ -288,10 +292,27 @@ export class BootLoader {
             const ins: IAddon = IOCContainer.get(key, "ADDON");
             console.log(ins.version);
         }
-
-
     }
 
+    /**
+     * Load mixture
+     *
+     * @static
+     * @param {*} app
+     * @memberof BootLoader
+     */
+    public static LoadMixtures(app: Kirinriki) {
+        const mixtureList = IOCContainer.listClass("ACTION");
+        mixtureList.forEach((item: ComponentItem) => {
+            item.id = (item.id ?? "").replace("MIXTURE:", "");
+            if (item.id && Check.isClass(item.target)) {
+                Logger.Debug(`Load mixture: ${item.id}`);
+                // registering to IOC
+                const scope = IOCContainer.getClassMetadata(ACTION_SCOPT, "scope", item.target);
+                IOCContainer.reg(item.id, item.target, { scope: scope, type: "ACTION", args: [] });
+            }
+        });
+    }
 
     /**
      * Load components

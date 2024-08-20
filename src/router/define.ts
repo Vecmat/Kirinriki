@@ -6,6 +6,9 @@ import { ValidOtpions } from "../validation/decorator.js";
 export const SAVANT_KEY = Symbol("SAVANT_KEY");
 export const ROUTER_KEY = Symbol("ROUTER_KEY");
 
+export const ACTION_SCOPT = Symbol("ACTION_SCOPT");
+
+
 export const ASPECT_SAVANT = Symbol("ASPECT_SAVANT");
 export const ASPECT_BEFORE = Symbol("ASPECT_BEFORE");
 export const ASPECT_BEHIND = Symbol("ASPECT_BEHIND");
@@ -15,6 +18,7 @@ export const CONTROLLER_ROUTER = Symbol("CONTROLLER_ROUTER");
 export type TAspect = (context: IContext) => Promise<void>;
 export type TParams = (context: IContext) => Promise<any> | any;
 export type TSavant = (context: IContext, next: INext) => Promise<void>;
+
 
 
 /**

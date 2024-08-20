@@ -4,7 +4,7 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 // tslint:disable-next-line: no-import-side-effect
-import "reflect-metadata";
+
 import { IOCContainer } from "../container/Container.js";
 
 

@@ -11,10 +11,13 @@ import getRawBody from "raw-body";
 import onFinished from "on-finished";
 import { PayloadOptions } from "./index.js";
 import { parseStringPromise } from "xml2js";
-import { IncomingForm, BufferEncoding } from "formidable";
+import formidable from "formidable";
+const { IncomingForm }= formidable;
+import  type { BufferEncoding } from "formidable";
 
 const fsUnlink = unlinkSync; //util.promisify(fs.unlink);
 const fsAccess = accessSync;
+
 /**
  *
  *

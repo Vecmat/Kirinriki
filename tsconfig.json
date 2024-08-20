@@ -5,7 +5,7 @@
         "outDir": "libs",
         "baseUrl": "src",
 
-
+      "moduleResolution": "NodeNext",
         "declaration": true,
         "noImplicitThis": false,
         "types": ["node", "jest"]

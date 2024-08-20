@@ -5,7 +5,7 @@
  */
 
 export type Scope = "Singleton" | "Prototype" | "Connect";
-export type ComponentType = "ADDON" | "CAPTURER" | "CONTROLLER" | "COMPONENT";
+export type ComponentType = "ACTION"| "ADDON" | "CAPTURER" | "CONTROLLER" | "COMPONENT";
 
 // used to store class properties args (value)
 export const TAGGED_ARGS = "TAGGED_ARGS";

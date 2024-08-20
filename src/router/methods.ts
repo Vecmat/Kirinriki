@@ -5,7 +5,7 @@
  */
 // tslint:disable-next-line: no-import-side-effect
 // tslint:disable-next-line: no-import-side-effect
-import "reflect-metadata";
+
 import { Exception } from "@vecmat/vendor";
 import { RequestMethod } from "./define.js";
 import { InjectRouter } from "./inject.js";

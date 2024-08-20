@@ -5,7 +5,7 @@
  */
 
 
-import "reflect-metadata";
+
 import { IContext } from "../core/IContext.js";
 import { Kirinriki } from "../core/Application.js";
 import { CONTROLLER_ROUTER } from "../router/define.js";
