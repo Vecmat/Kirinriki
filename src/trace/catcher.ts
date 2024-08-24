@@ -19,23 +19,21 @@ import { HTTPCatcher } from "./catcher/http.js";
  * @param {IContext} ctx
  * @param {(Exception)} err
  */
-export async function catcher(err: Error , ctx: IContext) {
+export async function catcher<E extends Error>(err: E , ctx: IContext) {
     let skip = false;
-    let excep: Exception;
+    let excep = err;
     let sign = "COMMON_ERROR";
-
 
     if (err instanceof Error) {
         if (err instanceof Exception) {
-            excep = err;
             sign = err.sign;
         } else {
             sign = err.name == "Error" ? err.constructor.name : err.name;
-            excep = new Exception(sign, err.message);
+            // excep = new Exception(sign, err.message);
         }
     } else {
         sign = "UNKNOW_ERROR";
-        excep = new Exception("UNKNOW_ERROR", "" + err);
+
     }
 
     // Global error handling

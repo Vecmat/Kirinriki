@@ -19,7 +19,7 @@ import { HttpStatusCodeMap, StatusCodeConvert, GrpcStatusCodeMap } from "../code
  * @param {Exception} err
  * @returns {*}  {Promise<any>}
  */
-export function gRPCCatcher(ctx: IContext, err: Exception) {
+export function gRPCCatcher<E extends Error>(ctx: IContext, err: E) {
     try {
         let errObj;
         let code = 2;

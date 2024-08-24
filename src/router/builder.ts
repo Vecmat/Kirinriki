@@ -29,6 +29,7 @@ import { ASPECT_BEFORE, ASPECT_BEHIND, RouterMetadataObject, CONTROLLER_ROUTER, 
  * @returns
  */
 export async function buildHandler(app: Kirinriki, ctx: IContext, ctlClass: any, method: string, ctlParams: any) {
+    // todo catch  需要移动到这里
     const ctl = IOCContainer.getInsByClass(ctlClass);
     if (!ctx) {
         throw new Exception("SYSTEM_CTX_ABSENT", "Context not found.");
@@ -66,8 +67,12 @@ export async function buildHandler(app: Kirinriki, ctx: IContext, ctlClass: any,
     for (const { name, exec } of behindAspects) {
         await exec(ctx);
     }
-
-    ctx.body = ctx.body || res;
+    // todo 检测accept 来 定制 返回格式
+    ctx.body = ctx.body || {
+        sign: "SUCCESS",
+        message: "success",
+        data: res || {}
+    };;
 }
 
 

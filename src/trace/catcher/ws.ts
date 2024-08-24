@@ -16,7 +16,7 @@ import { HttpStatusCodeMap } from "../code.js";
  * @param {Exception} err
  * @returns {*}  {void}
  */
-export function WSCatcher(ctx: any, err: Exception): void {
+export function WSCatcher<E extends Error>(ctx: any, err: E): void {
     try {
         ctx.status = ctx.status || 500;
         if (!HttpStatusCodeMap.has(ctx.status)) ctx.status = 500;

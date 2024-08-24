@@ -80,12 +80,15 @@ export async function httpRunner(ctx: IContext, next: INext, ext?: any): Promise
         if (ctx.body instanceof Stream) {
             return null;
         }
-        const body = {
-            sign: "SUCCESS",
-            message: "success",
-            data: ctx.body || {}
-        };
-        ctx.body = body;
+        if ("HEAD" === ctx.method && !ctx.body) {
+            const body = {
+                sign: "SUCCESS",
+                message: "success",
+                data: ctx.body || {}
+            };
+            ctx.body = body;
+        }
+
         return null;
     } catch (err: any) {
         // skip prevent errors

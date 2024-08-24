@@ -15,7 +15,7 @@ import { IOCContainer } from "../container/Container.js";
  */
 
 export interface ICapturer {
-    (err: Error, ctx?: IContext|Kirinriki ): Promise<boolean>
+    <E  extends Error >(err: E, ctx?: IContext|Kirinriki ): Promise<boolean>
 }
 
 
@@ -74,22 +74,18 @@ export class Captor {
 
     // 寻找错误错误处理器
     static match(name: string): ICapturer[] {
-        let item: ICapturer|undefined;
+        let item: ICapturer | undefined;
         const list: ICapturer[] = [];
-        // Put all matches at the start
-        item = Captor.map.get("*");
-        if (item) {
-            list.push(item);
-        }
-        item =Captor.map.get(name);
+
+        item = Captor.map.get(name);
         if (item) {
             list.push(item);
         } else {
             for (const key of Captor.regs.keys()) {
                 // Prevent duplication
-                if (key === "*")  break;
+                if (key === "*") break;
                 if (!~key.indexOf("*")) {
-                     break;
+                    break;
                 }
                 const regex = Captor.regs.get(key);
                 if (regex && regex.test(name)) {
@@ -99,6 +95,11 @@ export class Captor {
                     }
                 }
             }
+        }
+        // Put all matches at the end
+        item = Captor.map.get("*");
+        if (item) {
+            list.push(item);
         }
 
         return list;

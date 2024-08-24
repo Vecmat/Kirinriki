@@ -16,7 +16,7 @@ import { HttpStatusCodeMap } from "../code.js";
  * @param {Exception} err
  * @returns {*}
  */
-export function HTTPCatcher(ctx: any, err: Exception) {
+export function HTTPCatcher<E extends Error>(ctx: any, err: E) {
     try {
         ctx.status = ctx.status || 500;
         if (!HttpStatusCodeMap.has(ctx.status)) ctx.status = 500;
@@ -35,14 +35,20 @@ export function HTTPCatcher(ctx: any, err: Exception) {
             return null;
         }
 
-        const body = {
-            sign: err.sign,
-            message: err.message,
-            data: ctx.body || {}
-        };
+        if ("HEAD" === ctx.method && !ctx.body) {
+
+            const body = {
+                sign: err.name ,
+                message: err.message,
+                data: ctx.body || {}
+            };
+            ctx.body = body;
+        }
+
+
         // `{"":${},"message":"${}","":${}}`;
         // ctx.set("Content-Length", `${Buffer.byteLength(JSON.stringify(body))}`);
-        ctx.body = body;
+
         // ctx.res.end(JSON.stringify(body));
         return;
     } catch (error) {

@@ -74,7 +74,7 @@ const executeBootstrap = async function <TFunction extends Function>(
 
         const __dirname = path.dirname(__filename);
 
-        let file =  path.resolve(__dirname, "../../package.json");
+        let file =  path.resolve(__dirname, "../../../package.json");
         let pkg = await readFileSync(file, "utf8");
         let pkgjson = JSON.parse(pkg);
         // version
