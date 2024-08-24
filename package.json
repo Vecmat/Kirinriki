@@ -1,16 +1,24 @@
 {
     "name": "kirinriki",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Koa2 + Typescript = kirinriki. Use Typescript's decorator implement auto injection.",
     "type": "module",
-    "main": "./libs/index.mjs",
-    "module": "./libs/index.js",
-    "types": "./libs/index.d.ts",
+    "main": "./libs/cjs/index.cjs",
+    "module": "./libs/esm/index.mjs",
+    "types": "./libs/types/index.d.ts",
+    "exports":{
+      ".":{
+
+          "require": "./libs/cjs/index.cjs",
+          "import": "./libs/esm/index.mjs",
+          "types": "./libs/types/index.d.ts"
+      }
+    },
     "scripts": {
-        "clean": "rm -rf dist",
+        "clean": "rm -rf dist && rm -rf libs",
         "test": "",
         "#test": "pnpm build:test && npx mocha test",
-        "build": "rm -rf libs/ && tsc -p tsconfig.build.json --noEmit && rollup -c",
+        "build": "pnpm clean  && tsc -p tsconfig.build.json --noEmit && rollup -c",
         "compile": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
         "deploy": "npm build && npm publish ",
         "buildold": "pnpm clean && npm run build:js && npm run build:dts && npm run build:doc && npm run build:cp ",

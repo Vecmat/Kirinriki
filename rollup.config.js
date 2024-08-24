@@ -24,7 +24,7 @@ export default {
       interop: 'auto',
       exports: 'named',
       preserveModules: true,
-      entryFileNames: '[name].cjs'
+      entryFileNames: 'cjs/[name].cjs'
     },
     {
       dir: 'libs',
@@ -33,10 +33,10 @@ export default {
       interop: 'auto',
       exports: 'named',
       preserveModules: true,
-      entryFileNames: '[name].mjs'
+      entryFileNames: 'esm/[name].mjs'
     }
   ],
-  plugins: [typescript({ tsconfig: 'tsconfig.build.json' }), nodeResolve(), summary()],
+  plugins: [typescript({ tsconfig: 'tsconfig.build.json' }), summary()],
   external: [/node_modules/],
 };
 

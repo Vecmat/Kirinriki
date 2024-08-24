@@ -2,10 +2,10 @@
     "extends": "@silverhand/ts-config/tsconfig.base",
     "compilerOptions": {
         "rootDir": "src",
-        "outDir": "libs",
         "baseUrl": "src",
-
-      "moduleResolution": "NodeNext",
+        "outDir": "libs",
+        "declarationDir": "./libs/types",
+        "moduleResolution": "NodeNext",
         "declaration": true,
         "noImplicitThis": false,
         "types": ["node", "jest"]
