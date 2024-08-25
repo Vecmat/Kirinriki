@@ -7,10 +7,10 @@
  * Copyright: Copyright (©)}) 2023 Vecmat.com. All rights reserved.
  */
 
+import copy from 'rollup-plugin-copy'
 import { summary } from 'rollup-plugin-summary';
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-
 /**
  * @type {import('rollup').RollupOptions}
  */
@@ -18,7 +18,7 @@ export default {
   input: ['src/index.ts'],
   output: [
     {
-      dir: 'libs',
+      dir: 'dist',
       format: "cjs",
       sourcemap: true,
       interop: 'auto',
@@ -27,7 +27,7 @@ export default {
       entryFileNames: 'cjs/[name].cjs'
     },
     {
-      dir: 'libs',
+      dir: 'dist',
       format: "esm",
       sourcemap: true,
       interop: 'auto',
@@ -36,7 +36,21 @@ export default {
       entryFileNames: 'esm/[name].mjs'
     }
   ],
-  plugins: [typescript({ tsconfig: 'tsconfig.build.json' }), summary()],
+  plugins: [
+    typescript({ tsconfig: 'tsconfig.build.json' }),
+    summary(),
+    copy({
+      targets: [
+        { src: 'README.md', dest: 'dist/' },
+        { src: ".npmignore", dest: 'dist/' },
+        { src: 'package.json', dest: 'dist/',
+          // transform: (contents, filename) => {
+          //   return contents.toString().replace('__SCRIPT__', 'app.js')
+          // }
+        },
+      ]
+    })
+  ],
   external: [/node_modules/],
 };
 

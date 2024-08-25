@@ -3,8 +3,8 @@
     "compilerOptions": {
         "rootDir": "src",
         "baseUrl": "src",
-        "outDir": "libs",
-        "declarationDir": "./libs/types",
+        "outDir": "dist",
+        "declarationDir": "./dist/types",
         "moduleResolution": "NodeNext",
         "declaration": true,
         "noImplicitThis": false,

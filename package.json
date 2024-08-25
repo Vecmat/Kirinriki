@@ -3,19 +3,30 @@
     "version": "0.1.2",
     "description": "Koa2 + Typescript = kirinriki. Use Typescript's decorator implement auto injection.",
     "type": "module",
-    "main": "./libs/cjs/index.cjs",
-    "module": "./libs/esm/index.mjs",
-    "types": "./libs/types/index.d.ts",
-    "exports":{
-      ".":{
-
-          "require": "./libs/cjs/index.cjs",
-          "import": "./libs/esm/index.mjs",
-          "types": "./libs/types/index.d.ts"
-      }
+    "main": "./dist/cjs/index.cjs",
+    "module": "./dist/esm/index.mjs",
+    "types": "./dist/types/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/cjs/index.cjs",
+            "import": "./dist/esm/index.mjs",
+            "types": "./dist/types/index.d.ts"
+        }
+    },
+    "publishConfig": {
+        "main": "./cjs/index.cjs",
+        "module": "./esm/index.mjs",
+        "types": "./types/index.d.ts",
+        "exports": {
+            ".": {
+                "require": "./cjs/index.cjs",
+                "import": "./esm/index.mjs",
+                "types": "./types/index.d.ts"
+            }
+        }
     },
     "scripts": {
-        "clean": "rm -rf dist && rm -rf libs",
+        "clean": "rm -rf dist && rm -rf dist",
         "test": "",
         "#test": "pnpm build:test && npx mocha test",
         "build": "pnpm clean  && tsc -p tsconfig.build.json --noEmit && rollup -c",
@@ -59,8 +70,8 @@
     "dependencies": {
         "@types/koa-compose": "~3.2.5",
         "@types/formidable": "^2.0.4",
-        "@vecmat/vendor": "workspace:~0.1.1",
-        "@vecmat/printer": "workspace:~0.1.1",
+        "@vecmat/vendor": "workspace:*",
+        "@vecmat/printer": "workspace:*",
         "@grpc/grpc-js": "1.5.9",
         "@grpc/proto-loader": "~0.7.4",
         "@koa/router": "^12.0.0",
@@ -132,6 +143,7 @@
         "@silverhand/ts-config": "^5.0.0",
         "@silverhand/eslint-config": "^5.0.0",
         "rollup": "~4.13.0",
+        "rollup-plugin-copy": "~3.5.0",
         "rollup-plugin-summary": "~2.0.0",
         "@rollup/plugin-typescript": "11.1.0",
         "@rollup/plugin-node-resolve": "^15.0.2",
