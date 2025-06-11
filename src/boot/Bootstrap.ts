@@ -6,11 +6,9 @@
 
 import { readFileSync } from "fs";
 import lodash from "lodash";
-import EventEmitter from "events";
 import { Logger } from "../base/Logger.js";
-import path, {dirname} from 'path'
-import {fileURLToPath} from 'url'
-
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
 import { asyncEmit } from "../vendor/eve.js";
 import { Captor } from "../base/Capturer.js";
@@ -24,7 +22,7 @@ import { BindProcessEvent } from "../serve/terminus.js";
 import { IOCContainer } from "../container/Container.js";
 import { ListeningOptions, Serve } from "../serve/serve.js";
 import { NewRouter, RouterOptions } from "../router/index.js";
-import { isUnintTest} from "../vendor/Check.js";
+import { isUnintTest } from "../vendor/Check.js";
 import { LOGO, WELCOME, COMPONENT_SCAN, CONFIGURATION_SCAN, APP_READY_HOOK } from "../base/Constants.js";
 
 /**
@@ -46,7 +44,7 @@ const executeBootstrap = async function <TFunction extends Function>(
     // unittest running environment
     const inUnintTest = isUnintTest();
     if (!isInitiative && inUnintTest) {
-        throw new Exception("SYS_inUnintTest");
+        throw new Exception("SYS_IN_UNINT_TEST");
     }
 
     const app: Kirinriki = Reflect.construct(target, []);
@@ -65,7 +63,6 @@ const executeBootstrap = async function <TFunction extends Function>(
     try {
         !app.silent && Logger.Log("🌈🌈🌈🌈🌈", LOGO, WELCOME);
 
-
         // // 文件的路径
         // const __filename = fileURLToPath(import.meta.url)
         // // 先获取文件所在的目录
@@ -74,7 +71,7 @@ const executeBootstrap = async function <TFunction extends Function>(
 
         const __dirname = path.dirname(__filename);
 
-        let file =  path.resolve(__dirname, "../../../package.json");
+        let file = path.resolve(__dirname, "../../../package.json");
         let pkg = await readFileSync(file, "utf8");
         let pkgjson = JSON.parse(pkg);
         // version
@@ -103,7 +100,7 @@ const executeBootstrap = async function <TFunction extends Function>(
 
         // Load global error catcher first
         // todo: remove CaptorManager
-        await  BootLoader.loadCaptor(app);
+        await BootLoader.loadCaptor(app);
 
         // Check all Components
         Logger.Log("Vecmat", "", "Scan Component ...");
@@ -115,7 +112,7 @@ const executeBootstrap = async function <TFunction extends Function>(
         // Load configuration
         // configuration metadata
 
-        await  BootLoader.LoadConfigs(app, target);
+        await BootLoader.LoadConfigs(app, target);
         await asyncEmit(app, "APP_CONFIG_LOADED");
         Logger.Log("Vecmat", "", "Loaded Config ...");
 
@@ -126,12 +123,11 @@ const executeBootstrap = async function <TFunction extends Function>(
 
         // init MonitorManager
         await MonitorManager.init(app);
-        // init SavantManager
-        await SavantManager.init(app);
-
         //  Mount the monitor
         await MonitorManager.mount(app);
 
+        // init SavantManager
+        await SavantManager.init(app);
         // Mount the savant
         await SavantManager.mount(app);
 

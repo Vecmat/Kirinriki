@@ -1,9 +1,20 @@
 {
-    "extends": "@silverhand/ts-config/tsconfig.base",
     "compilerOptions": {
         "rootDir": "src",
         "baseUrl": "src",
         "outDir": "dist",
+        "target": "esnext",
+        "useDefineForClassFields": false, // update until https://github.com/microsoft/TypeScript/issues/50971 is fixed
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "module": "nodenext",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "skipLibCheck": true,
         "declarationDir": "./dist/types",
         "moduleResolution": "NodeNext",
         "declaration": true,
