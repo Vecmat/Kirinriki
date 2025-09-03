@@ -99,7 +99,9 @@
         "ws": "^8.11.0",
         "path-to-regexp": "~6.2.1",
         "concurrently": "~8.0.1",
-        "libphonenumber-js": "^1.9.50"
+        "libphonenumber-js": "^1.9.50",
+        "@rollup/plugin-commonjs": "~28.0.6",
+        "@rollup/plugin-esm-shim": "~0.1.8"
     },
     "devDependencies": {
         "@babel/core": "~7.22.9",

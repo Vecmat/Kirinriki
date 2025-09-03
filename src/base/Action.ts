@@ -4,19 +4,16 @@
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
  */
 
-
-import { ACTION_SCOPT } from "../router/define.js"
-import { IOCContainer } from "../container/index.js"
+import { ACTION_SCOPT } from "../router/define.js";
+import { IOCContainer } from "../container/index.js";
 import type { IContext, Kirinriki } from "../core/index.js";
 
-
-
 /**
- * Interface for Mixture
+ * Interface for Action
  *
  */
-export interface IMixture {
-    readonly app: Kirinriki;
+export interface IAction {
+    readonly app?: Kirinriki;
 }
 
 /**
@@ -35,9 +32,8 @@ export function Action(scope?: string, identifier?: string): ClassDecorator {
     };
 }
 
-
 /**
- * Interface for Mixture
+ * Interface for Action
  *
  */
 export interface IAction {
@@ -45,10 +41,10 @@ export interface IAction {
     readonly app?: Kirinriki;
 }
 
-type TACTION_SCOPE = "CONNECT" | "GLOBAL"
+type TACTION_SCOPE = "CONNECT" | "GLOBAL";
 
 /**
- * BaseMixture class
+ * BaseAction class
  *
  * @export
  * @class Base
@@ -59,10 +55,10 @@ export abstract class BaseAction implements IAction {
     readonly scope = "CONNECT";
 
     /**
-     * instance of BaseMixture.
+     * instance of BaseAction.
      * @param {Kirinriki} app
      * @param {IContext} ctx
-     * @memberof BaseMixture
+     * @memberof BaseAction
      */
     protected constructor(ctx: IContext, ...arg: any[]) {
         this.ctx = ctx;
@@ -72,7 +68,7 @@ export abstract class BaseAction implements IAction {
     /**
      * init
      * @protected
-     * @memberof BaseMixture
+     * @memberof BaseAction
      */
     protected init(...arg: any[]): void {
         return;

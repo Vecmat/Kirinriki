@@ -7,7 +7,7 @@
 import { Exception, Check } from "@vecmat/vendor";
 
 const ARGUMENT_NAMES = /([^\s,]+)/g;
-const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
 
 /**
  *
@@ -19,7 +19,7 @@ const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 export function requireDefault(p: string) {
     /* eslint-disable global-require */
     const ex = require(p);
-    return (ex && (typeof ex === "object") && "default" in ex) ? ex : ex;
+    return ex && typeof ex === "object" && "default" in ex ? ex : ex;
 }
 
 /**
@@ -32,11 +32,10 @@ export function requireDefault(p: string) {
  */
 let controllerReg: any = null;
 export function ControllerMatch(name: string, controllerSuffix = "") {
-    if (!controllerReg)
-        controllerReg = new RegExp(`([a-zA-Z0-9_]+)${controllerSuffix}`);
+    if (!controllerReg) controllerReg = new RegExp(`([a-zA-Z0-9_]+)${controllerSuffix}`);
 
-    const result = name.split(".")[0]||"";
-    const match =result.match(controllerReg);
+    const result = name.split(".")[0] || "";
+    const match = result.match(controllerReg);
     return match;
 }
 
@@ -47,8 +46,7 @@ export function ControllerMatch(name: string, controllerSuffix = "") {
 export function getParamNames(func: { toString: () => { replace: (arg0: RegExp, arg1: string) => any } }) {
     const fnStr = func.toString().replace(STRIP_COMMENTS, "");
     let result = fnStr.slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")")).match(ARGUMENT_NAMES);
-    if (result === null)
-        result = [];
+    if (result === null) result = [];
 
     return result;
 }
@@ -73,7 +71,7 @@ export function checkClass(fileName: string, xpath: string, target: any, exSet?:
         const keys = Object.keys(target);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (Check.isClass(target[keys[0]!])) {
-            calssname = keys[0]||"";
+            calssname = keys[0] || "";
         }
     }
     calssname = calssname || target.name || fileName;
@@ -88,4 +86,3 @@ export function checkClass(fileName: string, xpath: string, target: any, exSet?:
     // }
     exSet.add(calssname);
 }
-

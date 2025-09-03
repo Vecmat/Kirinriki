@@ -66,10 +66,10 @@ const executeBootstrap = async function <TFunction extends Function>(
         // // 文件的路径
         // const __filename = fileURLToPath(import.meta.url)
         // // 先获取文件所在的目录
-        // const __dirname = dirname(__filename)
-        const __filename = fileURLToPath(import.meta.url);
+        // // const __dirname = dirname(__filename)
+        // const __filename = fileURLToPath(import.meta.url);
 
-        const __dirname = path.dirname(__filename);
+        // const __dirname = path.dirname(__filename);
 
         let file = path.resolve(__dirname, "../../../package.json");
         let pkg = await readFileSync(file, "utf8");
@@ -121,10 +121,10 @@ const executeBootstrap = async function <TFunction extends Function>(
         await asyncEmit(app, "APP_ADDON_LOADED");
         Logger.Log("Vecmat", "", "Loaded Addon ...");
 
-        // init MonitorManager
-        await MonitorManager.init(app);
-        //  Mount the monitor
-        await MonitorManager.mount(app);
+        // // init MonitorManager
+        // await MonitorManager.init(app);
+        // //  Mount the monitor
+        // await MonitorManager.mount(app);
 
         // init SavantManager
         await SavantManager.init(app);

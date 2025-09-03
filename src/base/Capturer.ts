@@ -5,7 +5,7 @@
  */
 
 import { Exception } from "@vecmat/vendor";
-import { default as  lodash} from "lodash";
+import { default as lodash } from "lodash";
 import { CAPTURER_KEY } from "./Constants.js";
 import { IContext } from "../core/IContext.js";
 import { Kirinriki } from "../core/Application.js";
@@ -15,9 +15,8 @@ import { IOCContainer } from "../container/Container.js";
  */
 
 export interface ICapturer {
-    <E  extends Error >(err: E, ctx?: IContext|Kirinriki ): Promise<boolean>
+    <E extends Error>(err: E, ctx?: IContext | Kirinriki): Promise<boolean>;
 }
-
 
 /**
  * Indicates that an decorated class is a "capturer".
@@ -32,7 +31,6 @@ export function Capturer(identifier?: string): ClassDecorator {
         IOCContainer.saveClass("CAPTURER", target, identifier);
     };
 }
-
 
 /**
  * Register error capture function
@@ -50,7 +48,6 @@ export function Catching(name: string): MethodDecorator {
         IOCContainer.savePropertyData(CAPTURER_KEY, name, target, methodName);
     };
 }
-
 
 // CaptorManager;
 export class Captor {
@@ -110,6 +107,5 @@ export class Captor {
     // Mount the Captor
     static async mount(app: Kirinriki) {
         // 读取并注册到map里即可
-
     }
 }

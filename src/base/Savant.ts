@@ -24,10 +24,8 @@ import { ComponentType } from "../container/IContainer.js";
 export function Before(name: string): ClassDecorator {
     return (target: any) => {
         // 中间件名称
-
     };
 }
-
 
 // 函数调用中间件
 export function Use(name: string): MethodDecorator {
@@ -38,7 +36,6 @@ export function Use(name: string): MethodDecorator {
     };
 }
 
-
 /**
  * Indicates that an decorated method is a "savant".
  *
@@ -46,13 +43,12 @@ export function Use(name: string): MethodDecorator {
  * @param {string} [identifier] savant name
  * @returns {MethodDecorator}
  */
-export  function Savant(name: string, confg?: object): MethodDecorator {
+export function Savant(name: string, confg?: object): MethodDecorator {
     return (target: Object, method: string | symbol, descriptor: PropertyDescriptor) => {
         // 存到专用数组里？
         IOCContainer.savePropertyData(SAVANT_KEY, name, target, method);
     };
 }
-
 
 export class SavantManager {
     public static queues: string[] = [];
@@ -69,7 +65,7 @@ export class SavantManager {
     }
 
     // init savant function
-    static async init(app:Kirinriki) {
+    static async init(app: Kirinriki) {
         // Built in savant
         this.reg("Trace", Trace);
         this.reg("Playload", Payload);
@@ -95,10 +91,11 @@ export class SavantManager {
     // Mount the savant
     static async mount(app: Kirinriki) {
         // get Savant config
-        let savantConf = app.config(undefined, "savant");
+        let savantConf = app.config(undefined, "addon");
         const sysQueue = ["Trace", "Payload"];
         //
         if (lodash.isEmpty(savantConf)) {
+            console.log("[Kirinriki] No savant config found, use default config.");
             savantConf = { config: {}, queue: [] };
         }
         //
@@ -110,7 +107,6 @@ export class SavantManager {
             }
         });
         SavantManager.queues = Array.from(queueSet);
-
 
         await asyncEmit(app, "LOAD_APP_SAVANT_BEFORE", [SavantManager.queues]);
 
@@ -143,4 +139,3 @@ export class SavantManager {
         }
     }
 }
-

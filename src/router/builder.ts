@@ -14,10 +14,15 @@ import { IOCContainer } from "../container/index.js";
 import { TAGGED_PARAM } from "../container/IContainer.js";
 import { RecursiveGetMetadata, getOriginMetadata } from "../container/Util.js";
 import { PARAM_RULE_KEY, PARAM_CHECK_KEY, PARAM_TYPE_KEY } from "../validation/rule.js";
-import { ASPECT_BEFORE, ASPECT_BEHIND, RouterMetadataObject, CONTROLLER_ROUTER, ROUTER_KEY, ParamMetadataObject, ParamMetadata } from "./define.js";
-
-
-
+import {
+    ASPECT_BEFORE,
+    ASPECT_BEHIND,
+    RouterMetadataObject,
+    CONTROLLER_ROUTER,
+    ROUTER_KEY,
+    ParamMetadataObject,
+    ParamMetadata
+} from "./define.js";
 
 /**
  * controller handler
@@ -72,9 +77,8 @@ export async function buildHandler(app: Kirinriki, ctx: IContext, ctlClass: any,
         sign: "SUCCESS",
         message: "success",
         data: res || {}
-    };;
+    };
 }
-
 
 /**
  *
@@ -111,7 +115,6 @@ export function buildRouter(app: Kirinriki, target: any, instance?: any): Router
 
     return router;
 }
-
 
 /**
  *

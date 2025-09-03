@@ -2,7 +2,7 @@
  * @ Author: Hanrea
  * @ version: 2022-03-21 13:14:21
  * @ copyright: Vecmat (c) - <hi(at)vecmat.com>
-*/
+ */
 import lodash from "lodash";
 import { IAddon } from "../base/Addon.js";
 import { LoadDir } from "../base/Loader.js";
@@ -18,7 +18,7 @@ import { ARROBJ, Check, Exception } from "@vecmat/vendor";
 import { LoadConfigs as loadConf } from "../base/config.js";
 import { TAGGED_CLS, ComponentType } from "../container/IContainer.js";
 import { COMPONENT_SCAN, CONFIGURATION_SCAN, APP_READY_HOOK, CAPTURER_KEY } from "../base/Constants.js";
-import { ACTION_SCOPT } from "../router/define.js"
+import { ACTION_SCOPT } from "../router/define.js";
 import path from "path";
 import { fileURLToPath } from "url";
 /**
@@ -27,8 +27,8 @@ import { fileURLToPath } from "url";
  * @interface ComponentItem
  */
 export interface ComponentItem {
-    id: string
-    target: any
+    id: string;
+    target: any;
 }
 
 /**
@@ -63,11 +63,9 @@ export class BootLoader {
         }
 
         // define path
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
 
         const rootPath = app.rootPath || process.cwd();
-        const appPath = app.appPath || path.resolve(rootPath, env.indexOf("ts-node") > -1 ? "src" : "dist");
+        const appPath = app.appPath || path.resolve(rootPath, env.indexOf("ts-node") > -1 ? "src" : "");
         const krnrkPath = path.resolve(__dirname, "..");
 
         process.env.APP_PATH = appPath;
@@ -120,11 +118,11 @@ export class BootLoader {
         const exSet = new Set();
         await LoadDir(
             componentMetas,
-            "",
+            app.appPath,
             (fileName: string, xpath: string, xTarget: any) => {
                 checkClass(fileName, xpath, xTarget, exSet);
             },
-            ["**/**.js", "**/**.cjs", "**/**.mjs", "**/**.ts", "!**/**.d.ts"],
+            ["**/**.js", "**/**.cjs", "**/**.jsc", "**/**.mjs", "**/**.ts", "!**/**.d.ts"],
             [...configurationMetas, `${target.name || ".no"}.ts`]
         );
         exSet.clear();
@@ -203,8 +201,8 @@ export class BootLoader {
     public static async LoadConfigs(app: Kirinriki, target: any) {
         const frameConfig: any = {};
         let loadPath = BootLoader.GetConfigurationMetas(app, target);
-        Logger.Debug(`Load configuration path: ${app.krnrkPath}/config`);
-        await LoadDir(["./config"], app.krnrkPath, function (name: string, path: string, exp: any) {
+        Logger.Debug(`Load configuration path: ${app.appPath}/config`);
+        await LoadDir(["./config"], app.appPath, function (name: string, path: string, exp: any) {
             frameConfig[name] = exp;
         });
         if (lodash.isArray(loadPath)) {
@@ -290,23 +288,23 @@ export class BootLoader {
 
         for (const key of addonConfQueue) {
             const ins: IAddon = IOCContainer.get(key, "ADDON");
-            console.log(ins.version);
+            console.log(`Load Addon: ${key}: ${ins.version}`);
         }
     }
 
     /**
-     * Load mixture
+     * Load Action
      *
      * @static
      * @param {*} app
      * @memberof BootLoader
      */
-    public static LoadMixtures(app: Kirinriki) {
-        const mixtureList = IOCContainer.listClass("ACTION");
-        mixtureList.forEach((item: ComponentItem) => {
-            item.id = (item.id ?? "").replace("MIXTURE:", "");
+    public static LoadActions(app: Kirinriki) {
+        const ActionList = IOCContainer.listClass("ACTION");
+        ActionList.forEach((item: ComponentItem) => {
+            item.id = (item.id ?? "").replace("ACTION:", "");
             if (item.id && Check.isClass(item.target)) {
-                Logger.Debug(`Load mixture: ${item.id}`);
+                Logger.Debug(`Load Action: ${item.id}`);
                 // registering to IOC
                 const scope = IOCContainer.getClassMetadata(ACTION_SCOPT, "scope", item.target);
                 IOCContainer.reg(item.id, item.target, { scope: scope, type: "ACTION", args: [] });

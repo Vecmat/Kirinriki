@@ -25,7 +25,7 @@ type callbackFunc = (fileName: string, xpath: string, target: any) => void;
  * @param baseDir
  * @param dir
  */
-function buildLoadDir(baseDir: string, dir: string) :string{
+function buildLoadDir(baseDir: string, dir: string): string {
     if (!path.isAbsolute(dir)) return path.join(baseDir, dir);
     return dir;
 }
@@ -39,7 +39,7 @@ function buildLoadDir(baseDir: string, dir: string) :string{
  */
 async function requireDefault(p: string) {
     /* eslint-disable global-require */
-    const ex = await import(p);
+    const ex = require(p);
     return ex && typeof ex === "object" && "default" in ex ? ex.default : ex;
 }
 
@@ -57,7 +57,7 @@ export async function LoadDir(
     loadDir: string[],
     baseDir?: string,
     fn?: callbackFunc,
-    pattern: string[] = ["**/**.js", "**/**.cjs", "**/**.mjs", "**/**.ts", "!**/**.d.ts"],
+    pattern: string[] = ["**/**.ts", "**/**.js", "**/**.cjs", "**/**.jsc", "**/**.mjs", "!**/**.d.ts"],
     ignore: string[] = ["**/node_modules/**", "**/logs/**", "**/static/**"]
 ): Promise<ResInterface[]> {
     baseDir = baseDir || process.cwd();
@@ -73,7 +73,7 @@ export async function LoadDir(
         });
         for (let name of fileResults) {
             const file = path.join(dir, name);
-
+            console.log(`Load file: ${file.replaceAll(baseDir, "")}`);
             if (name.includes("/")) name = name.slice(name.lastIndexOf("/") + 1);
 
             const fileName = name.slice(0, name.lastIndexOf("."));

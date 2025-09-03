@@ -10,6 +10,9 @@
 import copy from 'rollup-plugin-copy'
 import { summary } from 'rollup-plugin-summary';
 import typescript from '@rollup/plugin-typescript';
+import commonjs from '@rollup/plugin-commonjs';
+
+import esmShim from '@rollup/plugin-esm-shim';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 /**
  * @type {import('rollup').RollupOptions}
@@ -38,12 +41,16 @@ export default {
   ],
   plugins: [
     typescript({ tsconfig: 'tsconfig.build.json' }),
+    // commonjs(),
     summary(),
+
+    esmShim(),
     copy({
       targets: [
         { src: 'README.md', dest: 'dist/' },
         { src: ".npmignore", dest: 'dist/' },
-        { src: 'package.json', dest: 'dist/',
+        {
+          src: 'package.json', dest: 'dist/',
           // transform: (contents, filename) => {
           //   return contents.toString().replace('__SCRIPT__', 'app.js')
           // }

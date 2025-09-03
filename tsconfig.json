@@ -4,7 +4,7 @@
         "baseUrl": "src",
         "outDir": "dist",
         "target": "esnext",
-        "useDefineForClassFields": false, // update until https://github.com/microsoft/TypeScript/issues/50971 is fixed
+        "useDefineForClassFields": false,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "strict": true,

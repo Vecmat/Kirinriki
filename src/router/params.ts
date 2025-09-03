@@ -20,18 +20,15 @@ export function Ctx(): ParameterDecorator {
     });
 }
 
-
-
 /**
- * Get mixture for ctx.
+ * Get Action for ctx.
  * ! 注意，改完后需要修改 Schedler 的引用
  */
 export function Act(name: string): ParameterDecorator {
     return InjectParams("Act", (ctx: IContext) => {
-        return ctx.getMixture(name);
-    }, );
+        return ctx.getAction(name);
+    });
 }
-
 
 /**
  * Get request header.
@@ -121,7 +118,6 @@ export function Body(name?: string): ParameterDecorator {
     });
 }
 
-
 /**
  * Get POST/GET parameters, POST priority
  *
@@ -141,4 +137,3 @@ export function Param(name?: string): ParameterDecorator {
         });
     });
 }
-
